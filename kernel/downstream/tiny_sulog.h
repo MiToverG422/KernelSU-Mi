@@ -27,7 +27,7 @@ struct sulog_entry {
 #define SULOG_BUFSIZ SULOG_ENTRY_MAX * (sizeof (struct sulog_entry))
 
 static void *sulog_buf_ptr = NULL;
-static uint32_t sulog_index_next = 0;
+static atomic_t sulog_index_next = ATOMIC_INIT(0);
 
 static void tiny_sulog_init_heap()
 {
@@ -64,15 +64,6 @@ static inline uint32_t boottime_s_get()
 	return (uint32_t)boottime_s;
 }
 
-/**
- * NOTE: C11 atomics
- *
- *	__ATOMIC_RELAXED non-barrier'd atomic op
- *	__ATOMIC_RELEASE writer publish, barrier'd
- *	__ATOMIC_ACQUIRE reader consume, barrier'd
- *	__ATOMIC_SEQ_CST sequential consitency, full barrier, atomic op
- *
- */
 static noinline void write_sulog(uint8_t sym)
 {
 	if (!sulog_buf_ptr)
@@ -86,7 +77,7 @@ static noinline void write_sulog(uint8_t sym)
 	*((char *)&entry.data + 3) = sym;
 
 	// reserve slot
-	uint32_t slot = __atomic_load_n(&sulog_index_next, __ATOMIC_RELAXED);
+	uint32_t slot = atomic_read(&sulog_index_next);
 	uint32_t next_slot;
 
 retry:
@@ -95,17 +86,19 @@ retry:
 	else
 		next_slot = slot + 1;
 
-	// if sulog_index_next == slot, set sulog_index_next = next_slot (increment) then ret true
-	// if it isn't, ret false and we just update &slot, it should be equal on the next loop
-	bool success = __atomic_compare_exchange(&sulog_index_next, &slot, &next_slot,
-							true,			// weak seems fine
-							__ATOMIC_RELEASE,	// writer publish + barrier
-							__ATOMIC_RELAXED);
-	if (!success)
-		goto retry; // another cpu overwrote slot, try grab another again
+	// if sulog_index_next == slot, next_slot is written to it and old is retted
+	// if sulog_index_next != slot, nothing happens and sulog_index_next is retted
+	uint32_t curr_slot = atomic_cmpxchg_release(&sulog_index_next, slot, next_slot);
+	if (curr_slot == slot)
+		goto write;
 
+	slot = curr_slot;
+	goto retry;
+
+write:
 	// 64-bit is also atomic on armv7 via ldrexd + strexd, https://godbolt.org/z/7Tqnrcceq
-	__atomic_store((uint64_t *)sulog_buf_ptr + slot, (uint64_t *)&entry, __ATOMIC_RELEASE);
+	//__atomic_store((uint64_t *)sulog_buf_ptr + slot, (uint64_t *)&entry, __ATOMIC_RELEASE);
+	atomic64_set((atomic64_t *)sulog_buf_ptr + slot, *(uint64_t *)&entry);
 }
 
 struct sulog_entry_rcv_ptr {
@@ -134,7 +127,7 @@ static noinline int send_sulog_dump(void __user *uptr)
 		return -ENOMEM;
 
 	uint32_t uptime = boottime_s_get();
-	uint32_t current_idx = __atomic_load_n(&sulog_index_next, __ATOMIC_ACQUIRE); // reader consume + barrier
+	uint32_t current_idx = (uint32_t)atomic_read_acquire(&sulog_index_next);
 	memcpy(memory, sulog_buf_ptr, SULOG_BUFSIZ); // take a snapshot
 
 	if (copy_to_user((void __user *)(uintptr_t)sbuf.uptime_ptr, &uptime, sizeof(uptime) ))
