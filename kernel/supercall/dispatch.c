@@ -404,7 +404,7 @@ static int ksu_get_task_mark(pid_t pid)
 	task = find_task_by_vpid(pid);
 	if (!task) {
 		rcu_read_unlock();
-		return ret;	
+		return ret;
 	}
 
 	ret = !task->seccomp.mode;
@@ -515,8 +515,8 @@ static int add_try_umount(void __user *arg)
 		case KSU_UMOUNT_ADD: {
 			long len = strncpy_from_user(buf, (const char __user *)cmd.arg, 256);
 			if (len <= 0)
-				return -EFAULT;	
-			
+				return -EFAULT;
+
 			buf[sizeof(buf) - 1] = '\0';
 
 			new_entry = kzalloc(sizeof(*new_entry), GFP_KERNEL);
@@ -563,7 +563,7 @@ static int add_try_umount(void __user *arg)
 			long len = strncpy_from_user(buf, (const char __user *)cmd.arg, sizeof(buf) - 1);
 			if (len <= 0)
 				return -EFAULT;
-			
+
 			buf[sizeof(buf) - 1] = '\0';
 
 			down_write(&mount_list_lock);
@@ -576,7 +576,7 @@ static int add_try_umount(void __user *arg)
 				}
 			}
 			up_write(&mount_list_lock);
-			
+
 			return 0;
 		}
 
@@ -585,7 +585,7 @@ static int add_try_umount(void __user *arg)
 			// check for pointer first
 			if (!cmd.arg)
 				return -EFAULT;
-		
+
 			size_t total_size = 0; // size of list in bytes
 
 			down_read(&mount_list_lock);
@@ -595,13 +595,13 @@ static int add_try_umount(void __user *arg)
 			up_read(&mount_list_lock);
 
 			pr_info("cmd_add_try_umount: total_size: %zu\n", total_size);
-			
+
 			if (copy_to_user((size_t __user *)cmd.arg, &total_size, sizeof(total_size)))
 				return -EFAULT;
 
 			return 0;
 		}
-		
+
 		// WARNING! this is straight up pointerwalking.
 		// this way we dont need to redefine the ioctl defs.
 		// this also avoids us needing to kmalloc
@@ -609,18 +609,18 @@ static int add_try_umount(void __user *arg)
 		case KSU_UMOUNT_GETLIST: {
 			if (!cmd.arg)
 				return -EFAULT;
-			
+
 			char *user_buf = (char *)cmd.arg;
 
 			down_read(&mount_list_lock);
 			list_for_each_entry(entry, &mount_list, list) {
 				pr_info("cmd_add_try_umount: entry: %s\n", entry->umountable);
-			
+
 				if (copy_to_user((char __user *)user_buf, entry->umountable, strlen(entry->umountable) + 1 )) {
 					up_read(&mount_list_lock);
 					return -EFAULT;
 				}
-				
+
 				// walk it! +1 for null terminator
 				user_buf = user_buf + strlen(entry->umountable) + 1;
 			}
@@ -635,7 +635,7 @@ static int add_try_umount(void __user *arg)
 		}
 
 	} // switch(cmd.mode)
-	
+
 	return 0;
 }
 
