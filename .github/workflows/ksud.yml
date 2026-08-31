@@ -28,6 +28,7 @@ jobs:
       if: ${{ inputs.pack_lkm }}
       run: |
         cp aarch64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/aarch64/
+        cp xx-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/aarch64/
     
     - name: Prepare ksuinit
       if: ${{ inputs.pack_ksuinit }}
@@ -53,10 +54,8 @@ jobs:
     - name: Build ksud
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        KSU_PACKAGE_NAME: com.mimi0721.manager
       run: |
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          export KSU_PACKAGE_NAME="me.weishu.kernelsu.pr"
-        fi
         source .github/scripts/setup-rust-build.sh ${{ inputs.target }} 26
         cargo build --target $TRIPLE --release --manifest-path ./userspace/ksud/Cargo.toml
 
