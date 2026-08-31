@@ -1,6 +1,11 @@
 package me.weishu.kernelsu.ui.screen.install
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -84,8 +89,14 @@ internal fun InstallScreenMaterial(
                 onSelected = actions.onSelectMethod,
                 onDownloadFile = actions.onDownloadFile,
                 onSelectBootImage = actions.onSelectBootImage,
+                onSelectAnyKernel = actions.onSelectAnyKernel,
             )
 
+            AnimatedVisibility(
+                visible = uiState.showInstallOptions,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) { Column(verticalArrangement = Arrangement.spacedBy(13.dp)) {
             SegmentedColumn(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 content = buildList {
@@ -123,6 +134,18 @@ internal fun InstallScreenMaterial(
                         )
                     }
                     add {
+                        val summaryText = when (uiState.lkmVariant) {
+                            LkmVariant.KOWSU -> stringResource(R.string.install_lkm_kowsu)
+                            LkmVariant.XXKSU -> stringResource(R.string.install_lkm_xxksu)
+                            LkmVariant.CUSTOM -> {
+                                (uiState.lkmSelection as? LkmSelection.LkmUri)?.let {
+                                    stringResource(
+                                        R.string.selected_lkm,
+                                        it.uri.lastPathSegment ?: "(file)"
+                                    )
+                                } ?: stringResource(R.string.install_upload_lkm_file)
+                            }
+                        }
                         SegmentedListItem(
                             leadingContent = {
                                 Icon(
@@ -130,19 +153,12 @@ internal fun InstallScreenMaterial(
                                     null
                                 )
                             },
-                            headlineContent = { Text(stringResource(R.string.install_upload_lkm_file)) },
+                            headlineContent = { Text(stringResource(R.string.install_select_lkm_variant)) },
                             supportingContent = {
-                                (uiState.lkmSelection as? LkmSelection.LkmUri)?.let {
-                                    Text(
-                                        stringResource(
-                                            R.string.selected_lkm,
-                                            it.uri.lastPathSegment ?: "(file)"
-                                        )
-                                    )
-                                }
+                                Text(summaryText)
                             },
                             trailingContent = {
-                                if (uiState.lkmSelection is LkmSelection.LkmUri) {
+                                if (uiState.lkmVariant == LkmVariant.CUSTOM && uiState.lkmSelection is LkmSelection.LkmUri) {
                                     IconButton(onClick = actions.onClearLkm) {
                                         Icon(
                                             Icons.Filled.Close,
@@ -153,7 +169,7 @@ internal fun InstallScreenMaterial(
                                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
                                 }
                             },
-                            onClick = actions.onUploadLkm
+                            onClick = actions.onSelectLkm
                         )
                     }
                 }
@@ -196,6 +212,8 @@ internal fun InstallScreenMaterial(
                     )
                 }
             }
+            }
+            }
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -213,6 +231,7 @@ private fun SelectInstallMethod(
     onSelected: (InstallMethod) -> Unit,
     onDownloadFile: () -> Unit,
     onSelectBootImage: () -> Unit,
+    onSelectAnyKernel: () -> Unit,
 ) {
     val confirmDialog = rememberConfirmDialog(
         onConfirm = {
@@ -229,6 +248,7 @@ private fun SelectInstallMethod(
             is InstallMethod.DownloadFile -> onDownloadFile()
             is InstallMethod.DirectInstall -> onSelected(option)
             is InstallMethod.DirectInstallToInactiveSlot -> confirmDialog.showConfirm(dialogTitle, dialogContent)
+            is InstallMethod.AnyKernel -> onSelectAnyKernel()
         }
     }
 
