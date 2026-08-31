@@ -2,7 +2,7 @@ name: Build Manager
 
 on:
   push:
-    branches: [ "main", "dev", "ci", "test", "staging" ]
+    branches: [ "main", "dev", "ci", "master", "test", "staging" ]
     paths:
       - 'README.md'
       - '.github/workflows/build-manager.yml'
@@ -97,6 +97,20 @@ jobs:
     needs: generate-key
     uses: ./.github/workflows/build-lkm.yml
     with:
+      manager_package: com.mimi0721.manager
+      expected_size: 0x02c8
+      expected_hash: 3b0d042b55e4eee9eb14c9aedbbe1499dacea8eb4c87106a2c5b922e7c2583af
+      expected_size2: ${{ needs.generate-key.outputs.expected_size || '' }}
+      expected_hash2: ${{ needs.generate-key.outputs.expected_hash || '' }}
+    secrets: inherit
+
+  build-xx-lkm:
+    needs: generate-key
+    uses: ./.github/workflows/build-xx-lkm.yml
+    with:
+      manager_package: com.mimi0721.manager
+      expected_size: 0x02c8
+      expected_hash: 3b0d042b55e4eee9eb14c9aedbbe1499dacea8eb4c87106a2c5b922e7c2583af
       expected_size2: ${{ needs.generate-key.outputs.expected_size || '' }}
       expected_hash2: ${{ needs.generate-key.outputs.expected_hash || '' }}
     secrets: inherit
@@ -105,7 +119,7 @@ jobs:
     uses: ./.github/workflows/ksuinit.yml
 
   build-ksud:
-    needs: [build-lkm, build-ksuinit]
+    needs: [build-lkm, build-xx-lkm, build-ksuinit]
     strategy:
       matrix:
         include:
@@ -124,12 +138,18 @@ jobs:
       target: ${{ matrix.target }}
       pack_lkm: ${{ matrix.pack_lkm }}
       pack_ksuinit: ${{ matrix.pack_ksuinit }}
-  
+
   build-ksud-extra:
-    needs: [build-lkm, build-ksuinit]
+    needs: [build-lkm, build-xx-lkm, build-ksuinit]
     strategy:
       matrix:
         include:
+          - target: x86_64-pc-windows-gnu # windows pc
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin # Intel mac
+            os: macos-latest
+          - target: aarch64-apple-darwin # M chip mac
+            os: macos-latest
           - target: aarch64-unknown-linux-musl # arm64 Linux
             os: ubuntu-latest
           - target: x86_64-unknown-linux-musl # x86 Linux
@@ -158,12 +178,15 @@ jobs:
       - name: Write key
         if: ${{ github.event_name != 'pull_request' || github.ref_type == 'tag' }}
         run: |
+          if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
             {
-              echo KEYSTORE_PASSWORD='password'
-              echo KEY_ALIAS='alias'
-              echo KEY_PASSWORD='password'
-              echo KEYSTORE_FILE='dummy.keystore'
+              echo KEYSTORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}'
+              echo KEY_ALIAS='${{ secrets.KEY_ALIAS }}'
+              echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}'
+              echo KEYSTORE_FILE='key.jks'
             } >> gradle.properties
+            echo "${{ secrets.KEYSTORE }}" | base64 -d > key.jks
+          fi
 
       - name: Write PR key
         if: github.event_name == 'pull_request'
@@ -191,6 +214,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
 
       - name: Build with Gradle
         run: |
@@ -201,6 +226,7 @@ jobs:
           fi
 
       - name: Upload build artifact
+        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v7
         with:
           name: manager-gradle
@@ -208,7 +234,7 @@ jobs:
 
       - name: Upload mappings
         uses: actions/upload-artifact@v7
-        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' )) || github.ref_type == 'tag' }}
+        if: ${{ ( github.event_name != 'pull_request') || github.ref_type == 'tag' }}
         with:
           name: "mappings"
           path: "manager/app/build/outputs/mapping/release/"
@@ -227,7 +253,7 @@ jobs:
       - name: Setup need_upload
         id: need_upload
         run: |
-          if [ ! -z "${{ secrets.BOT_TOKEN }}" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+          if [ ! -z "${{ secrets.BOT_TOKEN }}" ]; then
             echo "UPLOAD=true" >> $GITHUB_OUTPUT
           else
             echo "UPLOAD=false" >> $GITHUB_OUTPUT
@@ -235,6 +261,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
 
       - name: Download gradle manager artifact
         uses: actions/download-artifact@v8
@@ -281,13 +309,33 @@ jobs:
           cp -f "$X86_64_KSUD" target/x86_64-linux-android/release/ksud
 
       - name: Prepare signing inputs
+        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
+        env:
+          PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
+          PR_KEYSTORE_PASSWORD: ${{ needs.generate-key.outputs.keystore_password }}
+          PR_KEY_PASSWORD: ${{ needs.generate-key.outputs.key_password }}
+          PROD_KEYSTORE: ${{ secrets.KEYSTORE }}
+          PROD_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          PROD_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          PROD_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "SIGN_KEYSTORE_FILE=manager/dummy.keystore" >> $GITHUB_ENV
-          echo "SIGN_KEY_ALIAS=alias" >> $GITHUB_ENV
-          echo "SIGN_KEYSTORE_PASSWORD=password" >> $GITHUB_ENV
-          echo "SIGN_KEY_PASSWORD=password" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "$PR_KEYSTORE" | base64 -d > pr-key.jks
+            echo "SIGN_KEYSTORE_FILE=pr-key.jks" >> $GITHUB_ENV
+            echo "SIGN_KEY_ALIAS=pr-key" >> $GITHUB_ENV
+            echo "SIGN_KEYSTORE_PASSWORD=$PR_KEYSTORE_PASSWORD" >> $GITHUB_ENV
+            echo "SIGN_KEY_PASSWORD=$PR_KEY_PASSWORD" >> $GITHUB_ENV
+          else
+            test -n "$PROD_KEYSTORE"
+            echo "$PROD_KEYSTORE" | base64 -d > key.jks
+            echo "SIGN_KEYSTORE_FILE=key.jks" >> $GITHUB_ENV
+            echo "SIGN_KEY_ALIAS=$PROD_KEY_ALIAS" >> $GITHUB_ENV
+            echo "SIGN_KEYSTORE_PASSWORD=$PROD_KEYSTORE_PASSWORD" >> $GITHUB_ENV
+            echo "SIGN_KEY_PASSWORD=$PROD_KEY_PASSWORD" >> $GITHUB_ENV
+          fi
 
       - name: Repack and resign
+        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
         run: |
           python3 repack_apk.py repack \
             -b release \
@@ -302,6 +350,7 @@ jobs:
             --strip
 
       - name: Upload build artifact
+        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request') || github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v7
         with:
           name: manager

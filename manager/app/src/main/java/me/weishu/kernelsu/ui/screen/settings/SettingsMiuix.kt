@@ -1,5 +1,10 @@
 package me.weishu.kernelsu.ui.screen.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,45 +21,66 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.automirrored.rounded.Rule
+import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.AdminPanelSettings
 import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.ContactPage
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.DeveloperMode
-import androidx.compose.material.icons.rounded.DisplaySettings
+import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.ElectricalServices
+import androidx.compose.material.icons.rounded.Fence
+import androidx.compose.material.icons.rounded.FolderDelete
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Policy
+import androidx.compose.material.icons.rounded.RemoveCircle
+import androidx.compose.material.icons.rounded.RemoveModerator
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LayersClear
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.SystemUpdateAlt
+import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.UiMode
+import me.weishu.kernelsu.data.model.MountMode
 import me.weishu.kernelsu.ui.component.KsuIsValid
 import me.weishu.kernelsu.ui.component.dialog.rememberLoadingDialog
 import me.weishu.kernelsu.ui.component.miuix.SendLogDialog
+import me.weishu.kernelsu.ui.screen.colorpalette.ColorPaletteContentMiuix
+import me.weishu.kernelsu.ui.screen.colorpalette.toColorPaletteActions
+import me.weishu.kernelsu.ui.screen.colorpalette.toColorPaletteUiState
 import me.weishu.kernelsu.ui.component.uninstalldialog.UninstallDialog
 import me.weishu.kernelsu.ui.theme.LocalEnableBlur
 import me.weishu.kernelsu.ui.util.BlurredBar
 import me.weishu.kernelsu.ui.util.rememberBlurBackdrop
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Icon
+import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.MiuixScrollBehavior
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.layerBackdrop
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.preference.ArrowPreference
 import top.yukonga.miuix.kmp.preference.OverlayDropdownPreference
 import top.yukonga.miuix.kmp.preference.SwitchPreference
@@ -71,6 +97,7 @@ fun SettingPagerMiuix(
     uiState: SettingsUiState,
     actions: SettingsScreenActions,
     bottomInnerPadding: Dp,
+    section: SettingsSection? = null,
 ) {
     val scrollBehavior = MiuixScrollBehavior()
     val enableBlur = LocalEnableBlur.current
@@ -81,12 +108,39 @@ fun SettingPagerMiuix(
     val showUninstallDialog = rememberSaveable { mutableStateOf(false) }
     val showSendLogDialog = rememberSaveable { mutableStateOf(false) }
 
+    UninstallDialog(
+        show = showUninstallDialog.value,
+        onDismissRequest = { showUninstallDialog.value = false }
+    )
+    SendLogDialog(
+        show = showSendLogDialog.value,
+        onDismissRequest = { showSendLogDialog.value = false },
+        loadingDialog = loadingDialog
+    )
+
     Scaffold(
         topBar = {
             BlurredBar(backdrop) {
                 TopAppBar(
                     color = barColor,
-                    title = stringResource(R.string.settings),
+                    title = stringResource(section?.titleRes ?: R.string.settings),
+                    navigationIcon = {
+                        if (section != null) {
+                            IconButton(
+                                onClick = actions.onBack
+                            ) {
+                                val layoutDirection = LocalLayoutDirection.current
+                                Icon(
+                                    modifier = Modifier.graphicsLayer {
+                                        if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
+                                    },
+                                    imageVector = MiuixIcons.Back,
+                                    contentDescription = null,
+                                    tint = colorScheme.onBackground
+                                )
+                            }
+                        }
+                    },
                     scrollBehavior = scrollBehavior
                 )
             }
@@ -106,134 +160,160 @@ fun SettingPagerMiuix(
                 overscrollEffect = null,
             ) {
                 item {
-                    Card(
-                        modifier = Modifier
-                            .padding(top = 12.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        SwitchPreference(
-                            title = stringResource(id = R.string.settings_check_update),
-                            summary = stringResource(id = R.string.settings_check_update_summary),
-                            startAction = {
-                                Icon(
-                                    Icons.Rounded.SystemUpdate,
-                                    modifier = Modifier.padding(end = 6.dp),
-                                    contentDescription = stringResource(id = R.string.settings_check_update),
-                                    tint = colorScheme.onBackground
-                                )
-                            },
-                            checked = uiState.checkUpdate,
-                            onCheckedChange = actions.onSetCheckUpdate
-                        )
+                    if (section == null) {
+                        SettingsSectionListMiuix(actions)
+                        SettingsAboutEntryMiuix(actions)
+                    }
+
+                    if (section == SettingsSection.General) {
                         KsuIsValid {
-                            SwitchPreference(
-                                title = stringResource(id = R.string.settings_module_check_update),
-                                summary = stringResource(id = R.string.settings_check_update_summary),
-                                startAction = {
-                                    Icon(
-                                        Icons.Rounded.SystemUpdateAlt,
-                                        modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = stringResource(id = R.string.settings_check_update),
-                                        tint = colorScheme.onBackground
-                                    )
-                                },
-                                checked = uiState.checkModuleUpdate,
-                                onCheckedChange = actions.onSetCheckModuleUpdate
-                            )
-                        }
-                    }
-
-                    Card(
-                        modifier = Modifier
-                            .padding(top = 12.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        OverlayDropdownPreference(
-                            title = stringResource(id = R.string.settings_ui_mode),
-                            summary = stringResource(id = R.string.settings_ui_mode_summary),
-                            items = UiMode.entries.map { it.name },
-                            startAction = {
-                                Icon(
-                                    Icons.Rounded.DisplaySettings,
-                                    modifier = Modifier.padding(end = 6.dp),
-                                    contentDescription = stringResource(id = R.string.settings_ui_mode),
-                                    tint = colorScheme.onBackground
+                            Card(
+                                modifier = Modifier
+                                    .padding(top = 12.dp)
+                                    .fillMaxWidth(),
+                            ) {
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.settings_check_update),
+                                    summary = stringResource(id = R.string.settings_check_update_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.SystemUpdate,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.settings_check_update),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.checkUpdate,
+                                    onCheckedChange = actions.onSetCheckUpdate
                                 )
-                            },
-                            selectedIndex = if (uiState.uiMode == UiMode.Material.value) 1 else 0,
-                            onSelectedIndexChange = actions.onSetUiModeIndex
-                        )
-                        ArrowPreference(
-                            title = stringResource(id = R.string.settings_theme),
-                            summary = stringResource(id = R.string.settings_theme_summary),
-                            startAction = {
-                                Icon(
-                                    Icons.Rounded.Palette,
-                                    modifier = Modifier.padding(end = 6.dp),
-                                    contentDescription = stringResource(id = R.string.settings_theme),
-                                    tint = colorScheme.onBackground
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.settings_module_check_update),
+                                    summary = stringResource(id = R.string.settings_check_update_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.SystemUpdateAlt,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.settings_module_check_update),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.checkModuleUpdate,
+                                    onCheckedChange = actions.onSetCheckModuleUpdate
                                 )
-                            },
-                            onClick = actions.onOpenTheme
-                        )
-                    }
-
-                    KsuIsValid {
-                        Card(
-                            modifier = Modifier
-                                .padding(top = 12.dp)
-                                .fillMaxWidth(),
-                        ) {
-                            val profileTemplate = stringResource(id = R.string.settings_profile_template)
-                            ArrowPreference(
-                                title = profileTemplate,
-                                summary = stringResource(id = R.string.settings_profile_template_summary),
-                                startAction = {
-                                    Icon(
-                                        Icons.Rounded.Description,
-                                        modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = profileTemplate,
-                                        tint = colorScheme.onBackground
-                                    )
-                                },
-                                onClick = actions.onOpenProfileTemplate
-                            )
-                        }
-                    }
-
-                    KsuIsValid {
-                        Card(
-                            modifier = Modifier
-                                .padding(top = 12.dp)
-                                .fillMaxWidth(),
-                        ) {
-                            val suCompatModeItems = listOf(
-                                stringResource(id = R.string.settings_mode_enable_by_default),
-                                stringResource(id = R.string.settings_mode_disable_until_reboot),
-                                stringResource(id = R.string.settings_mode_disable_always),
-                            )
-
-                            val suSummary = when (uiState.suCompatStatus) {
-                                "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
-                                "managed" -> stringResource(id = R.string.feature_status_managed_summary)
-                                else -> stringResource(id = R.string.settings_sucompat_summary)
+                                val profileTemplate = stringResource(id = R.string.settings_profile_template)
+                                ArrowPreference(
+                                    title = profileTemplate,
+                                    summary = stringResource(id = R.string.settings_profile_template_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Description,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = profileTemplate,
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    onClick = actions.onOpenProfileTemplate
+                                )
+                                SwitchPreference(
+                                    title = stringResource(id = R.string.enable_web_debugging),
+                                    summary = stringResource(id = R.string.enable_web_debugging_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.DeveloperMode,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.enable_web_debugging),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    checked = uiState.enableWebDebugging,
+                                    onCheckedChange = actions.onSetEnableWebDebugging
+                                )
                             }
-                            OverlayDropdownPreference(
-                                title = stringResource(id = R.string.settings_sucompat),
-                                summary = suSummary,
-                                items = suCompatModeItems,
+                        }
+                        Card(
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                                .fillMaxWidth(),
+                        ) {
+                            ArrowPreference(
+                                title = stringResource(id = R.string.send_log),
                                 startAction = {
                                     Icon(
-                                        Icons.Rounded.AdminPanelSettings,
+                                        Icons.Rounded.BugReport,
                                         modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = stringResource(id = R.string.settings_sucompat),
+                                        contentDescription = stringResource(id = R.string.send_log),
                                         tint = colorScheme.onBackground
                                     )
                                 },
-                                enabled = uiState.suCompatStatus == "supported",
-                                selectedIndex = uiState.suCompatMode,
-                                onSelectedIndexChange = actions.onSetSuCompatMode
+                                onClick = { showSendLogDialog.value = true },
                             )
+                            if (uiState.isLkmMode) {
+                                val uninstall = stringResource(id = R.string.settings_uninstall)
+                                ArrowPreference(
+                                    title = uninstall,
+                                    enabled = !uiState.isLateLoadMode,
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.Delete,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = uninstall,
+                                            tint = colorScheme.onBackground,
+                                        )
+                                    },
+                                    onClick = { showUninstallDialog.value = true },
+                                )
+                            }
+                        }
+                    }
+
+                    if (section == SettingsSection.Appearance) {
+                        ColorPaletteContentMiuix(
+                            state = uiState.toColorPaletteUiState(),
+                            actions = actions.toColorPaletteActions()
+                        )
+                    }
+
+                    if (section == SettingsSection.Mount) KsuIsValid {
+                        val builtinMountEnabled = MountMode.fromValue(uiState.mountMode) == MountMode.MisuMount
+                        Card(
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                                .fillMaxWidth(),
+                        ) {
+                            SwitchPreference(
+                                title = stringResource(id = R.string.settings_mount_mode),
+                                summary = stringResource(id = R.string.settings_mount_mode_summary),
+                                startAction = {
+                                    Icon(
+                                        Icons.Rounded.Build,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = stringResource(id = R.string.settings_mount_mode),
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                checked = builtinMountEnabled,
+                                onCheckedChange = actions.onSetMountMode
+                            )
+
+                            AnimatedVisibility(
+                                visible = builtinMountEnabled,
+                                enter = fadeIn() + expandVertically(),
+                                exit = fadeOut() + shrinkVertically()
+                            ) {
+                                ArrowPreference(
+                                    title = stringResource(id = R.string.settings_builtin_mount),
+                                    summary = stringResource(id = R.string.settings_builtin_mount_summary),
+                                    startAction = {
+                                        Icon(
+                                            Icons.Rounded.FolderDelete,
+                                            modifier = Modifier.padding(end = 6.dp),
+                                            contentDescription = stringResource(id = R.string.settings_builtin_mount),
+                                            tint = colorScheme.onBackground
+                                        )
+                                    },
+                                    onClick = actions.onOpenBuiltinMount
+                                )
+                            }
 
                             val umountSummary = when (uiState.kernelUmountStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
@@ -254,6 +334,56 @@ fun SettingPagerMiuix(
                                 enabled = uiState.kernelUmountStatus == "supported",
                                 checked = uiState.isKernelUmountEnabled,
                                 onCheckedChange = actions.onSetKernelUmountEnabled
+                            )
+
+                            SwitchPreference(
+                                title = stringResource(id = R.string.settings_umount_modules_default),
+                                summary = stringResource(id = R.string.settings_umount_modules_default_summary),
+                                startAction = {
+                                    Icon(
+                                        Icons.AutoMirrored.Rounded.Rule,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = stringResource(id = R.string.settings_umount_modules_default),
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                checked = uiState.isDefaultUmountModules,
+                                onCheckedChange = actions.onSetDefaultUmountModules
+                            )
+                        }
+                    }
+
+                    if (section == SettingsSection.Kernel) KsuIsValid {
+                        Card(
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                                .fillMaxWidth(),
+                        ) {
+                            val suCompatModeItems = listOf(
+                                stringResource(id = R.string.settings_mode_enable_by_default),
+                                stringResource(id = R.string.settings_mode_disable_until_reboot),
+                                stringResource(id = R.string.settings_mode_disable_always),
+                            )
+                            val suSummary = when (uiState.suCompatStatus) {
+                                "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                else -> stringResource(id = R.string.settings_sucompat_summary)
+                            }
+                            OverlayDropdownPreference(
+                                title = stringResource(id = R.string.settings_sucompat),
+                                summary = suSummary,
+                                items = suCompatModeItems,
+                                startAction = {
+                                    Icon(
+                                        Icons.Rounded.AdminPanelSettings,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = stringResource(id = R.string.settings_sucompat),
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                enabled = uiState.suCompatStatus == "supported",
+                                selectedIndex = uiState.suCompatMode,
+                                onSelectedIndexChange = actions.onSetSuCompatMode
                             )
 
                             val selinuxHideSummary = when (uiState.selinuxHideStatus) {
@@ -319,57 +449,6 @@ fun SettingPagerMiuix(
                                 onCheckedChange = actions.onSetAdbRootEnabled
                             )
                             SwitchPreference(
-                                title = stringResource(id = R.string.settings_soft_reboot),
-                                summary = stringResource(id = R.string.settings_soft_reboot_summary),
-                                startAction = {
-                                    Icon(
-                                        Icons.Rounded.RestartAlt,
-                                        modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = stringResource(id = R.string.settings_soft_reboot),
-                                        tint = if (uiState.isLateLoadMode) colorScheme.disabledOnSecondaryVariant else colorScheme.onBackground
-                                    )
-                                },
-                                enabled = !uiState.isLateLoadMode,
-                                checked = uiState.isLateLoadMode || uiState.useSoftReboot,
-                                onCheckedChange = actions.onSetUseSoftReboot
-                            )
-                        }
-
-                        Card(
-                            modifier = Modifier
-                                .padding(top = 12.dp)
-                                .fillMaxWidth(),
-                        ) {
-                            SwitchPreference(
-                                title = stringResource(id = R.string.settings_umount_modules_default),
-                                summary = stringResource(id = R.string.settings_umount_modules_default_summary),
-                                startAction = {
-                                    Icon(
-                                        Icons.AutoMirrored.Rounded.Rule,
-                                        modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = stringResource(id = R.string.settings_umount_modules_default),
-                                        tint = colorScheme.onBackground
-                                    )
-                                },
-                                checked = uiState.isDefaultUmountModules,
-                                onCheckedChange = actions.onSetDefaultUmountModules
-                            )
-
-                            SwitchPreference(
-                                title = stringResource(id = R.string.enable_web_debugging),
-                                summary = stringResource(id = R.string.enable_web_debugging_summary),
-                                startAction = {
-                                    Icon(
-                                        Icons.Rounded.DeveloperMode,
-                                        modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = stringResource(id = R.string.enable_web_debugging),
-                                        tint = colorScheme.onBackground
-                                    )
-                                },
-                                checked = uiState.enableWebDebugging,
-                                onCheckedChange = actions.onSetEnableWebDebugging
-                            )
-                            SwitchPreference(
                                 title = stringResource(id = R.string.settings_auto_jailbreak),
                                 summary = stringResource(id = R.string.settings_auto_jailbreak_summary),
                                 startAction = {
@@ -384,75 +463,107 @@ fun SettingPagerMiuix(
                                 checked = uiState.autoJailbreak,
                                 onCheckedChange = actions.onSetAutoJailbreak
                             )
-                        }
-                    }
-
-                    if (uiState.isLkmMode) {
-                        Card(
-                            modifier = Modifier
-                                .padding(top = 12.dp)
-                                .fillMaxWidth(),
-                        ) {
-                            val uninstall = stringResource(id = R.string.settings_uninstall)
-                            ArrowPreference(
-                                title = uninstall,
-                                enabled = !uiState.isLateLoadMode,
+                            SwitchPreference(
+                                title = stringResource(id = R.string.settings_soft_reboot),
+                                summary = stringResource(id = R.string.settings_soft_reboot_summary),
                                 startAction = {
                                     Icon(
-                                        Icons.Rounded.Delete,
+                                        Icons.Rounded.RestartAlt,
                                         modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = uninstall,
-                                        tint = colorScheme.onBackground,
+                                        contentDescription = stringResource(id = R.string.settings_soft_reboot),
+                                        tint = if (uiState.isLateLoadMode) colorScheme.disabledOnSecondaryVariant else colorScheme.onBackground
                                     )
                                 },
-                                onClick = { showUninstallDialog.value = true },
+                                enabled = !uiState.isLateLoadMode,
+                                checked = uiState.isLateLoadMode || uiState.useSoftReboot,
+                                onCheckedChange = actions.onSetUseSoftReboot
                             )
-                            UninstallDialog(
-                                show = showUninstallDialog.value,
-                                onDismissRequest = { showUninstallDialog.value = false }
+
+                            val avcSpoofSummary = when (uiState.avcSpoofStatus) {
+                                "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                else -> stringResource(id = R.string.settings_avc_spoof_summary)
+                            }
+                            SwitchPreference(
+                                title = stringResource(id = R.string.settings_avc_spoof),
+                                summary = avcSpoofSummary,
+                                startAction = {
+                                    Icon(
+                                        Icons.Rounded.EditNote,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = stringResource(id = R.string.settings_avc_spoof),
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                enabled = uiState.avcSpoofStatus == "supported",
+                                checked = uiState.isAvcSpoofEnabled,
+                                onCheckedChange = actions.onSetAvcSpoofEnabled
                             )
                         }
-                    }
-
-                    Card(
-                        modifier = Modifier
-                            .padding(vertical = 12.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        ArrowPreference(
-                            title = stringResource(id = R.string.send_log),
-                            startAction = {
-                                Icon(
-                                    Icons.Rounded.BugReport,
-                                    modifier = Modifier.padding(end = 6.dp),
-                                    contentDescription = stringResource(id = R.string.send_log),
-                                    tint = colorScheme.onBackground
-                                )
-                            },
-                            onClick = { showSendLogDialog.value = true },
-                        )
-                        SendLogDialog(
-                            show = showSendLogDialog.value,
-                            onDismissRequest = { showSendLogDialog.value = false },
-                            loadingDialog = loadingDialog
-                        )
-                        val about = stringResource(id = R.string.about)
-                        ArrowPreference(
-                            title = about,
-                            startAction = {
-                                Icon(
-                                    Icons.Rounded.Info,
-                                    modifier = Modifier.padding(end = 6.dp),
-                                    contentDescription = about,
-                                    tint = colorScheme.onBackground
-                                )
-                            },
-                            onClick = actions.onOpenAbout,
-                        )
                     }
                     Spacer(Modifier.height(bottomInnerPadding))
                 }
             }
         }
     }
+}
+
+@Composable
+private fun SettingsSectionListMiuix(
+    actions: SettingsScreenActions,
+) {
+    Card(
+        modifier = Modifier
+            .padding(top = 12.dp)
+            .fillMaxWidth(),
+    ) {
+        for (section in SettingsSection.entries) {
+            val title = stringResource(section.titleRes)
+            ArrowPreference(
+                title = title,
+                summary = stringResource(section.summaryRes),
+                startAction = {
+                    Icon(
+                        section.miuixIcon(),
+                        modifier = Modifier.padding(end = 6.dp),
+                        contentDescription = title,
+                        tint = colorScheme.onBackground
+                    )
+                },
+                onClick = { actions.onOpenSettingsSection(section) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsAboutEntryMiuix(
+    actions: SettingsScreenActions,
+) {
+    Card(
+        modifier = Modifier
+            .padding(top = 12.dp)
+            .fillMaxWidth(),
+    ) {
+        val about = stringResource(id = R.string.about)
+        ArrowPreference(
+            title = about,
+            startAction = {
+                Icon(
+                    Icons.Rounded.Info,
+                    modifier = Modifier.padding(end = 6.dp),
+                    contentDescription = about,
+                    tint = colorScheme.onBackground
+                )
+            },
+            onClick = actions.onOpenAbout,
+        )
+    }
+}
+
+private fun SettingsSection.miuixIcon(): ImageVector = when (this) {
+    SettingsSection.General -> Icons.Rounded.Settings
+    SettingsSection.Appearance -> Icons.Rounded.Palette
+    SettingsSection.Kernel -> Icons.Rounded.Build
+    SettingsSection.Mount -> Icons.Rounded.FolderDelete
 }
