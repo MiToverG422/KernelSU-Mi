@@ -26,7 +26,7 @@ static void __user *userspace_stack_buffer(const void *d, size_t len)
 
 	volatile unsigned long start_stack = current->mm->start_stack;
 	unsigned int step = 32;
-	
+
 start_loop:
 	;
 	char __user *p = (void __user *)(start_stack - step - len);
@@ -121,7 +121,7 @@ uid_check:
 		return false;
 #elif defined(CONFIG_KSU_SHELL_HAS_SU_ALWAYS)
 	/**
-	 * NOTE: if shell always has su anyway, and full uid checks are disabled, 
+	 * NOTE: if shell always has su anyway, and full uid checks are disabled,
 	 * we can skip all these checks. this goto is for explicitness / code styel
 	 */
 	 goto check_ptr;
@@ -129,7 +129,7 @@ uid_check:
 #else /* default behavior */
 	/**
 	 * NOTE: shell has its seccomp disabled, so we only need
-	 * to check for this thing. short-circuit if not shell! 
+	 * to check for this thing. short-circuit if not shell!
 	 * as we allow apps on setuid lsm by disabling seccomp
 	 *
 	 */
