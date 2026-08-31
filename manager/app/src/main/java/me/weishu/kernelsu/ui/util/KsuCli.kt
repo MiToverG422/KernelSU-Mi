@@ -13,6 +13,7 @@ import android.util.Log
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
+import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -22,12 +23,22 @@ import me.weishu.kernelsu.core.tasks.BootKernelVersion
 import me.weishu.kernelsu.core.tasks.ExtractImage
 import me.weishu.kernelsu.core.tasks.ProbeResult
 import me.weishu.kernelsu.core.utils.DataSourceChannel
+import me.weishu.kernelsu.data.model.BuiltinMountBackend
+import me.weishu.kernelsu.data.model.BuiltinMountLastRun
+import me.weishu.kernelsu.data.model.BuiltinMountModuleStatus
+import me.weishu.kernelsu.data.model.BuiltinMountStatus
+import me.weishu.kernelsu.data.model.BuiltinMountStorage
+import me.weishu.kernelsu.data.model.MountMode
 import me.weishu.kernelsu.ksuApp
-import okhttp3.OkHttpClient
 import org.json.JSONArray
+import org.json.JSONObject
+import okhttp3.OkHttpClient
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -35,6 +46,7 @@ import java.util.concurrent.TimeUnit
  * @date 2023/1/1.
  */
 private const val TAG = "KsuCli"
+private const val BUSYBOX = "/data/adb/ksu/bin/busybox"
 
 private fun getKsuDaemonPath(): String {
     return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "libksud.so"
@@ -44,6 +56,9 @@ data class FlashResult(val code: Int, val err: String, val showReboot: Boolean) 
     constructor(result: Shell.Result, showReboot: Boolean) : this(result.code, result.err.joinToString("\n"), showReboot)
     constructor(result: Shell.Result) : this(result, result.isSuccess)
 }
+
+private val SAFE_PARTITION_NAME = Regex("^[A-Za-z0-9._-]+$")
+private val SAFE_MODULE_ID = Regex("^[A-Za-z0-9._-]+$")
 
 object KsuCli {
     val SHELL: Shell = createRootShell()
@@ -124,6 +139,150 @@ suspend fun getFeaturePersistValue(feature: String): Long? = withContext(Dispatc
     valueLine.substringAfter("Value:").trim().toLongOrNull()
 }
 
+fun setConfiguredMountMode(mode: String): Boolean {
+    val normalizedMode = MountMode.fromValue(mode).value
+    return execKsud("mount-mode set $normalizedMode", true)
+}
+
+suspend fun getConfiguredMountMode(): String = withContext(Dispatchers.IO) {
+    val shell = getRootShell()
+    val out = shell.newJob()
+        .add("${getKsuDaemonPath()} mount-mode get")
+        .to(ArrayList<String>(), null)
+        .exec()
+        .out
+
+    MountMode.fromValue(out.firstOrNull()?.trim()).value
+}
+
+suspend fun getBuiltinMountStatus(): BuiltinMountStatus = withContext(Dispatchers.IO) {
+    val shell = getRootShell()
+    val out = shell.newJob()
+        .add("${getKsuDaemonPath()} mount-config status")
+        .to(ArrayList<String>(), null)
+        .exec()
+        .out
+        .joinToString("\n")
+        .ifBlank { "{}" }
+
+    parseBuiltinMountStatus(out)
+}
+
+fun setBuiltinMountBackend(backend: BuiltinMountBackend): Boolean {
+    return execKsud("mount-config backend set ${backend.value}", true)
+}
+
+fun setBuiltinMountStorage(storage: BuiltinMountStorage): Boolean {
+    return execKsud("mount-config storage set ${storage.value}", true)
+}
+
+fun setBuiltinMountModuleBackend(moduleId: String, backend: BuiltinMountBackend): Boolean {
+    val normalized = normalizeModuleId(moduleId) ?: return false
+    return execKsud("mount-config module set $normalized ${backend.value}", true)
+}
+
+fun addBuiltinMountPartition(partition: String): Boolean {
+    val normalized = normalizePartitionName(partition) ?: return false
+    return execKsud("mount-config partition add $normalized", true)
+}
+
+fun removeBuiltinMountPartition(partition: String): Boolean {
+    val normalized = normalizePartitionName(partition) ?: return false
+    return execKsud("mount-config partition remove $normalized", true)
+}
+
+fun normalizePartitionName(partition: String): String? {
+    val normalized = partition.trim().trimStart('/').lowercase(Locale.ROOT)
+    if (normalized.isBlank() || normalized == "system" || !SAFE_PARTITION_NAME.matches(normalized)) {
+        return null
+    }
+    return normalized
+}
+
+fun normalizeModuleId(moduleId: String): String? {
+    val normalized = moduleId.trim()
+    if (
+        normalized.isBlank() ||
+        normalized == "." ||
+        normalized == ".." ||
+        !SAFE_MODULE_ID.matches(normalized)
+    ) {
+        return null
+    }
+    return normalized
+}
+
+private fun parseBuiltinMountStatus(json: String): BuiltinMountStatus {
+    return runCatching {
+        val obj = JSONObject(json)
+        val modulesArray = obj.optJSONArray("modules") ?: JSONArray()
+        val modules = (0 until modulesArray.length()).mapNotNull { index ->
+            val module = modulesArray.optJSONObject(index) ?: return@mapNotNull null
+            val configuredBackendValue = module.opt("configuredBackend") as? String
+            BuiltinMountModuleStatus(
+                dirId = module.optString("dirId"),
+                id = module.optString("id"),
+                name = module.optString("name").ifBlank { module.optString("id") },
+                enabled = module.optBoolean("enabled"),
+                remove = module.optBoolean("remove"),
+                skipMount = module.optBoolean("skipMount"),
+                metamodule = module.optBoolean("metamodule"),
+                needsMount = module.optBoolean("needsMount"),
+                partitions = module.optJSONArray("partitions").toStringList(),
+                configuredBackend = configuredBackendValue?.let { BuiltinMountBackend.fromValue(it) },
+                effectiveBackend = BuiltinMountBackend.fromValue(module.optString("effectiveBackend")),
+            )
+        }
+
+        BuiltinMountStatus(
+            backend = BuiltinMountBackend.fromValue(obj.optString("backend")),
+            overlayStorage = BuiltinMountStorage.fromValue(obj.optString("overlayStorage")),
+            customPartitions = obj.optJSONArray("customPartitions").toStringList(),
+            knownPartitions = obj.optJSONArray("knownPartitions").toStringList(),
+            modules = modules,
+            lastRun = obj.optJSONObject("lastRun").toBuiltinMountLastRun(),
+        )
+    }.getOrDefault(BuiltinMountStatus())
+}
+
+private fun JSONObject?.toBuiltinMountLastRun(): BuiltinMountLastRun? {
+    this ?: return null
+    val status = optString("status")
+    if (status.isBlank()) return null
+    val actualStorage = if (isNull("actualOverlayStorage")) {
+        null
+    } else {
+        optString("actualOverlayStorage").takeIf { it.isNotBlank() }
+    }
+    val error = if (isNull("error")) {
+        null
+    } else {
+        optString("error").takeIf { it.isNotBlank() }
+    }
+    return BuiltinMountLastRun(
+        status = status,
+        mountMode = optString("mountMode"),
+        backend = BuiltinMountBackend.fromValue(optString("backend")),
+        overlayStorage = BuiltinMountStorage.fromValue(optString("overlayStorage")),
+        actualOverlayStorage = actualStorage?.let { BuiltinMountStorage.fromValue(it) },
+        startedAt = optLong("startedAt"),
+        finishedAt = optLong("finishedAt"),
+        moduleCount = optInt("moduleCount"),
+        mountableModuleCount = optInt("mountableModuleCount"),
+        activeMounts = optJSONArray("activeMounts").toStringList(),
+        fallbackPartitions = optJSONArray("fallbackPartitions").toStringList(),
+        warnings = optJSONArray("warnings").toStringList(),
+        failedModules = optJSONArray("failedModules").toStringList(),
+        error = error,
+    )
+}
+
+private fun JSONArray?.toStringList(): List<String> {
+    if (this == null) return emptyList()
+    return (0 until length())
+        .mapNotNull { index -> optString(index).takeIf { it.isNotBlank() } }
+}
+
 fun install() {
     val start = SystemClock.elapsedRealtime()
     val libadbroot = File(ksuApp.applicationInfo.nativeLibraryDir, "libadbroot.so").absolutePath
@@ -176,6 +335,52 @@ fun uninstallModule(id: String): Boolean {
     return result
 }
 
+private fun processUiPrintLine(s: String?): Pair<Int, String?> {
+    if (s == null) {
+        return Pair(1,null)
+    }
+
+    val check1 = s.startsWith("ui_print")
+    val trimmed = s.trim()
+    val check2 = trimmed.startsWith("ui_print")
+    if (!check1 && check2) return Pair(1,null)
+
+    return if(check1) {
+        Pair(1,trimmed.drop(8).dropWhile { it.isWhitespace() })
+    }
+    else {
+        Pair(2, trimmed)
+    }
+}
+
+private fun flashWithIoAk3(
+    cmd: String,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): Shell.Result {
+
+    val stdoutCallback: CallbackList<String?> = object : CallbackList<String?>() {
+        override fun onAddElement(s: String?) {
+            val (type, text) = processUiPrintLine(s)
+            if(type == 1) {
+                text?.let(onStdout)
+            } else {
+                text?.let(onStderr)
+            }
+        }
+    }
+
+    val stderrCallback: CallbackList<String?> = object : CallbackList<String?>() {
+        override fun onAddElement(s: String?) {
+            onStderr(s ?: "")
+        }
+    }
+
+    return withNewRootShell {
+        newJob().add(cmd).to(stdoutCallback, stderrCallback).exec()
+    }
+}
+
 private fun flashWithIO(
     cmd: String,
     onStdout: (String) -> Unit,
@@ -212,7 +417,7 @@ fun flashModule(
         }
         val cmd = "module install ${file.absolutePath}"
         val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
-        Log.i("KernelSU", "install module $uri result: $result")
+        Log.i("MISU", "install module $uri result: $result")
 
         file.delete()
 
@@ -240,7 +445,7 @@ fun runModuleAction(
             .to(stdoutCallback, stderrCallback).exec()
     }
 
-    Log.i("KernelSU", "Module runAction result: $result")
+    Log.i("MISU", "Module runAction result: $result")
 
     return result.isSuccess
 }
@@ -266,6 +471,9 @@ sealed class LkmSelection : Parcelable {
 
     @Parcelize
     data class KmiString(val value: String) : LkmSelection()
+
+    @Parcelize
+    data class KmiStringXX(val value: String) : LkmSelection()
 
     @Parcelize
     data object KmiNone : LkmSelection()
@@ -331,10 +539,13 @@ fun installBoot(
     val lkmFile = writeLkmFile(lkm)
     if (lkmFile != null) {
         cmd += " -m ${lkmFile.absolutePath}"
-    } else if (lkm is LkmSelection.KmiString) {
-        cmd += " --kmi ${lkm.value}"
+    } else {
+        when (lkm) {
+            is LkmSelection.KmiString -> cmd += " --kmi ${lkm.value}"
+            is LkmSelection.KmiStringXX -> cmd += " --kmi xx-${lkm.value}"
+            LkmSelection.KmiNone, is LkmSelection.LkmUri -> Unit
+        }
     }
-
     if (bootFile != null) {
         val downloadsDir =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -346,7 +557,7 @@ fun installBoot(
     }
 
     val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
-    Log.i("KernelSU", "install boot result: ${result.isSuccess}")
+    Log.i("MISU", "install boot result: ${result.isSuccess}")
 
     bootFile?.delete()
     lkmFile?.delete()
@@ -499,6 +710,54 @@ fun reboot(reason: String = "") {
     ShellUtils.fastCmd(shell, "/system/bin/svc power reboot $reason || /system/bin/reboot $reason")
 }
 
+fun flashAnyKernelZip(
+    uri: Uri,
+    onStdout: (String) -> Unit,
+    onStderr: (String) -> Unit
+): FlashResult {
+    val resolver = ksuApp.contentResolver
+
+    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val tmpFile = File(ksuApp.cacheDir, "anykernel_${timestamp}.zip")
+    resolver.openInputStream(uri).use { input ->
+        tmpFile.outputStream().use { out ->
+            input?.copyTo(out)
+        }
+    }
+
+    val destZip = tmpFile.absolutePath
+    val destZipName = File(destZip).name
+    val destDirFile = File(ksuApp.cacheDir, "anykernel3_${timestamp}")
+    val destDir = destDirFile.absolutePath
+
+    val cmd = """
+        mkdir -p '$destDir' && \
+        $BUSYBOX unzip -p -o '$destZip' "META-INF/com/google/android/update-binary" > '$destDir/update-binary' 2>/dev/null && \
+        cp '$destZip' '$destDir/$destZipName' 2>/dev/null || true && \
+        $BUSYBOX chmod 755 '$destDir/update-binary' && \
+        $BUSYBOX chown root:root '$destDir/update-binary' && \
+        (cd '$destDir' && \
+            if [ -f './update-binary' ] && grep -q "AnyKernel3" './update-binary'; then \
+                AKHOME='$destDir/tmp' $BUSYBOX ash '$destDir/update-binary' 3 1 '$destDir/$destZipName'; \
+            else \
+                echo 'No installer script found' >&2; exit 1; \
+            fi)
+    """.trimIndent().replace(Regex("\\s+\\\\\\s*"), " ")
+
+    val result = flashWithIoAk3(cmd, onStdout, onStderr)
+    try {
+        return FlashResult(result, result.isSuccess)
+    } finally {
+        try {
+            runCatching {
+                createRootShell(true).use { sh ->
+                    sh.newJob().add("rm -rf '$destDir' '$destZip'").exec()
+                }
+            }
+        } catch (_: Throwable) { }
+    }
+}
+
 fun rootAvailable(): Boolean {
     val shell = getRootShell()
     return shell.isRoot
@@ -514,7 +773,7 @@ suspend fun getSupportedKmis(): List<String> = withContext(Dispatchers.IO) {
     val shell = getRootShell()
     val cmd = "boot-info supported-kmis"
     val out = shell.newJob().add("${getKsuDaemonPath()} $cmd").to(ArrayList(), null).exec().out
-    out.filter { it.isNotBlank() }.map { it.trim() }
+    out.filter { it.isNotBlank() }.map { it.trim() }.filter { !it.startsWith("xx-") }
 }
 
 suspend fun isAbDevice(): Boolean = withContext(Dispatchers.IO) {
@@ -631,4 +890,8 @@ fun launchApp(packageName: String, userId: Int? = null) {
 fun restartApp(packageName: String, userId: Int? = null) {
     forceStopApp(packageName, userId)
     launchApp(packageName, userId)
+}
+
+fun isWebuiModuleInstalled(modId: String): Boolean {
+    return SuFile("/data/adb/modules/$modId/webroot/index.html").exists()
 }
