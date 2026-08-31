@@ -9,12 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -65,7 +59,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
-import me.weishu.kernelsu.ui.component.bottombar.BottomBar
+import me.weishu.kernelsu.ui.component.bottombar.BottomBarCoui
+import me.weishu.kernelsu.ui.component.bottombar.BottomBarMaterial
+import me.weishu.kernelsu.ui.component.bottombar.BottomBarMiuix
 import me.weishu.kernelsu.ui.component.bottombar.MainPagerState
 import me.weishu.kernelsu.ui.component.bottombar.NavigationBadgeState
 import me.weishu.kernelsu.ui.component.bottombar.SideRail
@@ -87,6 +83,8 @@ import me.weishu.kernelsu.ui.screen.module.ModulePager
 import me.weishu.kernelsu.ui.screen.modulerepo.ModuleRepoDetailScreen
 import me.weishu.kernelsu.ui.screen.modulerepo.ModuleRepoScreen
 import me.weishu.kernelsu.ui.screen.settings.SettingPager
+import me.weishu.kernelsu.ui.screen.settings.BuiltinMountScreen
+import me.weishu.kernelsu.ui.screen.settings.SettingsSubpageScreen
 import me.weishu.kernelsu.ui.screen.sulog.SulogScreen
 import me.weishu.kernelsu.ui.screen.superuser.SuperUserPager
 import me.weishu.kernelsu.ui.screen.template.AppProfileTemplateScreen
@@ -97,6 +95,7 @@ import me.weishu.kernelsu.ui.theme.LocalEnableBlur
 import me.weishu.kernelsu.ui.theme.LocalEnableFloatingBottomBar
 import me.weishu.kernelsu.ui.theme.LocalEnableFloatingBottomBarBlur
 import me.weishu.kernelsu.ui.theme.LocalEnableNavigationBadge
+import me.weishu.kernelsu.ui.util.rememberCouiBlurBackdrop
 import me.weishu.kernelsu.ui.util.getSuperuserCount
 import me.weishu.kernelsu.ui.util.install
 import me.weishu.kernelsu.ui.util.rememberBlurBackdrop
@@ -106,9 +105,13 @@ import me.weishu.kernelsu.ui.viewmodel.MainActivityViewModel
 import me.weishu.kernelsu.ui.viewmodel.MainPagerConfig
 import me.weishu.kernelsu.ui.viewmodel.ModuleViewModel
 import me.weishu.kernelsu.ui.viewmodel.SuperUserViewModel
-import top.yukonga.miuix.kmp.basic.Scaffold
-import top.yukonga.miuix.kmp.blur.layerBackdrop
-import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
+import io.github.suqi8.coui.kmp.basic.Scaffold as CouiScaffold
+import top.yukonga.miuix.kmp.blur.layerBackdrop as couiLayerBackdrop
+import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop as rememberCouiLayerBackdrop
+import io.github.suqi8.coui.kmp.theme.COUITheme
+import top.yukonga.miuix.kmp.basic.Scaffold as MiuixScaffold
+import top.yukonga.miuix.kmp.blur.layerBackdrop as miuixLayerBackdrop
+import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop as rememberMiuixLayerBackdrop
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 class MainActivity : ComponentActivity() {
@@ -134,9 +137,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val viewModel = viewModel<MainActivityViewModel>()
-            val superUserViewModel = viewModel<SuperUserViewModel>()
-            val moduleViewModel = viewModel<ModuleViewModel>()
-
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val selectedMainPage by viewModel.selectedMainPage.collectAsStateWithLifecycle()
             val appSettings = uiState.appSettings
@@ -175,16 +175,6 @@ class MainActivity : ComponentActivity() {
                 LocalUiMode provides uiMode,
             ) {
                 KernelSUTheme(appSettings = appSettings, uiMode = uiMode) {
-                    val isFullFeatured = Natives.isManager && !Natives.requireNewKernel() && rootAvailable()
-                    LaunchedEffect(isFullFeatured) {
-                        if (isFullFeatured) {
-                            superUserViewModel.initializePreferences()
-                            superUserViewModel.loadAppList()
-                            moduleViewModel.initializePreferences()
-                            moduleViewModel.fetchModuleList()
-                        }
-                    }
-
                     IntentDispatcher(intentChannel = intentChannel)
                     val mainScreenEntry = @Composable {
                         MainScreen(
@@ -213,26 +203,13 @@ class MainActivity : ComponentActivity() {
                                     else -> navigator.pop()
                                 }
                             },
-                            transitionSpec = {
-                                val enter = slideInHorizontally(initialOffsetX = { it })
-                                val exit = slideOutHorizontally(targetOffsetX = { -it / 4 }) + fadeOut()
-                                enter togetherWith exit
-                            },
-                            popTransitionSpec = {
-                                val enter = slideInHorizontally(initialOffsetX = { -it / 4 }) + fadeIn()
-                                val exit = scaleOut(targetScale = 0.9f) + fadeOut()
-                                enter togetherWith exit
-                            },
-                            predictivePopTransitionSpec = {
-                                val enter = slideInHorizontally(initialOffsetX = { -it / 4 }) + fadeIn()
-                                val exit = scaleOut(targetScale = 0.9f) + fadeOut()
-                                enter togetherWith exit
-                            },
                             entryProvider = entryProvider {
                                 entry<Route.Main> { mainScreenEntry() }
                                 entry<Route.About> { AboutScreen() }
                                 entry<Route.Sulog> { SulogScreen() }
                                 entry<Route.ColorPalette> { ColorPaletteScreen() }
+                                entry<Route.SettingsSubpage> { key -> SettingsSubpageScreen(key.section) }
+                                entry<Route.BuiltinMount> { BuiltinMountScreen() }
                                 entry<Route.AppProfileTemplate> { AppProfileTemplateScreen() }
                                 entry<Route.TemplateEditor> { key -> TemplateEditorScreen(key.template, key.readOnly) }
                                 entry<Route.AppProfile> { key -> AppProfileScreen(key.uid) }
@@ -254,7 +231,9 @@ class MainActivity : ComponentActivity() {
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         ) { navDisplay() }
 
-                        UiMode.Miuix -> Scaffold { navDisplay() }
+                        UiMode.Miuix -> MiuixScaffold { navDisplay() }
+
+                        UiMode.Coui -> CouiScaffold { navDisplay() }
                     }
                     SideEffect { contentReady = true }
                 }
@@ -349,10 +328,16 @@ fun MainScreen(
     val surfaceColor = when (uiMode) {
         UiMode.Material -> MaterialTheme.colorScheme.surface // Blur is not used in Material, this is just a placeholder
         UiMode.Miuix -> MiuixTheme.colorScheme.surface
+        UiMode.Coui -> COUITheme.colorScheme.surface
     }
-    val blurBackdrop = rememberBlurBackdrop(enableBlur)
+    val miuixBlurBackdrop = if (uiMode == UiMode.Miuix) rememberBlurBackdrop(enableBlur) else null
+    val couiBlurBackdrop = if (uiMode == UiMode.Coui) rememberCouiBlurBackdrop(enableBlur) else null
 
-    val backdrop = rememberLayerBackdrop {
+    val miuixBackdrop = rememberMiuixLayerBackdrop {
+        drawRect(surfaceColor)
+        drawContent()
+    }
+    val couiBackdrop = rememberCouiLayerBackdrop {
         drawRect(surfaceColor)
         drawContent()
     }
@@ -374,10 +359,20 @@ fun MainScreen(
     ) {
         val contentReady = rememberContentReady()
         val pagerContent = @Composable { bottomInnerPadding: Dp ->
-            Box(modifier = if (blurBackdrop != null) Modifier.layerBackdrop(blurBackdrop) else Modifier) {
+            val blurModifier = when (uiMode) {
+                UiMode.Material -> Modifier
+                UiMode.Miuix -> if (miuixBlurBackdrop != null) Modifier.miuixLayerBackdrop(miuixBlurBackdrop) else Modifier
+                UiMode.Coui -> if (couiBlurBackdrop != null) Modifier.couiLayerBackdrop(couiBlurBackdrop) else Modifier
+            }
+            val floatingBlurModifier = when (uiMode) {
+                UiMode.Material -> Modifier
+                UiMode.Miuix -> if (enableFloatingBottomBar && enableFloatingBottomBarBlur) Modifier.miuixLayerBackdrop(miuixBackdrop) else Modifier
+                UiMode.Coui -> if (enableFloatingBottomBar && enableFloatingBottomBarBlur) Modifier.couiLayerBackdrop(couiBackdrop) else Modifier
+            }
+            Box(modifier = blurModifier) {
                 HorizontalPager(
                     modifier = Modifier
-                        .then(if (enableFloatingBottomBar && enableFloatingBottomBarBlur) Modifier.layerBackdrop(backdrop) else Modifier),
+                        .then(floatingBlurModifier),
                     state = mainPagerState.pagerState,
                     beyondViewportPageCount = if (contentReady) 3 else 0,
                     overscrollEffect = null,
@@ -415,7 +410,20 @@ fun MainScreen(
                     }
                 }
 
-                UiMode.Miuix -> Scaffold { _ ->
+                UiMode.Miuix -> MiuixScaffold { _ ->
+                    Row {
+                        SideRail(navigationBadge)
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .consumeWindowInsets(startInsets)
+                        ) {
+                            pagerContent(navBarBottomPadding)
+                        }
+                    }
+                }
+
+                UiMode.Coui -> CouiScaffold { _ ->
                     Row {
                         SideRail(navigationBadge)
                         Box(
@@ -433,12 +441,22 @@ fun MainScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    BottomBar(
-                        blurBackdrop = blurBackdrop,
-                        backdrop = backdrop,
-                        navigationBadge = navigationBadge,
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                    )
+                    when (uiMode) {
+                        UiMode.Material -> BottomBarMaterial(navigationBadge)
+                        UiMode.Miuix -> BottomBarMiuix(
+                            blurBackdrop = miuixBlurBackdrop,
+                            backdrop = miuixBackdrop,
+                            navigationBadge = navigationBadge,
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                        )
+
+                        UiMode.Coui -> BottomBarCoui(
+                            blurBackdrop = couiBlurBackdrop,
+                            backdrop = couiBackdrop,
+                            navigationBadge = navigationBadge,
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                        )
+                    }
                 }
             }
 
@@ -450,7 +468,11 @@ fun MainScreen(
                     pagerContent(innerPadding.calculateBottomPadding())
                 }
 
-                UiMode.Miuix -> Scaffold(bottomBar = bottomBar) { innerPadding ->
+                UiMode.Miuix -> MiuixScaffold(bottomBar = bottomBar) { innerPadding ->
+                    pagerContent(innerPadding.calculateBottomPadding())
+                }
+
+                UiMode.Coui -> CouiScaffold(bottomBar = bottomBar) { innerPadding ->
                     pagerContent(innerPadding.calculateBottomPadding())
                 }
             }

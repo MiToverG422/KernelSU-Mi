@@ -154,7 +154,7 @@ internal fun badgeFor(index: Int, state: NavigationBadgeState): NavBadge? = when
 
 @Composable
 fun useNavigationRail(enableFloatingBottomBar: Boolean): Boolean {
-    return shouldShowSplitPane() && !(LocalUiMode.current == UiMode.Miuix && enableFloatingBottomBar)
+    return shouldShowSplitPane() && !(LocalUiMode.current.isMiuixFamily && enableFloatingBottomBar)
 }
 
 @Composable
@@ -166,6 +166,7 @@ fun BottomBar(
 ) {
     when (LocalUiMode.current) {
         UiMode.Miuix -> BottomBarMiuix(blurBackdrop, backdrop, navigationBadge, modifier)
+        UiMode.Coui -> BottomBarMaterial(navigationBadge)
         UiMode.Material -> BottomBarMaterial(navigationBadge)
     }
 }
@@ -177,6 +178,7 @@ fun SideRail(
 ) {
     when (LocalUiMode.current) {
         UiMode.Miuix -> NavigationRailMiuix(navigationBadge, modifier)
+        UiMode.Coui -> NavigationRailCoui(navigationBadge, modifier)
         UiMode.Material -> NavigationRailMaterial(navigationBadge, modifier)
     }
 }
