@@ -23,8 +23,8 @@ val managerVersionCode = rootProject.extra["managerVersionCode"] as Int
 val managerVersionName = rootProject.extra["managerVersionName"] as String
 
 val isPrBuild = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false
-val defaultManagerPackageName = if (isPrBuild) "me.weishu.kernelsu.pr" else "me.weishu.kernelsu"
-val defaultManagerName = if (isPrBuild) "KernelSU PR" else "KernelSU"
+val defaultManagerPackageName = "com.mimi0721.manager"
+val defaultManagerName = "MISU"
 val managerPackageName = project.findProperty("KSU_PACKAGE_NAME")?.toString() ?: defaultManagerPackageName
 val managerName = project.findProperty("KSU_NAME")?.toString() ?: defaultManagerName
 
@@ -160,7 +160,7 @@ android {
         }
 
         ndk {
-            abiFilters += listOf("arm64-v8a", "x86_64", "armeabi-v7a")
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
     }
 
@@ -177,7 +177,7 @@ android {
 
 androidComponents {
     onVariants(selector().withBuildType("release")) {
-        it.packaging.resources.excludes.addAll(listOf("META-INF/**", "kotlin/**", "**.bin"))
+        it.packaging.resources.excludes.addAll(listOf("META-INF/*.version", "kotlin/**", "**.bin"))
     }
 }
 
@@ -185,6 +185,20 @@ base {
     archivesName.set(
         "${managerName.replace(" ", "_")}_${managerVersionName}_${managerVersionCode}"
     )
+}
+
+tasks.register<Copy>("mergeScripts") {
+    into("${project.projectDir}/src/main/resources/META-INF/com/google/android")
+    from(rootProject.file("scripts/update_binary.sh")) {
+        rename { "update-binary" }
+    }
+    from(rootProject.file("scripts/updater_script.sh")) {
+        rename { "updater-script" }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("mergeScripts")
 }
 
 dependencies {
@@ -233,6 +247,10 @@ dependencies {
     implementation(libs.miuix.navigation3.ui)
     implementation(libs.miuix.preference)
     implementation(libs.miuix.blur)
+
+    implementation(libs.coui.ui)
+    implementation(libs.coui.icons)
+    implementation(libs.coui.preference)
 
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
