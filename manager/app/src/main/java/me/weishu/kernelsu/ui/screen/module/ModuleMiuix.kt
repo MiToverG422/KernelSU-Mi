@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -117,6 +116,7 @@ import me.weishu.kernelsu.ui.component.miuix.SearchBox
 import me.weishu.kernelsu.ui.component.miuix.SearchPager
 import me.weishu.kernelsu.ui.theme.LocalEnableBlur
 import me.weishu.kernelsu.ui.theme.isInDarkTheme
+import me.weishu.kernelsu.ui.util.AppInfo
 import me.weishu.kernelsu.ui.util.BlurredBar
 import me.weishu.kernelsu.ui.util.getFileName
 import me.weishu.kernelsu.ui.util.reboot
@@ -580,7 +580,7 @@ private fun ModuleShortcutDialog(
     fun copyShortcutUrl() {
         val url = shortcutState.buildShortcutUrl() ?: return
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
+        clipboard.setPrimaryClip(ClipData.newPlainText("MISU deep link", url))
         Toast.makeText(context, resources.getString(R.string.module_shortcut_scheme_copied), Toast.LENGTH_SHORT).show()
     }
 
@@ -615,7 +615,7 @@ private fun ModuleShortcutDialog(
                                 .background(Color.White)
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                            painter = AppInfo.appIconForeground(),
                             contentDescription = null,
                             contentScale = FixedScale(1.5f)
                         )
@@ -777,6 +777,7 @@ fun ModuleItem(
     val hasUpdate = updateUrl.isNotEmpty()
     val textDecoration = if (module.remove) TextDecoration.LineThrough else null
     val hasDescription = module.description.isNotBlank()
+    val compactActionButtonMinSize = 34.dp
     var expanded by rememberSaveable(module.id) { mutableStateOf(false) }
 
     Card(
@@ -909,8 +910,8 @@ fun ModuleItem(
                     if (module.hasActionScript) {
                         Row(
                             modifier = Modifier
-                                .heightIn(min = 35.dp)
-                                .widthIn(min = 35.dp)
+                                .heightIn(min = compactActionButtonMinSize)
+                                .widthIn(min = compactActionButtonMinSize)
                                 .clip(CircleShape)
                                 .background(secondaryContainer)
                                 .combinedClickable(
@@ -944,8 +945,8 @@ fun ModuleItem(
                     if (module.hasWebUi) {
                         Row(
                             modifier = Modifier
-                                .heightIn(min = 35.dp)
-                                .widthIn(min = 35.dp)
+                                .heightIn(min = compactActionButtonMinSize)
+                                .widthIn(min = compactActionButtonMinSize)
                                 .clip(CircleShape)
                                 .background(secondaryContainer)
                                 .combinedClickable(
@@ -987,8 +988,8 @@ fun ModuleItem(
                     modifier = Modifier.padding(end = 8.dp),
                     backgroundColor = updateBg,
                     enabled = !module.remove,
-                    minHeight = 35.dp,
-                    minWidth = 35.dp,
+                    minHeight = compactActionButtonMinSize,
+                    minWidth = compactActionButtonMinSize,
                     onClick = onUpdate,
                 ) {
                     Row(
@@ -1013,8 +1014,8 @@ fun ModuleItem(
                 }
             }
             IconButton(
-                minHeight = 35.dp,
-                minWidth = 35.dp,
+                minHeight = compactActionButtonMinSize,
+                minWidth = compactActionButtonMinSize,
                 onClick = if (module.remove) onUndoUninstall else onUninstall,
                 backgroundColor = if (module.remove) {
                     secondaryContainer.copy(alpha = 0.8f)
@@ -1022,12 +1023,8 @@ fun ModuleItem(
                     secondaryContainer
                 },
             ) {
-                val animatedPadding by animateDpAsState(
-                    targetValue = if (!hasUpdate) 10.dp else 0.dp,
-                    animationSpec = tween(durationMillis = 300)
-                )
                 Row(
-                    modifier = Modifier.padding(horizontal = animatedPadding),
+                    modifier = Modifier.padding(horizontal = 7.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -1038,23 +1035,10 @@ fun ModuleItem(
                             MiuixIcons.Delete
                         },
                         tint = actionIconTint,
-                        contentDescription = null
-                    )
-                    AnimatedVisibility(
-                        visible = !hasUpdate,
-                        enter = expandHorizontally(),
-                        exit = shrinkHorizontally()
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp, end = 3.dp),
-                            text = stringResource(
-                                if (module.remove) R.string.undo else R.string.uninstall
-                            ),
-                            color = actionIconTint,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 15.sp
+                        contentDescription = stringResource(
+                            if (module.remove) R.string.undo else R.string.uninstall
                         )
-                    }
+                    )
                 }
             }
         }

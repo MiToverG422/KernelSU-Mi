@@ -2,6 +2,7 @@ package me.weishu.kernelsu.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.materialkolor.PaletteStyle
@@ -10,6 +11,8 @@ import me.weishu.kernelsu.data.repository.SettingsRepository
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
+import me.weishu.kernelsu.ui.util.LocalScrollAnimation
+import me.weishu.kernelsu.ui.util.LocalShowSwitchIcon
 
 enum class ColorMode(val value: Int) {
     SYSTEM(0),
@@ -49,6 +52,10 @@ data class AppSettings(
     val keyColor: Int,
     val paletteStyle: PaletteStyle,
     val colorSpec: ColorSpec.SpecVersion,
+    val enableOfficialLauncher: Boolean,
+    val classicUi: Boolean,
+    val showSwitchIcon: Boolean,
+    val scrollAnimation: Boolean,
 )
 
 val PaletteStyle.supportsSpec2025: Boolean
@@ -69,7 +76,7 @@ object ThemeController {
         val uiMode = repo.uiMode
         var colorModeValue = repo.themeMode
 
-        if (uiMode == "miuix") {
+        if (UiMode.fromValue(uiMode).isMiuixFamily) {
             val miuixMonet = repo.miuixMonet
             val colorMode = ColorMode.fromValue(colorModeValue)
             colorModeValue = if (!miuixMonet && colorMode.isMonet) {
@@ -95,8 +102,12 @@ object ThemeController {
         } catch (_: Exception) {
             ColorSpec.SpecVersion.SPEC_2025
         }
+        val enableOfficialLauncher = repo.enableOfficialLauncher
+        val classicUi = repo.classicUi
+        val showSwitchIcon = repo.showSwitchIcon
+        val scrollAnimation = repo.scrollAnimation
 
-        return AppSettings(colorMode, keyColor, paletteStyle, colorSpec)
+        return AppSettings(colorMode, keyColor, paletteStyle, colorSpec, enableOfficialLauncher, classicUi, showSwitchIcon, scrollAnimation)
     }
 }
 
@@ -106,17 +117,29 @@ fun KernelSUTheme(
     uiMode: UiMode = LocalUiMode.current,
     content: @Composable () -> Unit
 ) {
+    CompositionLocalProvider(
+        LocalColorMode provides appSettings.colorMode.value,
+        LocalEnableOfficialLauncher provides appSettings.enableOfficialLauncher,
+        LocalClassicUi provides appSettings.classicUi,
+        LocalShowSwitchIcon provides appSettings.showSwitchIcon,
+        LocalScrollAnimation provides appSettings.scrollAnimation,
+    ) {
+        when (uiMode) {
+            UiMode.Miuix -> MiuixKernelSUTheme(
+                appSettings = appSettings,
+                content = content
+            )
 
-    when (uiMode) {
-        UiMode.Miuix -> MiuixKernelSUTheme(
-            appSettings = appSettings,
-            content = content
-        )
+            UiMode.Coui -> CouiKernelSUTheme(
+                appSettings = appSettings,
+                content = content
+            )
 
-        UiMode.Material -> MaterialKernelSUTheme(
-            appSettings = appSettings,
-            content = content
-        )
+            UiMode.Material -> MaterialKernelSUTheme(
+                appSettings = appSettings,
+                content = content
+            )
+        }
     }
 }
 
@@ -131,6 +154,10 @@ fun isInDarkTheme(): Boolean {
 }
 
 val LocalColorMode = staticCompositionLocalOf { 0 }
+
+val LocalEnableOfficialLauncher = staticCompositionLocalOf { false }
+
+val LocalClassicUi = staticCompositionLocalOf { false }
 
 val LocalEnableBlur = staticCompositionLocalOf { false }
 

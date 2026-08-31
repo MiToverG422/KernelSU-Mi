@@ -81,7 +81,12 @@ fun HomePagerMaterial(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     ExpressiveScaffold(
-        topBar = { TopBar(scrollBehavior = scrollBehavior) },
+        topBar = {
+            TopBar(
+                title = state.appName,
+                scrollBehavior = scrollBehavior
+            )
+        },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         Column(
@@ -177,10 +182,11 @@ private fun UpdateCard(
 
 @Composable
 private fun TopBar(
+    title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     LargeFlexibleTopAppBar(
-        title = { Text(stringResource(R.string.app_name)) },
+        title = { Text(title) },
         actions = { RebootListPopup() },
         colors = expressiveTopAppBarColors(),
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
@@ -573,6 +579,8 @@ private fun previewHomeScreenState(
     isLateLoadMode: Boolean = false,
     selinuxStatus: String = "Enforcing",
 ) = HomeUiState(
+    appName = "MISU",
+    classicUi = false,
     kernelVersion = KernelVersion(6, 1, 0),
     ksuVersion = ksuVersion,
     lkmMode = lkmMode,

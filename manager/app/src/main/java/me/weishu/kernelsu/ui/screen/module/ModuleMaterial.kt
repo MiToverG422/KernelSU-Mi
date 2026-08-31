@@ -69,7 +69,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CheckableDropdownMenuItem
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuPopup
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -117,7 +116,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -145,6 +143,7 @@ import me.weishu.kernelsu.ui.component.material.SearchAppBar
 import me.weishu.kernelsu.ui.component.material.SnackBarHost
 import me.weishu.kernelsu.ui.component.material.TonalCard
 import me.weishu.kernelsu.ui.component.statustag.StatusTag
+import me.weishu.kernelsu.ui.util.AppInfo
 import me.weishu.kernelsu.ui.util.reboot
 
 @SuppressLint("StringFormatInvalid")
@@ -563,7 +562,7 @@ private fun ModuleShortcutSheet(
     fun copyShortcutUrl() {
         val url = shortcutState.buildShortcutUrl() ?: return
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
+        clipboard.setPrimaryClip(ClipData.newPlainText("MISU deep link", url))
         Toast.makeText(context, resources.getString(R.string.module_shortcut_scheme_copied), Toast.LENGTH_SHORT).show()
     }
 
@@ -607,7 +606,7 @@ private fun ModuleShortcutSheet(
                             .background(Color.White)
                     )
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        painter = AppInfo.appIconForeground(),
                         contentDescription = null,
                         contentScale = FixedScale(1.5f)
                     )
@@ -723,6 +722,9 @@ private fun ModuleItem(
         val indication = LocalIndication.current
         var expanded by rememberSaveable(module.id) { mutableStateOf(false) }
         var isOverflowing by remember { mutableStateOf(false) }
+        val compactActionButtonMinWidth = 44.dp
+        val compactActionButtonMinHeight = 34.dp
+        val compactActionButtonPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
 
         Column(
             modifier = Modifier
@@ -863,13 +865,18 @@ private fun ModuleItem(
                                     closeSearch()
                                 },
                                 onLongClick = { onAddShortcut(ShortcutType.Action) },
-                                modifier = Modifier.defaultMinSize(52.dp, 32.dp),
+                                modifier = Modifier.defaultMinSize(
+                                    compactActionButtonMinWidth,
+                                    compactActionButtonMinHeight
+                                ),
+                                minWidth = compactActionButtonMinWidth,
+                                minHeight = compactActionButtonMinHeight,
                                 shape = ButtonDefaults.filledTonalShape,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                 ),
-                                contentPadding = ButtonDefaults.TextButtonContentPadding
+                                contentPadding = compactActionButtonPadding
                             ) {
                                 Icon(
                                     modifier = Modifier.size(20.dp),
@@ -894,13 +901,18 @@ private fun ModuleItem(
                                     closeSearch()
                                 },
                                 onLongClick = { onAddShortcut(ShortcutType.WebUI) },
-                                modifier = Modifier.defaultMinSize(52.dp, 32.dp),
+                                modifier = Modifier.defaultMinSize(
+                                    compactActionButtonMinWidth,
+                                    compactActionButtonMinHeight
+                                ),
+                                minWidth = compactActionButtonMinWidth,
+                                minHeight = compactActionButtonMinHeight,
                                 shape = ButtonDefaults.filledTonalShape,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                 ),
-                                contentPadding = ButtonDefaults.TextButtonContentPadding
+                                contentPadding = compactActionButtonPadding
                             ) {
                                 Icon(
                                     modifier = Modifier.size(20.dp),
@@ -954,16 +966,24 @@ private fun ModuleItem(
                     }
                 }
 
-                FilledTonalButton(
-                    modifier = Modifier.defaultMinSize(52.dp, 32.dp),
+                CombinedClickableButton(
+                    modifier = Modifier.defaultMinSize(
+                        compactActionButtonMinWidth,
+                        compactActionButtonMinHeight
+                    ),
                     onClick = onUninstallClicked,
-                    contentPadding = ButtonDefaults.TextButtonContentPadding
+                    onLongClick = {},
+                    minWidth = compactActionButtonMinWidth,
+                    minHeight = compactActionButtonMinHeight,
+                    shape = ButtonDefaults.filledTonalShape,
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    contentPadding = compactActionButtonPadding
                 ) {
                     if (!module.remove) {
                         Icon(
                             modifier = Modifier.size(20.dp),
                             imageVector = Icons.Outlined.Delete,
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.uninstall),
                         )
                     } else {
                         Icon(
@@ -971,15 +991,7 @@ private fun ModuleItem(
                                 .size(20.dp)
                                 .rotate(180f),
                             imageVector = Icons.Outlined.Refresh,
-                            contentDescription = null,
-                        )
-                    }
-                    if (!module.hasActionScript && !module.hasWebUi || !hasUpdate) {
-                        Text(
-                            modifier = Modifier.padding(start = 7.dp),
-                            fontFamily = MaterialTheme.typography.labelMedium.fontFamily,
-                            fontSize = MaterialTheme.typography.labelMedium.fontSize,
-                            text = stringResource(if (module.remove) R.string.undo else R.string.uninstall)
+                            contentDescription = stringResource(R.string.undo),
                         )
                     }
                 }
@@ -998,6 +1010,8 @@ fun CombinedClickableButton(
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    minWidth: Dp = ButtonDefaults.MinWidth,
+    minHeight: Dp = ButtonDefaults.MinHeight,
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -1023,8 +1037,8 @@ fun CombinedClickableButton(
             Row(
                 Modifier
                     .defaultMinSize(
-                        minWidth = ButtonDefaults.MinWidth,
-                        minHeight = ButtonDefaults.MinHeight,
+                        minWidth = minWidth,
+                        minHeight = minHeight,
                     )
                     .padding(contentPadding),
                 horizontalArrangement = Arrangement.Center,

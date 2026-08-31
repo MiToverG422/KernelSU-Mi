@@ -1,6 +1,5 @@
 package me.weishu.kernelsu.ui.screen.home
 
-import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -99,6 +98,7 @@ fun HomePagerMiuix(
     Scaffold(
         topBar = {
             TopBar(
+                title = state.appName,
                 scrollBehavior = scrollBehavior,
                 backdrop = backdrop,
                 barColor = barColor,
@@ -219,6 +219,7 @@ private fun UpdateCard(
 
 @Composable
 private fun TopBar(
+    title: String,
     scrollBehavior: ScrollBehavior,
     backdrop: LayerBackdrop?,
     barColor: Color,
@@ -226,7 +227,7 @@ private fun TopBar(
     BlurredBar(backdrop) {
         TopAppBar(
             color = barColor,
-            title = stringResource(R.string.app_name),
+            title = title,
             actions = {
                 RebootListPopupMiuix()
             },
@@ -252,7 +253,7 @@ private fun StatusCard(
                     }
                 }
                 val workingMode = when (state.lkmMode) {
-                    null -> if (Build.SUPPORTED_64_BIT_ABIS.isEmpty()) "32-BIT" else "LEGACY"
+                    null -> null
                     true -> "LKM"
                     else -> "GKI"
                 }
@@ -299,17 +300,19 @@ private fun StatusCard(
                                     contentDescription = null
                                 )
                             }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp, 10.dp),
-                                contentAlignment = Alignment.BottomStart,
-                            ) {
-                                Text(
-                                    text = workingMode,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium,
-                                )
+                            if (workingMode != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp, 10.dp),
+                                    contentAlignment = Alignment.BottomStart,
+                                ) {
+                                    Text(
+                                        text = workingMode,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                    )
+                                }
                             }
                             Box(
                                 modifier = Modifier
@@ -658,6 +661,8 @@ private fun previewHomeScreenState(
     isLateLoadMode: Boolean = false,
     selinuxStatus: String = "Enforcing",
 ) = HomeUiState(
+    appName = "MISU",
+    classicUi = false,
     kernelVersion = KernelVersion(6, 1, 0),
     ksuVersion = ksuVersion,
     lkmMode = lkmMode,

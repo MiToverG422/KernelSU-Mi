@@ -13,9 +13,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.model.MountMode
 import me.weishu.kernelsu.data.repository.SettingsRepository
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
 import me.weishu.kernelsu.ksuApp
+import me.weishu.kernelsu.ui.UiMode
 import me.weishu.kernelsu.ui.screen.settings.SettingsUiState
 import me.weishu.kernelsu.ui.theme.ColorMode
 
@@ -44,11 +46,16 @@ class SettingsViewModel(
             val enableNavigationBadge = repo.enableNavigationBadge
             val pageScale = repo.pageScale
             val enableWebDebugging = repo.enableWebDebugging
+            val enableOfficialLauncher = repo.enableOfficialLauncher
+            val classicUi = repo.classicUi
+            val showSwitchIcon = repo.showSwitchIcon
+            val scrollAnimation = repo.scrollAnimation
             val colorStyle = repo.colorStyle
             val colorSpec = repo.colorSpec
             val isLkmMode = repo.isLkmMode()
 
             // Async loading for natives/features
+            val mountMode = repo.getMountMode()
             val suCompatStatus = repo.getSuCompatStatus()
             val suCompatPersistValue = repo.getSuCompatPersistValue()
             val isSuEnabled = repo.isSuEnabled()
@@ -79,6 +86,10 @@ class SettingsViewModel(
                     themeMode = themeMode,
                     miuixMonet = miuixMonet,
                     keyColor = keyColor,
+                    enableOfficialLauncher = enableOfficialLauncher,
+                    classicUi = classicUi,
+                    showSwitchIcon = showSwitchIcon,
+                    scrollAnimation = scrollAnimation,
                     enablePredictiveBack = enablePredictiveBack,
                     enableBlur = enableBlur,
                     enableFloatingBottomBar = enableFloatingBottomBar,
@@ -88,6 +99,7 @@ class SettingsViewModel(
                     enableWebDebugging = enableWebDebugging,
                     colorStyle = colorStyle,
                     colorSpec = colorSpec,
+                    mountMode = mountMode,
                     suCompatStatus = suCompatStatus,
                     suCompatMode = suCompatMode,
                     isSuEnabled = isSuEnabled,
@@ -119,9 +131,11 @@ class SettingsViewModel(
     fun setUiMode(mode: String) {
         val oldMode = repo.uiMode
         val currentThemeMode = repo.themeMode
+        val oldUiMode = UiMode.fromValue(oldMode)
+        val newUiMode = UiMode.fromValue(mode)
 
-        val newThemeMode = when (oldMode) {
-            "material" if mode == "miuix" -> {
+        val newThemeMode = when {
+            oldUiMode == UiMode.Material && newUiMode.isMiuixFamily -> {
                 val colorMode = ColorMode.fromValue(currentThemeMode)
                 val baseMode = if (colorMode == ColorMode.DARK_AMOLED) 2 else currentThemeMode
                 if (repo.miuixMonet && !colorMode.isMonet) {
@@ -131,7 +145,7 @@ class SettingsViewModel(
                 } else baseMode
             }
 
-            "miuix" if mode == "material" -> {
+            oldUiMode.isMiuixFamily && newUiMode == UiMode.Material -> {
                 val colorMode = ColorMode.fromValue(currentThemeMode)
                 if (colorMode.isMonet) {
                     colorMode.toNonMonetMode()
@@ -153,7 +167,7 @@ class SettingsViewModel(
 
     fun setThemeMode(mode: Int) {
         val currentUiMode = repo.uiMode
-        val effectiveMode = if (currentUiMode == "miuix" && _uiState.value.miuixMonet) {
+        val effectiveMode = if (UiMode.fromValue(currentUiMode).isMiuixFamily && _uiState.value.miuixMonet) {
             mode + 3
         } else {
             mode
@@ -193,6 +207,26 @@ class SettingsViewModel(
     fun setColorSpec(spec: String) {
         repo.colorSpec = spec
         _uiState.update { it.copy(colorSpec = spec) }
+    }
+
+    fun setEnableOfficialLauncher(enabled: Boolean) {
+        repo.enableOfficialLauncher = enabled
+        _uiState.update { it.copy(enableOfficialLauncher = enabled) }
+    }
+
+    fun setClassicUi(enabled: Boolean) {
+        repo.classicUi = enabled
+        _uiState.update { it.copy(classicUi = enabled) }
+    }
+
+    fun setShowSwitchIcon(enabled: Boolean) {
+        repo.showSwitchIcon = enabled
+        _uiState.update { it.copy(showSwitchIcon = enabled) }
+    }
+
+    fun setScrollAnimation(enabled: Boolean) {
+        repo.scrollAnimation = enabled
+        _uiState.update { it.copy(scrollAnimation = enabled) }
     }
 
     fun setEnablePredictiveBack(enabled: Boolean) {
@@ -253,6 +287,23 @@ class SettingsViewModel(
                     repo.execKsudFeatureSave()
                     repo.setSuCompatModePref(2)
                     _uiState.update { it.copy(suCompatMode = 2, isSuEnabled = false) }
+                }
+            }
+        }
+    }
+
+    fun setMountMode(enabled: Boolean) {
+        val mode = if (enabled) MountMode.MisuMount else MountMode.MetaModule
+        viewModelScope.launch(Dispatchers.IO) {
+            if (repo.setMountMode(mode.value)) {
+                _uiState.update { it.copy(mountMode = mode.value) }
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(ksuApp, R.string.reboot_to_apply, Toast.LENGTH_LONG).show()
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(ksuApp, R.string.settings_mount_mode_failed, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         }
