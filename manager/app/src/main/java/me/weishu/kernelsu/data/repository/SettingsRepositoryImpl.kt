@@ -9,6 +9,7 @@ import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
 import com.topjohnwu.superuser.ShellUtils
 import me.weishu.kernelsu.Natives
+import me.weishu.kernelsu.data.model.MountMode
 import me.weishu.kernelsu.ksuApp
 import me.weishu.kernelsu.magica.BootCompletedReceiver
 import me.weishu.kernelsu.ui.UiMode
@@ -16,10 +17,13 @@ import me.weishu.kernelsu.ui.screen.modulerepo.RepoSort
 import me.weishu.kernelsu.ui.util.execKsud
 import me.weishu.kernelsu.ui.util.getFeaturePersistValue
 import me.weishu.kernelsu.ui.util.getFeatureStatus
+import me.weishu.kernelsu.ui.util.getConfiguredMountMode
+import me.weishu.kernelsu.ui.util.setConfiguredMountMode
 import java.security.SecureRandom
 
 private const val SETTINGS_PREFS = "settings"
 private const val KEY_USE_SOFT_REBOOT = "soft_reboot"
+private const val KEY_MOUNT_MODE = "mount_mode"
 
 /** Prefer soft reboot: always in jailbreak mode, or when the setting is enabled. */
 fun isSoftRebootPreferred(): Boolean =
@@ -68,6 +72,22 @@ class SettingsRepositoryImpl : SettingsRepository {
     override var colorSpec: String
         get() = prefs.getString("color_spec", ColorSpec.SpecVersion.SPEC_2025.name) ?: ColorSpec.SpecVersion.SPEC_2025.name
         set(value) = prefs.edit { putString("color_spec", value) }
+
+    override var enableOfficialLauncher: Boolean
+        get() = prefs.getBoolean("enable_official_launcher", false)
+        set(value) = prefs.edit { putBoolean("enable_official_launcher", value) }
+
+    override var classicUi: Boolean
+        get() = prefs.getBoolean("classic_ui", false)
+        set(value) = prefs.edit { putBoolean("classic_ui", value) }
+
+    override var showSwitchIcon: Boolean
+        get() = prefs.getBoolean("show_switch_icon", false)
+        set(value) = prefs.edit { putBoolean("show_switch_icon", value) }
+
+    override var scrollAnimation: Boolean
+        get() = prefs.getBoolean("scroll_animation", false)
+        set(value) = prefs.edit { putBoolean("scroll_animation", value) }
 
     override var enablePredictiveBack: Boolean
         get() = prefs.getBoolean("enable_predictive_back", true)
@@ -160,6 +180,23 @@ class SettingsRepositoryImpl : SettingsRepository {
         return token
     }
 
+    override suspend fun getMountMode(): String {
+        val fallback = prefs.getString(KEY_MOUNT_MODE, MountMode.DEFAULT.value)
+        val mountMode = runCatching { getConfiguredMountMode() }
+            .getOrElse { MountMode.fromValue(fallback).value }
+        prefs.edit { putString(KEY_MOUNT_MODE, mountMode) }
+        return mountMode
+    }
+
+    override fun setMountMode(mode: String): Boolean {
+        val normalizedMode = MountMode.fromValue(mode).value
+        if (!setConfiguredMountMode(normalizedMode)) {
+            return false
+        }
+        prefs.edit { putString(KEY_MOUNT_MODE, normalizedMode) }
+        return true
+    }
+
     override suspend fun getSuCompatStatus(): String = getFeatureStatus("su_compat")
 
     override suspend fun getSuCompatPersistValue(): Long? = getFeaturePersistValue("su_compat")
@@ -201,6 +238,12 @@ class SettingsRepositoryImpl : SettingsRepository {
         } else {
             false
         }
+
+    override suspend fun getAvcSpoofStatus(): String = getFeatureStatus("avc_spoof")
+
+    override fun isAvcSpoofEnabled(): Boolean = Natives.isAvcSpoofEnabled()
+
+    override fun setAvcSpoofEnabled(enabled: Boolean): Boolean = Natives.setAvcSpoofEnabled(enabled)
 
     override fun isDefaultUmountModules(): Boolean = Natives.isDefaultUmountModules()
 
