@@ -115,7 +115,7 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
 	// only root is allowed for these commands
 	if (current_uid().val != 0)
 		return 0;
-	
+
 	// extensions
 	u64 reply = (u64)*arg;
 
@@ -185,12 +185,12 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
 		// for release
 		if (strncpy_from_user(release_buf, (char __user *)u_ptr, sizeof(release_buf)) < 0)
 			return 0;
-		release_buf[sizeof(release_buf) - 1] = '\0'; 
+		release_buf[sizeof(release_buf) - 1] = '\0';
 
 		// for version
 		if (strncpy_from_user(version_buf, (char __user *)(u_ptr + strlen(release_buf) + 1), sizeof(version_buf)) < 0)
 			return 0;
-		version_buf[sizeof(version_buf) - 1] = '\0'; 
+		version_buf[sizeof(version_buf) - 1] = '\0';
 
 		if (original_release_buf[0] == '\0') {
 			struct new_utsname *u_curr = utsname();
@@ -236,6 +236,8 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
 void __init ksu_supercalls_init(void)
 {
 	ksu_supercall_dump_commands();
+
+	tiny_sulog_init_heap(); // grab heap memory for sulog
 }
 
 void __exit ksu_supercalls_exit(void) { }
