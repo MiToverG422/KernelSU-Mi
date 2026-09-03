@@ -2,6 +2,21 @@ name: Build LKM for KernelSU
 on:
   workflow_call:
     inputs:
+      manager_package:
+        description: 'Manager package name accepted by the kernel module'
+        required: false
+        default: 'com.mimi0721.manager'
+        type: string
+      expected_size:
+        description: 'Primary manager signing certificate size'
+        required: false
+        default: '0x02c8'
+        type: string
+      expected_hash:
+        description: 'Primary manager signing certificate SHA-256'
+        required: false
+        default: '3b0d042b55e4eee9eb14c9aedbbe1499dacea8eb4c87106a2c5b922e7c2583af'
+        type: string
       expected_size2:
         description: 'Second expected signature size (for PR builds)'
         required: false
@@ -29,5 +44,8 @@ jobs:
     uses: ./.github/workflows/ddk-lkm.yml
     with:
       kmi: ${{ matrix.kmi }}
+      manager_package: ${{ inputs.manager_package || 'com.mimi0721.manager' }}
+      expected_size: ${{ inputs.expected_size || '0x02c8' }}
+      expected_hash: ${{ inputs.expected_hash || '3b0d042b55e4eee9eb14c9aedbbe1499dacea8eb4c87106a2c5b922e7c2583af' }}
       expected_size2: ${{ inputs.expected_size2 || '' }}
       expected_hash2: ${{ inputs.expected_hash2 || '' }}
