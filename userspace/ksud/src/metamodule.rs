@@ -85,6 +85,10 @@ pub fn has_metamodule() -> bool {
 /// - Err(true) means metamodule is disabled
 /// - Err(false) means metamodule is in other unstable state
 pub fn check_install_safety() -> Result<(), bool> {
+    if !crate::mount_mode::uses_metamodule() {
+        return Ok(());
+    }
+
     // No metamodule → safe
     let Some(metamodule_path) = get_metamodule_path() else {
         return Ok(());
@@ -176,6 +180,9 @@ pub fn get_install_script(
     // Only apply this logic for regular modules (not when installing metamodule itself)
     let install_script = if is_metamodule {
         info!("Installing metamodule, using default installer");
+        install_module_script.to_string()
+    } else if !crate::mount_mode::uses_metamodule() {
+        info!("Metamodule installer disabled by mount mode, using default installer");
         install_module_script.to_string()
     } else if let Some(metamodule_path) = get_metamodule_path() {
         if metamodule_path.join(defs::DISABLE_FILE_NAME).exists() {

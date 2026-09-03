@@ -4,7 +4,7 @@ use rustix::cstr;
 use std::process::Command;
 
 use crate::module::{handle_updated_modules, prune_modules};
-use crate::{assets, defs, init_event, metamodule, restorecon, utils};
+use crate::{assets, defs, init_event, mount_backend, mount_mode, restorecon, utils};
 
 fn dump_process_info(label: &str) {
     use rustix::process::{getgid, getgroups, getpid, getuid};
@@ -115,9 +115,11 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
         warn!("load system.prop failed: {e}");
     }
 
-    // 10. Execute metamodule mount script (OverlayFS)
-    if let Err(e) = metamodule::exec_mount_script(defs::MODULE_DIR) {
-        warn!("execute metamodule mount failed: {e}");
+    // 10. Mount modules systemlessly with the selected backend
+    let mount_mode = mount_mode::current();
+    info!("module mount mode: {mount_mode}");
+    if let Err(e) = mount_backend::mount_modules_systemlessly(defs::MODULE_DIR, mount_mode) {
+        warn!("execute module mount failed: {e}");
     }
 
     // 11. Execute post-mount stage scripts (blocking)

@@ -34,7 +34,14 @@ mod android {
     pub const DISABLE_FILE_NAME: &str = "disable";
     pub const UPDATE_FILE_NAME: &str = "update";
     pub const REMOVE_FILE_NAME: &str = "remove";
+    pub const SKIP_MOUNT_FILE_NAME: &str = "skip_mount";
     pub const MODULE_INIT_RC_DIR: &str = "initrc";
+    pub const MOUNT_MODE_FILE: &str = concatcp!(WORKING_DIR, "mount_mode");
+    pub const MOUNT_CONFIG_FILE: &str = concatcp!(WORKING_DIR, "mount_config.json");
+    pub const MOUNT_STATE_FILE: &str = concatcp!(WORKING_DIR, "mount_state.json");
+    pub const KSU_MOUNT_SOURCE: &str = "KSU";
+    pub const KSU_OVERLAY_SOURCE: &str = "KSU";
+    pub const SYSTEM_RW_DIR: &str = concatcp!(MODULE_DIR, ".rw/");
 
     // Module config system
     pub const MODULE_CONFIG_DIR: &str = concatcp!(WORKING_DIR, "module_configs/");

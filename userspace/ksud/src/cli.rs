@@ -9,8 +9,8 @@ use crate::boot_patch::{BootPatchArgs, BootRestoreArgs};
 use crate::lkm_image::BootPatchV2Args;
 use crate::module::regenerate_preinit_rc;
 use crate::{
-    apk_sign, assets, debug, defs, init_event, ksu_uapi, ksucalls, module, module_config, sulog,
-    utils,
+    apk_sign, assets, debug, defs, init_event, ksu_uapi, ksucalls, module, module_config,
+    mount_config, mount_mode, sulog, utils,
 };
 
 /// KernelSU userspace cli
@@ -111,6 +111,18 @@ enum Commands {
     Feature {
         #[command(subcommand)]
         command: Feature,
+    },
+
+    /// Manage module mount backend
+    MountMode {
+        #[command(subcommand)]
+        command: MountModeCommand,
+    },
+
+    /// Manage built-in module mounting options
+    MountConfig {
+        #[command(subcommand)]
+        command: MountConfigCommand,
     },
 
     /// Patch boot or init_boot images to apply KernelSU
@@ -449,6 +461,128 @@ enum Feature {
 }
 
 #[derive(clap::Subcommand, Debug)]
+enum MountModeCommand {
+    /// Print current module mount backend
+    Get,
+
+    /// Set module mount backend: meta_module, misu_mount
+    Set {
+        /// Module mount backend
+        mode: String,
+    },
+
+    /// List supported module mount backends
+    List,
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum MountConfigCommand {
+    /// Print full built-in mount status as JSON
+    Status,
+
+    /// Manage built-in mount backend
+    Backend {
+        #[command(subcommand)]
+        command: MountConfigBackendCommand,
+    },
+
+    /// Manage overlayfs staging storage
+    Storage {
+        #[command(subcommand)]
+        command: MountConfigStorageCommand,
+    },
+
+    /// Manage extra root partitions mounted by the built-in backend
+    Partition {
+        #[command(subcommand)]
+        command: MountConfigPartitionCommand,
+    },
+
+    /// Manage per-module built-in mount backend overrides
+    Module {
+        #[command(subcommand)]
+        command: MountConfigModuleCommand,
+    },
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum MountConfigBackendCommand {
+    /// Print current built-in mount backend
+    Get,
+
+    /// Set built-in mount backend: auto, magic_mount, overlayfs, disabled
+    Set {
+        /// Built-in mount backend
+        backend: String,
+    },
+
+    /// List supported built-in mount backends
+    List,
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum MountConfigStorageCommand {
+    /// Print current overlayfs staging storage
+    Get,
+
+    /// Set overlayfs staging storage: tmpfs, ext4
+    Set {
+        /// Overlayfs staging storage
+        storage: String,
+    },
+
+    /// List supported overlayfs staging storage modes
+    List,
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum MountConfigPartitionCommand {
+    /// Print configured extra root partitions
+    List,
+
+    /// Add an extra root partition, e.g. my_product
+    Add {
+        /// Partition name without leading slash
+        partition: String,
+    },
+
+    /// Remove an extra root partition
+    Remove {
+        /// Partition name without leading slash
+        partition: String,
+    },
+
+    /// Clear all configured extra root partitions
+    Clear,
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum MountConfigModuleCommand {
+    /// Print configured backend for a module, or the default backend if unset
+    Get {
+        /// Module id
+        id: String,
+    },
+
+    /// Set backend override for one module: auto, magic_mount, overlayfs, disabled
+    Set {
+        /// Module id
+        id: String,
+        /// Built-in mount backend
+        backend: String,
+    },
+
+    /// Remove backend override for one module
+    Reset {
+        /// Module id
+        id: String,
+    },
+
+    /// Print all configured module backend overrides
+    List,
+}
+
+#[derive(clap::Subcommand, Debug)]
 enum Kernel {
     /// Nuke ext4 sysfs
     NukeExt4Sysfs {
@@ -695,6 +829,73 @@ pub fn run() -> Result<()> {
             Feature::Check { id } => crate::feature::check_feature(&id),
             Feature::Load => crate::feature::load_config_and_apply(),
             Feature::Save => crate::feature::save_config(),
+        },
+
+        Commands::MountMode { command } => match command {
+            MountModeCommand::Get => {
+                mount_mode::print_current();
+                Ok(())
+            }
+            MountModeCommand::Set { mode } => {
+                mount_mode::set_from_cli(&mode)?;
+                regenerate_preinit_rc()
+            }
+            MountModeCommand::List => {
+                mount_mode::print_modes();
+                Ok(())
+            }
+        },
+
+        Commands::MountConfig { command } => match command {
+            MountConfigCommand::Status => mount_config::print_status(),
+            MountConfigCommand::Backend { command } => match command {
+                MountConfigBackendCommand::Get => {
+                    mount_config::print_backend();
+                    Ok(())
+                }
+                MountConfigBackendCommand::Set { backend } => mount_config::set_backend(&backend),
+                MountConfigBackendCommand::List => {
+                    mount_config::print_backends();
+                    Ok(())
+                }
+            },
+            MountConfigCommand::Storage { command } => match command {
+                MountConfigStorageCommand::Get => {
+                    mount_config::print_overlay_storage();
+                    Ok(())
+                }
+                MountConfigStorageCommand::Set { storage } => {
+                    mount_config::set_overlay_storage(&storage)
+                }
+                MountConfigStorageCommand::List => {
+                    mount_config::print_overlay_storage_modes();
+                    Ok(())
+                }
+            },
+            MountConfigCommand::Partition { command } => match command {
+                MountConfigPartitionCommand::List => {
+                    mount_config::print_partitions();
+                    Ok(())
+                }
+                MountConfigPartitionCommand::Add { partition } => {
+                    mount_config::add_partition(&partition)
+                }
+                MountConfigPartitionCommand::Remove { partition } => {
+                    mount_config::remove_partition(&partition)
+                }
+                MountConfigPartitionCommand::Clear => mount_config::clear_partitions(),
+            },
+            MountConfigCommand::Module { command } => match command {
+                MountConfigModuleCommand::Get { id } => mount_config::print_module_backend(&id),
+                MountConfigModuleCommand::Set { id, backend } => {
+                    mount_config::set_module_backend(&id, &backend)
+                }
+                MountConfigModuleCommand::Reset { id } => mount_config::remove_module_backend(&id),
+                MountConfigModuleCommand::List => {
+                    mount_config::print_module_backends();
+                    Ok(())
+                }
+            },
         },
 
         Commands::Debug { command } => match command {

@@ -222,6 +222,10 @@ pub fn has_magisk() -> bool {
     which::which("magisk").is_ok()
 }
 
+pub fn find_tmp_path() -> String {
+    defs::WORKING_DIR.trim_end_matches('/').to_string()
+}
+
 fn link_ksud_to_bin() -> Result<()> {
     let ksu_bin = PathBuf::from(defs::DAEMON_PATH);
     let ksu_bin_link = PathBuf::from(defs::DAEMON_LINK_PATH);

@@ -1,7 +1,7 @@
 use crate::module::{handle_updated_modules, prune_modules};
 use crate::utils::{is_safe_mode, switch_mnt_ns};
 use crate::{
-    assets, defs, ksucalls, metamodule, restorecon,
+    assets, defs, ksucalls, metamodule, mount_backend, mount_mode, restorecon,
     utils::{self},
 };
 use anyhow::{Context, Result};
@@ -99,8 +99,13 @@ pub fn on_post_data_fs() -> Result<()> {
         warn!("init features failed: {e}");
     }
 
+    let mount_mode = mount_mode::current();
+    info!("module mount mode: {mount_mode}");
+
     // execute metamodule post-fs-data script first (priority)
-    if let Err(e) = metamodule::exec_stage_script("post-fs-data", true) {
+    if mount_mode.uses_metamodule()
+        && let Err(e) = metamodule::exec_stage_script("post-fs-data", true)
+    {
         warn!("exec metamodule post-fs-data script failed: {e}");
     }
 
@@ -115,9 +120,8 @@ pub fn on_post_data_fs() -> Result<()> {
         warn!("load system.prop failed: {e}");
     }
 
-    // execute metamodule mount script
-    if let Err(e) = metamodule::exec_mount_script(module_dir) {
-        warn!("execute metamodule mount failed: {e}");
+    if let Err(e) = mount_backend::mount_modules_systemlessly(module_dir, mount_mode) {
+        warn!("execute module mount failed: {e}");
     }
 
     run_stage("post-mount", true);
@@ -145,7 +149,9 @@ pub fn run_stage(stage: &str, block: bool) {
     }
 
     // execute metamodule stage script first (priority)
-    if let Err(e) = metamodule::exec_stage_script(stage, block) {
+    if mount_mode::uses_metamodule()
+        && let Err(e) = metamodule::exec_stage_script(stage, block)
+    {
         warn!("Failed to exec metamodule {stage} script: {e}");
     }
 
