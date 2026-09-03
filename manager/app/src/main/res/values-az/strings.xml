@@ -8,7 +8,7 @@
     <string name="home_working">İşləyir</string>
     <string name="home_working_version">Versiya: %s</string>
     <string name="home_module_count">Modullar: %d</string>
-    <string name="home_unsupported_reason">Hal-hazırda KernelSU yalnız GKI nüvələrini dəstəkləyir</string>
+    <string name="home_unsupported_reason">Hal-hazırda MISU yalnız GKI nüvələrini dəstəkləyir</string>
     <string name="home_unsupported">Dəstəklənmir</string>
     <string name="module_install">Yüklə</string>
     <string name="install">Yüklə</string>
@@ -71,13 +71,13 @@ Kanalımıza %2$s qoşulun</string>
     <string name="module_start_downloading">Endirməni başlat: %s</string>
     <string name="new_version_available">Yeni versiya: %s əlçatandır, endirmək üçün toxunun</string>
     <string name="module_downloading">Modul yüklənir: %s</string>
-    <string name="profile_umount_modules_summary">Bu seçimi aktivləşdirmək KernelSU-ya bu proqram üçün modullar tərəfindən hər hansı dəyişdirilmiş faylları bərpa etməyə imkan verəcək.</string>
+    <string name="profile_umount_modules_summary">Bu seçimi aktivləşdirmək MISU-ya bu proqram üçün modullar tərəfindən hər hansı dəyişdirilmiş faylları bərpa etməyə imkan verəcək.</string>
     <string name="launch_app">Aç</string>
     <string name="force_stop_app">Məcburi dayandır</string>
     <string name="restart_app">Təkrar başlat</string>
     <string name="failed_to_update_sepolicy">%s görə SELinux qaydalarını güncəlləmək mümkün olmadı</string>
     <string name="save_log">Girişləri Saxla</string>
-    <string name="require_kernel_version">Cari KernelSU versiyası %1$d menecerin düzgün işləməsi üçün çox aşağıdır. Lütfən, %2$d və ya daha yüksək versiyaya təkmilləşdirin!</string>
+    <string name="require_kernel_version">Cari MISU versiyası %1$d menecerin düzgün işləməsi üçün çox aşağıdır. Lütfən, %2$d və ya daha yüksək versiyaya təkmilləşdirin!</string>
     <string name="module_install_prompt_with_name">Aşağıdakı modullar quraşdırılacaq: %1$s</string>
     <string name="confirm">Təsdiq edin</string>
     <string name="module_sort_action_first">Sıralama (ilk hərəkət)</string>
@@ -99,8 +99,8 @@ Kanalımıza %2$s qoşulun</string>
     <string name="settings_sucompat">su binary yönləndirmə</string>
     <string name="settings_sucompat_summary">Tətbiq Profilinə Superuser icazəsi verilmiş proqramları /system/bin/su vasitəsilə superuser shell əldə etməyə icazə verir; yalnız yeni proseslər üçün effektivdir.</string>
     <string name="settings_kernel_umount">Nüvə umount</string>
-    <string name="settings_kernel_umount_summary">KernelSU tərəfindən idarə olunan nüvə səviyyəsində umount davranışı</string>
-    <string name="profile_flags_desc_no_new_privs">Bu root profili kontekstində KernelSU vasitəsilə əlavə səlahiyyət yüksəltməsinin qarşısını alır.</string>
+    <string name="settings_kernel_umount_summary">MISU tərəfindən idarə olunan nüvə səviyyəsində umount davranışı</string>
+    <string name="profile_flags_desc_no_new_privs">Bu root profili kontekstində MISU vasitəsilə əlavə səlahiyyət yüksəltməsinin qarşısını alır.</string>
     <string name="install_force_backup">Orijinal imic kimi yedəklə</string>
     <string name="install_force_backup_summary">Zəhmət olmasa seçdiyiniz boot imicinin orijinal imic olduğuna əmin olun</string>
 </resources>

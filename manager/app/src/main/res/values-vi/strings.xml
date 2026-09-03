@@ -9,7 +9,7 @@
     <string name="failed_to_update_app_profile">Cập nhật Hồ sơ ứng dụng cho %s thất bại!</string>
     <string name="settings_umount_modules_default">Umount modules</string>
     <string name="settings_umount_modules_default_summary">Giá trị mặc định chung cho \"Umount modules\" trong Hồ sơ ứng dụng. Nếu được bật, mọi thay đổi hệ thống do các module gây ra sẽ bị gỡ bỏ khỏi hệ thống và các ứng dụng chưa thiết lập hồ sơ.</string>
-    <string name="profile_umount_modules_summary">Bật tùy chọn này sẽ cho phép KernelSU khôi phục mọi file đã được các module sửa đổi trong ứng dụng này.</string>
+    <string name="profile_umount_modules_summary">Bật tùy chọn này sẽ cho phép MISU khôi phục mọi file đã được các module sửa đổi trong ứng dụng này.</string>
     <string name="module_update">Cập nhật</string>
     <string name="module_downloading">Đang tải xuống module: %s</string>
     <string name="module_start_downloading">Bắt đầu tải xuống: %s</string>
@@ -28,7 +28,7 @@
     <string name="home_working">Đang hoạt động</string>
     <string name="home_working_version">Phiên bản: %s</string>
     <string name="home_unsupported">Không được hỗ trợ!</string>
-    <string name="home_unsupported_reason">KernelSU hiện tại chỉ hỗ trợ Kernel GKI, nhưng bạn có thể patch file .img của thiết bị GKI mà bạn cần.</string>
+    <string name="home_unsupported_reason">MISU hiện tại chỉ hỗ trợ Kernel GKI, nhưng bạn có thể patch file .img của thiết bị GKI mà bạn cần.</string>
     <string name="home_device_model">Mẫu thiết bị</string>
     <string name="home_kernel">Phiên bản Kernel</string>
     <string name="home_manager_version">Phiên bản Trình quản lý</string>
@@ -85,9 +85,9 @@
     <string name="profile_namespace_individual">Riêng biệt</string>
     <string name="profile_selinux_context">Ngữ cảnh SELinux</string>
     <string name="profile_umount_modules">Umount modules</string>
-    <string name="uapi_mismatch">Phiên bản uapi của Trình quản lý (%1$d) và phiên bản uapi của driver KernelSU (%2$d) không khớp!</string>
-    <string name="require_manager_version">Phiên bản Trình quản lý hiện tại %1$d quá thấp để KernelSU hoạt động bình thường. Vui lòng cập nhật Trình quản lý lên phiên bản %2$d hoặc cao hơn!</string>
-    <string name="require_kernel_version">Phiên bản KernelSU hiện tại %1$d quá thấp để Trình quản lý hoạt động bình thường. Vui lòng cập nhật lên phiên bản %2$d hoặc cao hơn!</string>
+    <string name="uapi_mismatch">Phiên bản uapi của Trình quản lý (%1$d) và phiên bản uapi của driver MISU (%2$d) không khớp!</string>
+    <string name="require_manager_version">Phiên bản Trình quản lý hiện tại %1$d quá thấp để MISU hoạt động bình thường. Vui lòng cập nhật Trình quản lý lên phiên bản %2$d hoặc cao hơn!</string>
+    <string name="require_kernel_version">Phiên bản MISU hiện tại %1$d quá thấp để Trình quản lý hoạt động bình thường. Vui lòng cập nhật lên phiên bản %2$d hoặc cao hơn!</string>
     <string name="app_profile_template_import_success">Đã nhập thành công</string>
     <string name="app_profile_export_to_clipboard">Xuất vào bộ nhớ tạm</string>
     <string name="app_profile_template_export_empty">Không tìm thấy mẫu cục bộ để xuất!</string>
@@ -100,8 +100,8 @@
     <string name="app_profile_import_export">Nhập/Xuất</string>
     <string name="app_profile_template_save_failed">Lưu mẫu thất bại!</string>
     <string name="app_profile_template_edit">Chỉnh sửa mẫu</string>
-    <string name="settings_kernelsu_toolkit">Hộp công cụ KernelSU</string>
-    <string name="settings_kernelsu_toolkit_summary">Các tính năng bổ sung của KernelSU.</string>
+    <string name="settings_kernelsu_toolkit">Hộp công cụ MISU</string>
+    <string name="settings_kernelsu_toolkit_summary">Các tính năng bổ sung của MISU.</string>
     <string name="settings_kpatch_next">KPatch Next</string>
     <string name="settings_kpatch_next_summary">Triển khai hệ thống hỗ trợ KPM.</string>
     <string name="settings_profile_template">Mẫu Hồ sơ ứng dụng</string>
@@ -121,7 +121,7 @@
     <string name="close">Đóng</string>
     <string name="install_inactive_slot">Cài đặt vào phân vùng không hoạt động (Sau OTA)</string>
     <string name="install_inactive_slot_warning">Thiết bị của bạn sẽ **BUỘC** phải khởi động vào phân vùng không hoạt động hiện tại sau khi khởi động lại!\nChỉ dùng tùy chọn này khi cập nhật OTA đã hoàn tất!\nTiếp tục?</string>
-    <string name="settings_uninstall_temporary_message">Gỡ cài đặt tạm thời KernelSU, khôi phục lại trạng thái ban đầu sau lần khởi động lại tiếp theo.</string>
+    <string name="settings_uninstall_temporary_message">Gỡ cài đặt tạm thời MISU, khôi phục lại trạng thái ban đầu sau lần khởi động lại tiếp theo.</string>
     <string name="select_kmi">Chọn KMI</string>
     <string name="anykernel_install">Flashing AnyKernel</string>
     <string name="flash_module">Flashing Module</string>
@@ -137,8 +137,8 @@
     <string name="settings_uninstall_temporary">Gỡ cài đặt tạm thời</string>
     <string name="settings_uninstall_permanent">Gỡ cài đặt vĩnh viễn</string>
     <string name="settings_restore_stock_image">Khôi phục image gốc</string>
-    <string name="settings_uninstall_permanent_message">Gỡ cài đặt KernelSU (Root và tất cả các module) sạch hoàn toàn, trả về trạng thái ban đầu.</string>
-    <string name="settings_restore_stock_image_message">Khôi phục lại image gốc (nếu có bản sao lưu), thường được sử dụng trước OTA; nếu bạn cần gỡ hẳn KernelSU, hãy sử dụng \"Gỡ cài đặt vĩnh viễn\".</string>
+    <string name="settings_uninstall_permanent_message">Gỡ cài đặt MISU (Root và tất cả các module) sạch hoàn toàn, trả về trạng thái ban đầu.</string>
+    <string name="settings_restore_stock_image_message">Khôi phục lại image gốc (nếu có bản sao lưu), thường được sử dụng trước OTA; nếu bạn cần gỡ hẳn MISU, hãy sử dụng \"Gỡ cài đặt vĩnh viễn\".</string>
     <string name="flashing">Đang Flash...</string>
     <string name="flash_success">Flash thành công</string>
     <string name="flash_failed">Flash thất bại!</string>
@@ -155,7 +155,7 @@
     <string name="settings_module_check_update">Kiểm tra cập nhật module</string>
     <string name="install_upload_lkm_file">Sử dụng file LKM cục bộ</string>
     <string name="install_select_lkm_variant">Chọn biến thể LKM</string>
-    <string name="install_lkm_kowsu">KowSU</string>
+    <string name="install_lkm_kowsu">MISU</string>
     <string name="install_lkm_xxksu">xxKSU</string>
     <string name="install_only_support_ko_file">Chỉ hỗ trợ các file .ko</string>
     <string name="settings_sucompat">Lệnh SU cổ điển</string>
@@ -240,7 +240,7 @@
     <string name="color_amber">Hổ phách</string>
     <string name="color_blue_grey">Xám xanh</string>
     <string name="color_sakura">Hoa anh đào</string>
-    <string name="home_version_mismatch">Phiên bản Trình quản lý (%1$d) và phiên bản driver của KernelSU (%2$d) không khớp!</string>
+    <string name="home_version_mismatch">Phiên bản Trình quản lý (%1$d) và phiên bản driver của MISU (%2$d) không khớp!</string>
     <string name="reboot_soft">Khởi động lại mềm</string>
     <string name="jailbreak_mode">Chế độ Jailbreak</string>
     <string name="home_jailbreak">Jailbreak</string>
@@ -298,11 +298,11 @@
     <string name="sulog_entry_unknown_event">Sự kiện không xác định!</string>
     <string name="sulog_entry_description_sucompat">Yêu cầu /system/bin/su đã bị chặn</string>
     <string name="sulog_entry_title_root_grant_request">Yêu cầu cấp quyền root</string>
-    <string name="sulog_entry_description_ioctl_grant_root">Đã cấp quyền truy cập Root thông qua KernelSU ioctl</string>
+    <string name="sulog_entry_description_ioctl_grant_root">Đã cấp quyền truy cập Root thông qua MISU ioctl</string>
     <string name="sulog_entry_title_daemon_restarted">Tiến trình nền đã khởi động lại</string>
     <string name="sulog_entry_title_dropped_events">Sự kiện bị huỷ bỏ</string>
     <string name="settings_sulog">Nhật ký SU</string>
-    <string name="settings_sulog_summary">Ghi lại các sự kiện liên quan đến quyền Root vào các file nhật ký SU của KernelSU.</string>
+    <string name="settings_sulog_summary">Ghi lại các sự kiện liên quan đến quyền Root vào các file nhật ký SU của MISU.</string>
     <string name="sulog_filter_root_execve">Root execve</string>
     <string name="settings_adb_root">ADB Root</string>
     <string name="settings_adb_root_summary">Chạy tiến trình nền adbd với quyền Root.</string>
@@ -312,7 +312,7 @@
     <string name="sort_by_install_time">Thời gian cài đặt</string>
     <string name="sort_by_update_time">Thời gian cập nhật</string>
     <string name="sort_reverse">Đảo ngược</string>
-    <string name="profile_flags_desc_no_new_privs">Ngăn chặn việc leo thang đặc quyền thông qua KernelSU từ bên trong phạm vi Hồ sơ người dùng Root này.</string>
+    <string name="profile_flags_desc_no_new_privs">Ngăn chặn việc leo thang đặc quyền thông qua MISU từ bên trong phạm vi Hồ sơ người dùng Root này.</string>
     <string name="module_shortcut_copy_scheme">Sao chép URL Scheme</string>
     <string name="module_shortcut_scheme_copied">Đã sao chép URL Scheme</string>
     <string name="install_force_backup">Sao lưu stock image</string>

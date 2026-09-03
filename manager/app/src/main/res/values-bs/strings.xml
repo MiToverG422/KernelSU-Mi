@@ -9,10 +9,10 @@
     <string name="profile_selinux_context">SELinux kontekst</string>
     <string name="profile_umount_modules">Umount module</string>
     <string name="failed_to_update_app_profile">Ažuriranje Profila Aplikacije za %s nije uspjelo</string>
-    <string name="require_kernel_version">Trenutna KernelSU verzija %1$d je preniska da bi upravitelj ispravno radio. Molimo vas da nadogradite na verziju %2$d ili noviju!</string>
+    <string name="require_kernel_version">Trenutna MISU verzija %1$d je preniska da bi upravitelj ispravno radio. Molimo vas da nadogradite na verziju %2$d ili noviju!</string>
     <string name="settings_umount_modules_default">Umount module po zadanom</string>
     <string name="settings_umount_modules_default_summary">Globalna zadana vrijednost za \"Umount module\" u Profilima Aplikacije. Ako je omogućeno, uklonit će sve izmjene modula na sistemu za aplikacije koje nemaju postavljen Profil.</string>
-    <string name="profile_umount_modules_summary">Uključivanjem ove opcije omogućit će KernelSU-u da vrati sve izmjenute datoteke od strane modula za ovu aplikaciju.</string>
+    <string name="profile_umount_modules_summary">Uključivanjem ove opcije omogućit će MISU-u da vrati sve izmjenute datoteke od strane modula za ovu aplikaciju.</string>
     <string name="module_update">Ažuriranje</string>
     <string name="module_downloading">Skidanje module: %s</string>
     <string name="module_start_downloading">Započnite sa skidanjem: %s</string>
@@ -27,7 +27,7 @@
     <string name="home_superuser_count">Superkorisnici: %d</string>
     <string name="home_module_count">Module: %d</string>
     <string name="home_unsupported">Nepodržano</string>
-    <string name="home_unsupported_reason">KernelSU samo podržava GKI kernele sad</string>
+    <string name="home_unsupported_reason">MISU samo podržava GKI kernele sad</string>
     <string name="home_manager_version">Verzija Upravitelja</string>
     <string name="home_fingerprint">Otisak prsta</string>
     <string name="home_selinux_status">SELinux stanje</string>
@@ -83,8 +83,8 @@
     <string name="settings_sucompat">Preusmjeri su binarnu datoteku</string>
     <string name="settings_sucompat_summary">Preusmjeri /system/bin/su na ksud za aplikacije kojima je dodijeljeno dopuštenje Superuser u Profilu aplikacije; učinkovito samo za nove procese.</string>
     <string name="settings_kernel_umount">Kernel umount</string>
-    <string name="settings_kernel_umount_summary">Ponašanje umount na razini kernela kontrolira KernelSU</string>
-    <string name="profile_flags_desc_no_new_privs">Sprječava daljnju eskalaciju privilegija putem KernelSU-a unutar konteksta ovog root profila.</string>
+    <string name="settings_kernel_umount_summary">Ponašanje umount na razini kernela kontrolira MISU</string>
+    <string name="profile_flags_desc_no_new_privs">Sprječava daljnju eskalaciju privilegija putem MISU-a unutar konteksta ovog root profila.</string>
     <string name="install_force_backup">Napravi sigurnosnu kopiju kao fabričku sliku</string>
     <string name="install_force_backup_summary">Uvjerite se da je odabrana boot slika fabrička slika</string>
 </resources>

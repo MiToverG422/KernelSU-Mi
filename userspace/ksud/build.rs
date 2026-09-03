@@ -9,18 +9,38 @@ const BOOTSTRAP_SOURCE: &str = "src/lkm_image_bootstrap.S";
 const BOOTSTRAP_OBJECT: &str = "lkm_image_bootstrap.o";
 const PREPARED_BOOTSTRAP_OBJECT: &str = ".lkm_image_bootstrap.o";
 
-fn get_git_version() -> Result<(u32, String), std::io::Error> {
+fn get_kernel_version_code() -> Option<u32> {
+    let manifest_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR")?);
+    let makefile = manifest_dir.join("../../kernel/Makefile");
+    let content = fs::read_to_string(makefile).ok()?;
+    const MARKER: &str = "-DKSU_VERSION=";
+
+    content.lines().find_map(|line| {
+        let (_, rest) = line.split_once(MARKER)?;
+        let digits: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
+        digits.parse().ok()
+    })
+}
+
+fn get_fallback_version_code() -> Result<u32, std::io::Error> {
     let output = Command::new("git")
         .args(["rev-list", "--count", "HEAD"])
         .output()?;
 
     let output = output.stdout;
-    let version_code = String::from_utf8(output).expect("Failed to read git count stdout");
-    let version_code: u32 = version_code
+    let commit_count = String::from_utf8(output).expect("Failed to read git count stdout");
+    let commit_count: u32 = commit_count
         .trim()
         .parse()
         .map_err(|_| std::io::Error::other("Failed to parse git count"))?;
-    let version_code = 30000 + version_code - 97;
+    Ok(30000 + commit_count - 97)
+}
+
+fn get_git_version() -> Result<(u32, String), std::io::Error> {
+    let version_code = match get_kernel_version_code() {
+        Some(version_code) => version_code,
+        None => get_fallback_version_code()?,
+    };
 
     let version_name = String::from_utf8(
         Command::new("git")
@@ -228,7 +248,7 @@ fn main() {
         }
     };
     if env::var("KSU_PACKAGE_NAME").is_err() {
-        println!("cargo:rustc-env=KSU_PACKAGE_NAME=com.kowx712.supermanager");
+        println!("cargo:rustc-env=KSU_PACKAGE_NAME=com.mimi0721.manager");
     }
     println!("cargo:rustc-env=VERSION_CODE={code}");
     println!("cargo:rustc-env=VERSION_NAME={name}");
@@ -236,6 +256,6 @@ fn main() {
     let target_os = env::var("CARGO_CFG_TARGET_OS").expect("CARGO_CFG_TARGET_OS not set");
     if target_os == "android" {
         configure_bindgen();
-	cc::Build::new() .file("src/compat.c") .compile("compat");
+        cc::Build::new().file("src/compat.c").compile("compat");
     }
 }

@@ -12,7 +12,7 @@
     <string name="selinux_status_unknown">Hindi matukoy</string>
     <string name="home_module_count">Mga Modyul: %d</string>
     <string name="home_unsupported">Hindi Suportado</string>
-    <string name="home_unsupported_reason">Sinusuportahan lamang ng KernelSU ang mga GKI na kernel.</string>
+    <string name="home_unsupported_reason">Sinusuportahan lamang ng MISU ang mga GKI na kernel.</string>
     <string name="module_failed_to_enable">Nabigong paganahin ang module: %s</string>
     <string name="module_failed_to_disable">Nabigong i-disable ang module: %s</string>
     <string name="module_empty">Walang naka-install na modyul</string>
@@ -44,8 +44,8 @@
     <string name="profile_selinux_context">Konteksto ng SELinux</string>
     <string name="profile_umount_modules">I-unmount ang mga module</string>
     <string name="failed_to_update_app_profile">Nabigong i-update ang App Profile para sa %s</string>
-    <string name="require_kernel_version">Ang kasalukuyang bersyon ng KernelSU %1$d ay masyadong mababa para gumana nang maayos ang manager. Mangyaring mag-upgrade sa bersyon %2$d o mas mataas!</string>
-    <string name="profile_umount_modules_summary">Ang pag-enable sa opsyong ito ay magbibigay-daan sa KernelSU na ibalik ang anumang binagong file ng mga module para sa app na ito.</string>
+    <string name="require_kernel_version">Ang kasalukuyang bersyon ng MISU %1$d ay masyadong mababa para gumana nang maayos ang manager. Mangyaring mag-upgrade sa bersyon %2$d o mas mataas!</string>
+    <string name="profile_umount_modules_summary">Ang pag-enable sa opsyong ito ay magbibigay-daan sa MISU na ibalik ang anumang binagong file ng mga module para sa app na ito.</string>
     <string name="profile_selinux_rules">Mga Tuntunin</string>
     <string name="module_downloading">Nagda-download ng modyul: %s</string>
     <string name="module_start_downloading">Simulan ang pag-download: %s</string>
@@ -125,9 +125,9 @@
     <string name="settings_uninstall_temporary">Pansamantalang i-uninstall</string>
     <string name="settings_uninstall_permanent">Permanenteng i-uninstall</string>
     <string name="settings_restore_stock_image">Ibalik ang stock image</string>
-    <string name="settings_uninstall_temporary_message">Pansamantalang i-uninstall ang KernelSU, ibabalik sa orihinal na kalagayan pagkatapos ng susunod na reboot.</string>
-    <string name="settings_uninstall_permanent_message">Ina-uninstall ang KernelSU (root at lahat ng mga module) nang tuluyan at permanente.</string>
-    <string name="settings_restore_stock_image_message">Ibalik ang stock factory image (kung may umiiral na backup), kadalasan na ginagamit bago ng OTA; kung kailangan mong i-uninstall ang KernelSU, mangyaring gamitin ang \"Permanenteng i-uninstall\".</string>
+    <string name="settings_uninstall_temporary_message">Pansamantalang i-uninstall ang MISU, ibabalik sa orihinal na kalagayan pagkatapos ng susunod na reboot.</string>
+    <string name="settings_uninstall_permanent_message">Ina-uninstall ang MISU (root at lahat ng mga module) nang tuluyan at permanente.</string>
+    <string name="settings_restore_stock_image_message">Ibalik ang stock factory image (kung may umiiral na backup), kadalasan na ginagamit bago ng OTA; kung kailangan mong i-uninstall ang MISU, mangyaring gamitin ang \"Permanenteng i-uninstall\".</string>
     <string name="flashing">Nagfa-flash</string>
     <string name="flash_success">Matagumpay ang pag-flash</string>
     <string name="flash_failed">Nabigo ang pag-flash</string>
@@ -140,7 +140,7 @@
     <string name="module_repos_source_code">Source code</string>
     <string name="metamodule_uninstall_confirm">Sigurado ka ba gusto mong i-uninstall ang module na %s? Aapektuhan ng aksyon na ito ang lahat ng mga module, at hindi na gagana ang mga feature na ibinigay ng metamodule (tulad ng pag-mount).</string>
     <string name="safe_mode_module_disabled">Naka-disable sa safe mode ang pag-install ng mga module</string>
-    <string name="profile_flags_desc_no_new_privs">Pinipigilan ang karagdagang pagtaas ng pribilehiyo sa pamamagitan ng KernelSU mula sa loob ng konteksto ng root profile na ito.</string>
+    <string name="profile_flags_desc_no_new_privs">Pinipigilan ang karagdagang pagtaas ng pribilehiyo sa pamamagitan ng MISU mula sa loob ng konteksto ng root profile na ito.</string>
     <string name="install_force_backup">I-backup bilang stock image</string>
     <string name="install_force_backup_summary">Pakisigurado na stock image ang napili mong boot image</string>
 </resources>

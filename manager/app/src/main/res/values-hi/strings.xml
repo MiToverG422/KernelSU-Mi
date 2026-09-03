@@ -15,7 +15,7 @@
     <string name="selinux_status_permissive">पर्मिसिव</string>
     <string name="reboot_download">डाउनलोड में रिबूट करें</string>
     <string name="settings_umount_modules_default">डिफ़ॉल्ट रूप से मॉड्यूल अनमाउन्ट करें</string>
-    <string name="profile_umount_modules_summary">इस विकल्प को चालू करने से KernelSU को इस एप्लिकेशन के लिए मॉड्यूल द्वारा किसी भी मोडिफाइड फ़ाइल को रिस्टोर करें।</string>
+    <string name="profile_umount_modules_summary">इस विकल्प को चालू करने से MISU को इस एप्लिकेशन के लिए मॉड्यूल द्वारा किसी भी मोडिफाइड फ़ाइल को रिस्टोर करें।</string>
     <string name="profile_namespace_individual">Individual</string>
     <string name="module_failed_to_enable">%s मॉड्यूल चालू करने में विफल</string>
     <string name="force_stop_app">जबर्दस्ती बंद करें</string>
@@ -33,7 +33,7 @@
     <string name="profile_default">डिफॉल्ट</string>
     <string name="launch_app">लॉन्च करें</string>
     <string name="safe_mode">सेफ मोड</string>
-    <string name="require_kernel_version">मैनेजर के ठीक से काम करने के लिए वर्तमान KernelSU वर्जन %1$d बहुत कम है। कृपया वर्जन %2$d या उच्चतर में अपग्रेड करें!</string>
+    <string name="require_kernel_version">मैनेजर के ठीक से काम करने के लिए वर्तमान MISU वर्जन %1$d बहुत कम है। कृपया वर्जन %2$d या उच्चतर में अपग्रेड करें!</string>
     <string name="reboot_recovery">रिकवरी में रिबूट करें</string>
     <string name="reboot_userspace">सॉफ्ट रिबूट</string>
     <string name="profile_name">प्रोफाइल का नाम</string>
@@ -49,7 +49,7 @@
     <string name="about">हमारे बारे में</string>
     <string name="home_working_version">वर्जन: %s</string>
     <string name="reboot">रीबूट करें</string>
-    <string name="home_unsupported_reason">KernelSU अभी केवल GKI कर्नल्स को सपोर्ट करता है</string>
+    <string name="home_unsupported_reason">MISU अभी केवल GKI कर्नल्स को सपोर्ट करता है</string>
     <string name="home_selinux_status">SELinux स्थिति</string>
     <string name="module_version">वर्जन</string>
     <string name="home_unsupported">सपोर्ट नहीं करता है</string>
@@ -82,8 +82,8 @@
     <string name="settings_sucompat">su बाइनरी को फिर से रूट करें</string>
     <string name="settings_sucompat_summary">ऐप प्रोफ़ाइल में सुपरयूज़र अनुमति दिए गए ऐप्स को /system/bin/su को निष्पादित करके सुपरयूज़र शेल प्राप्त करने की अनुमति देता है; केवल नई प्रक्रियाओं के लिए प्रभावी।</string>
     <string name="settings_kernel_umount">कर्नेल अनमाउंट</string>
-    <string name="settings_kernel_umount_summary">KernelSU द्वारा नियंत्रित कर्नेल-स्तरीय अनमाउंट व्यवहार</string>
-    <string name="profile_flags_desc_no_new_privs">इस रूट प्रोफाइल के संदर्भ में KernelSU के माध्यम से आगे विशेषाधिकार बढ़ाने से रोकता है।</string>
+    <string name="settings_kernel_umount_summary">MISU द्वारा नियंत्रित कर्नेल-स्तरीय अनमाउंट व्यवहार</string>
+    <string name="profile_flags_desc_no_new_privs">इस रूट प्रोफाइल के संदर्भ में MISU के माध्यम से आगे विशेषाधिकार बढ़ाने से रोकता है।</string>
     <string name="install_force_backup">स्टॉक इमेज के रूप में बैकअप करें</string>
     <string name="install_force_backup_summary">कृपया सुनिश्चित करें कि आपने जो boot इमेज चुनी है वह स्टॉक इमेज है</string>
 </resources>

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 
 public class AppZygotePreload implements ZygotePreload {
-    public static final String TAG = "KernelSUMagica";
+    public static final String TAG = "MISUMagica";
 
     private static native void forkDontCareAndExecKsud(String ksudPath, String packageName);
 

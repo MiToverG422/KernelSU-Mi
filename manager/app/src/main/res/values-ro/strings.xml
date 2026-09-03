@@ -8,7 +8,7 @@
     <string name="home_superuser_count">Super-utilizatori: %d</string>
     <string name="home_module_count">Module: %d</string>
     <string name="home_unsupported">Necompatibil</string>
-    <string name="home_unsupported_reason">KernelSU suportă doar nuclee GKI acum</string>
+    <string name="home_unsupported_reason">MISU suportă doar nuclee GKI acum</string>
     <string name="home_kernel">Nucleu</string>
     <string name="home_manager_version">Versiune Manager</string>
     <string name="home_fingerprint">Amprentă</string>
@@ -64,7 +64,7 @@
     <string name="failed_to_update_app_profile">Nu s-a putut actualiza profilul aplicației pentru %s</string>
     <string name="settings_umount_modules_default">U-montează modulele în mod implicit</string>
     <string name="settings_umount_modules_default_summary">Valoarea implicită globală pentru „Module u-montate” în Profilurile aplicațiilor. Dacă este activat, va elimina toate modificările modulelor aduse sistemului pentru aplicațiile care nu au un profil setat.</string>
-    <string name="profile_umount_modules_summary">Activarea acestei opțiuni va permite KernelSU să restaureze orice fișiere modificate de către modulele pentru această aplicație.</string>
+    <string name="profile_umount_modules_summary">Activarea acestei opțiuni va permite MISU să restaureze orice fișiere modificate de către modulele pentru această aplicație.</string>
     <string name="profile_selinux_domain">Domeniu</string>
     <string name="profile_selinux_rules">Reguli</string>
     <string name="module_update">Actualizează</string>
@@ -75,7 +75,7 @@
     <string name="launch_app">Lansare</string>
     <string name="force_stop_app">Oprire forțată</string>
     <string name="restart_app">Repornește</string>
-    <string name="require_kernel_version">Versiunea actuală a KernelSU %1$d este prea mică pentru ca managerul să funcționeze corect. Actualizează la versiunea %2$d sau o versiune superioară!</string>
+    <string name="require_kernel_version">Versiunea actuală a MISU %1$d este prea mică pentru ca managerul să funcționeze corect. Actualizează la versiunea %2$d sau o versiune superioară!</string>
     <string name="module_changelog">Jurnalul modificărilor</string>
     <string name="app_profile_template_import_success">Importat cu succes</string>
     <string name="app_profile_export_to_clipboard">Export în clipboard</string>
@@ -118,12 +118,12 @@
     <string name="install_inactive_slot">Instalează într-un slot inactiv (după OTA)</string>
     <string name="settings_uninstall">Dezinstalează</string>
     <string name="settings_restore_stock_image">Restaurare imagine stoc</string>
-    <string name="settings_uninstall_temporary_message">Dezinstalează temporar KernelSU, se revine la starea inițială după următoarea repornire.</string>
+    <string name="settings_uninstall_temporary_message">Dezinstalează temporar MISU, se revine la starea inițială după următoarea repornire.</string>
     <string name="selected_lkm">Lkm selectat: %s</string>
     <string name="settings_uninstall_temporary">Dezinstalează temporar</string>
     <string name="settings_uninstall_permanent">Dezinstalează definitiv</string>
-    <string name="settings_uninstall_permanent_message">Dezinstalare KernelSU (Root și toate modulele) complet și permanent.</string>
-    <string name="settings_restore_stock_image_message">Restaurează imaginea stoc din fabrică (dacă există o copie de rezervă), utilizată de obicei înainte de OTA; dacă trebuie să dezinstalezi KernelSU, utilizează „Dezinstalare permanentă”.</string>
+    <string name="settings_uninstall_permanent_message">Dezinstalare MISU (Root și toate modulele) complet și permanent.</string>
+    <string name="settings_restore_stock_image_message">Restaurează imaginea stoc din fabrică (dacă există o copie de rezervă), utilizată de obicei înainte de OTA; dacă trebuie să dezinstalezi MISU, utilizează „Dezinstalare permanentă”.</string>
     <string name="flashing">Instalare</string>
     <string name="flash_success">Instalare reușită</string>
     <string name="flash_failed">Instalarea a eșuat</string>
@@ -131,8 +131,8 @@
     <string name="settings_sucompat">Redirecționare binar su</string>
     <string name="settings_sucompat_summary">Permite aplicațiilor cu permisiune de Superutilizator în Profilul Aplicației să obțină un shell de superutilizator executând /system/bin/su; eficient doar pentru procesele noi.</string>
     <string name="settings_kernel_umount">Demontare kernel</string>
-    <string name="settings_kernel_umount_summary">Comportament de demontare la nivel de kernel controlat de KernelSU</string>
-    <string name="profile_flags_desc_no_new_privs">Împiedică escaladarea suplimentară a privilegiilor prin KernelSU în contextul acestui profil root.</string>
+    <string name="settings_kernel_umount_summary">Comportament de demontare la nivel de kernel controlat de MISU</string>
+    <string name="profile_flags_desc_no_new_privs">Împiedică escaladarea suplimentară a privilegiilor prin MISU în contextul acestui profil root.</string>
     <string name="install_force_backup">Salvează ca imagine originală</string>
     <string name="install_force_backup_summary">Asigură-te că imaginea boot selectată este imaginea originală</string>
 </resources>

@@ -8,7 +8,7 @@
     <string name="home_superuser_count">スーパーユーザー: %d</string>
     <string name="home_module_count">モジュール: %d</string>
     <string name="home_unsupported">非対応</string>
-    <string name="home_unsupported_reason">KernelSU は現在 GKI カーネルのみをサポートしています。ただし、GKI デバイス向けにイメージにパッチを適用することは可能です。</string>
+    <string name="home_unsupported_reason">MISU は現在 GKI カーネルのみをサポートしています。ただし、GKI デバイス向けにイメージにパッチを適用することは可能です。</string>
     <string name="home_kernel">カーネル</string>
     <string name="home_manager_version">アプリのバージョン</string>
     <string name="home_fingerprint">Fingerprint</string>
@@ -73,10 +73,10 @@
     <string name="failed_to_update_sepolicy">SELinux ルールの更新に失敗しました %s</string>
     <string name="profile_capabilities">ケーパビリティ</string>
     <string name="module_downloading">モジュールをダウンロード中: %s</string>
-    <string name="profile_umount_modules_summary">このオプションを有効にすると、KernelSU はこのアプリのモジュールによって変更されたファイルを復元できるようになります。</string>
+    <string name="profile_umount_modules_summary">このオプションを有効にすると、MISU はこのアプリのモジュールによって変更されたファイルを復元できるようになります。</string>
     <string name="settings_umount_modules_default">デフォルトでモジュールをアンマウントする</string>
     <string name="settings_umount_modules_default_summary">アプリプロファイルの「モジュールのアンマウント」の共通のデフォルト値です。 有効にすると、プロファイルセットを持たないアプリのシステムに対するすべてのモジュールの変更が削除されます。</string>
-    <string name="require_kernel_version">現在の KernelSU バージョン %1$d はマネージャーが適切に機能するには低すぎます。 バージョン %2$d 以降にアップグレードしてください！</string>
+    <string name="require_kernel_version">現在の MISU バージョン %1$d はマネージャーが適切に機能するには低すぎます。 バージョン %2$d 以降にアップグレードしてください！</string>
     <string name="module_changelog">変更履歴</string>
     <string name="app_profile_template_import_success">インポート成功</string>
     <string name="app_profile_export_to_clipboard">クリップボードからエクスポート</string>
@@ -119,9 +119,9 @@
     <string name="settings_restore_stock_image">ストックイメージを復元</string>
     <string name="settings_uninstall_temporary">一時的にアンインストールする</string>
     <string name="settings_uninstall">アンインストール</string>
-    <string name="settings_uninstall_temporary_message">KernelSU を一時的にアンインストールし、次回の再起動後に元の状態に戻します。</string>
-    <string name="settings_uninstall_permanent_message">KernelSU (ルートおよびすべてのモジュール) を完全かつ永久にアンインストールします。</string>
-    <string name="settings_restore_stock_image_message">バックアップが存在する場合、工場出荷時のイメージを復元できます (OTA の前に使用してください)。KernelSU をアンインストールする必要がある場合は、「完全にアンインストールする」を使用してください。</string>
+    <string name="settings_uninstall_temporary_message">MISU を一時的にアンインストールし、次回の再起動後に元の状態に戻します。</string>
+    <string name="settings_uninstall_permanent_message">MISU (ルートおよびすべてのモジュール) を完全かつ永久にアンインストールします。</string>
+    <string name="settings_restore_stock_image_message">バックアップが存在する場合、工場出荷時のイメージを復元できます (OTA の前に使用してください)。MISU をアンインストールする必要がある場合は、「完全にアンインストールする」を使用してください。</string>
     <string name="flashing">フラッシュ</string>
     <string name="flash_success">フラッシュ成功</string>
     <string name="flash_failed">フラッシュ失敗</string>
@@ -206,7 +206,7 @@
     <string name="color_amber">アンバー</string>
     <string name="color_blue_grey">ブルーグレー</string>
     <string name="color_sakura">桜</string>
-    <string name="profile_flags_desc_no_new_privs">この root プロファイルのコンテキスト内で、KernelSU を介したさらなる権限昇格を防止します。</string>
+    <string name="profile_flags_desc_no_new_privs">この root プロファイルのコンテキスト内で、MISU を介したさらなる権限昇格を防止します。</string>
     <string name="install_force_backup">純正イメージとしてバックアップ</string>
     <string name="install_force_backup_summary">選択した boot イメージが純正イメージであることを確認してください</string>
 </resources>

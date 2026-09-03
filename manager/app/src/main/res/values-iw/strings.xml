@@ -15,7 +15,7 @@
     <string name="selinux_status_permissive">התרים</string>
     <string name="reboot_download">הפעלה מחדש למצב הורדה</string>
     <string name="settings_umount_modules_default">טעינת מודולים כברירת מחדל</string>
-    <string name="profile_umount_modules_summary">הפעלת אפשרות זו תאפשר ל-KernelSU לשחזר קבצים שהשתנו על ידי המודולים עבור יישום זה.</string>
+    <string name="profile_umount_modules_summary">הפעלת אפשרות זו תאפשר ל-MISU לשחזר קבצים שהשתנו על ידי המודולים עבור יישום זה.</string>
     <string name="profile_namespace_individual">אישי</string>
     <string name="module_failed_to_enable">הפעלת המודל נכשלה: %s</string>
     <string name="force_stop_app">עצירה בכח</string>
@@ -33,7 +33,7 @@
     <string name="profile_default">ברירת מחדל</string>
     <string name="launch_app">להשיק</string>
     <string name="safe_mode">מצב בטוח</string>
-    <string name="require_kernel_version">גרסת KernelSU הנוכחית %1$d נמוכה מדי כדי שהמנהל יפעל כראוי. אנא שדרג לגרסה %2$d ומעלה!</string>
+    <string name="require_kernel_version">גרסת MISU הנוכחית %1$d נמוכה מדי כדי שהמנהל יפעל כראוי. אנא שדרג לגרסה %2$d ומעלה!</string>
     <string name="reboot_recovery">הפעלה מחדש לריקברי</string>
     <string name="reboot_userspace">רך Reboot</string>
     <string name="profile_name">שם פרופיל</string>
@@ -49,7 +49,7 @@
     <string name="about">אודות</string>
     <string name="home_working_version">גרסה: %s</string>
     <string name="reboot">הפעלה מחדש</string>
-    <string name="home_unsupported_reason">KernelSU תומך רק בליבת GKI כעת</string>
+    <string name="home_unsupported_reason">MISU תומך רק בליבת GKI כעת</string>
     <string name="home_selinux_status">סטטוס SELinux</string>
     <string name="module_version">גרסה</string>
     <string name="home_unsupported">אינו נתמך</string>
@@ -81,8 +81,8 @@
     <string name="settings_sucompat">ניתוב מחדש של su binary</string>
     <string name="settings_sucompat_summary">הפנה מחדש את /system/bin/su ל-ksud עבור אפליקציות שקיבלו הרשאת Superuser בפרופיל האפליקציה; יעיל לתהליכים חדשים בלבד.</string>
     <string name="settings_kernel_umount">ביטול טעינת קרנל</string>
-    <string name="settings_kernel_umount_summary">התנהגות ביטול טעינה ברמת הקרנל הנשלטת על ידי KernelSU</string>
-    <string name="profile_flags_desc_no_new_privs">מונע הסלמת הרשאות נוספת דרך KernelSU מתוך ההקשר של פרופיל root זה.</string>
+    <string name="settings_kernel_umount_summary">התנהגות ביטול טעינה ברמת הקרנל הנשלטת על ידי MISU</string>
+    <string name="profile_flags_desc_no_new_privs">מונע הסלמת הרשאות נוספת דרך MISU מתוך ההקשר של פרופיל root זה.</string>
     <string name="install_force_backup">גבה כתמונת מקור</string>
     <string name="install_force_backup_summary">אנא ודא שתמונת האתחול שבחרת היא תמונת המקור</string>
 </resources>

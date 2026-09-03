@@ -11,8 +11,8 @@
     <string name="settings_sucompat">Preusmeri su binarni fajl</string>
     <string name="settings_sucompat_summary">Preusmeri /system/bin/su na ksud za aplikacije sa dozvolom Superkorisnika u Profilu aplikacije; efektivno samo za nove procese.</string>
     <string name="settings_kernel_umount">Kernel umount</string>
-    <string name="settings_kernel_umount_summary">Ponašanje umount-a na nivou kernela kontrolisano od strane KernelSU-a</string>
-    <string name="profile_flags_desc_no_new_privs">Sprečava dalje podizanje privilegija putem KernelSU-a u okviru ovog root profila.</string>
+    <string name="settings_kernel_umount_summary">Ponašanje umount-a na nivou kernela kontrolisano od strane MISU-a</string>
+    <string name="profile_flags_desc_no_new_privs">Sprečava dalje podizanje privilegija putem MISU-a u okviru ovog root profila.</string>
     <string name="install_force_backup">Napravi rezervnu kopiju kao originalnu sliku</string>
     <string name="install_force_backup_summary">Uverite se da je izabrana boot slika originalna slika</string>
 </resources>

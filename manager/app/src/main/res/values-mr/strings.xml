@@ -8,7 +8,7 @@
     <string name="home_module_count">मॉड्यूल्स: %d</string>
     <string name="home_superuser_count">सुपरयूझर: %d</string>
     <string name="home_unsupported">असमर्थित</string>
-    <string name="home_unsupported_reason">KernelSU आता फक्त GKI कर्नलचे समर्थन करते</string>
+    <string name="home_unsupported_reason">MISU आता फक्त GKI कर्नलचे समर्थन करते</string>
     <string name="home_kernel">कर्नल</string>
     <string name="home_fingerprint">फिंगरप्रिंट</string>
     <string name="home_manager_version">व्यवस्थापक आवृत्ती</string>
@@ -64,7 +64,7 @@
     <string name="failed_to_update_app_profile">%s साठी अॅप प्रोफाइल अपडेट करण्यात अयशस्वी</string>
     <string name="settings_umount_modules_default">डीफॉल्टनुसार मॉड्यूल्स उमाउंट करा</string>
     <string name="settings_umount_modules_default_summary">अॅप प्रोफाइलमधील \"उमाउंट मॉड्यूल्स\" साठी जागतिक डीफॉल्ट मूल्य. सक्षम असल्यास, ते प्रोफाइल सेट नसलेल्या ॲप्लिकेशनचे सिस्टममधील सर्व मॉड्यूल बदल काढून टाकेल.</string>
-    <string name="profile_umount_modules_summary">हा पर्याय सक्षम केल्याने KernelSU ला या ऍप्लिकेशनसाठी मॉड्यूल्सद्वारे कोणत्याही सुधारित फाइल्स पुनर्संचयित करण्यास अनुमती मिळेल.</string>
+    <string name="profile_umount_modules_summary">हा पर्याय सक्षम केल्याने MISU ला या ऍप्लिकेशनसाठी मॉड्यूल्सद्वारे कोणत्याही सुधारित फाइल्स पुनर्संचयित करण्यास अनुमती मिळेल.</string>
     <string name="failed_to_update_sepolicy">यासाठी SELinux नियम अपडेट करण्यात अयशस्वी: %s</string>
     <string name="profile_selinux_rules">नियम</string>
     <string name="module_update">अपडेट करा</string>
@@ -79,8 +79,8 @@
     <string name="settings_sucompat">su बाइनरी पुन्हा मार्गस्थ करा</string>
     <string name="settings_sucompat_summary">ॲप प्रोफाईलमध्ये सुपरयुझर परवानगी दिलेल्या ॲप्ससाठी /system/bin/su ला ksud वर पुनर्निर्देशित करा; फक्त नवीन प्रक्रियांसाठी प्रभावी.</string>
     <string name="settings_kernel_umount">कर्नल अनमाउंट</string>
-    <string name="settings_kernel_umount_summary">KernelSU द्वारे नियंत्रित कर्नल-स्तरीय अनमाउंट वर्तन</string>
-    <string name="profile_flags_desc_no_new_privs">या रूट प्रोफाइलच्या संदर्भात KernelSU द्वारे पुढील अधिकारवाढ रोखते.</string>
+    <string name="settings_kernel_umount_summary">MISU द्वारे नियंत्रित कर्नल-स्तरीय अनमाउंट वर्तन</string>
+    <string name="profile_flags_desc_no_new_privs">या रूट प्रोफाइलच्या संदर्भात MISU द्वारे पुढील अधिकारवाढ रोखते.</string>
     <string name="install_force_backup">स्टॉक इमेज म्हणून बॅकअप करा</string>
     <string name="install_force_backup_summary">कृपया तुम्ही निवडलेली boot इमेज ही स्टॉक इमेज असल्याची खात्री करा</string>
 </resources>

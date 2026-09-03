@@ -35,7 +35,7 @@
     <string name="home_not_installed">Pole paigaldatud</string>
     <string name="home_unsupported">Mittetoetatud</string>
     <string name="home_superuser_count">Superkasutajaid: %d</string>
-    <string name="home_unsupported_reason">KernelSU toetab hetkel vaid GSI tuumasid</string>
+    <string name="home_unsupported_reason">MISU toetab hetkel vaid GSI tuumasid</string>
     <string name="home_selinux_status">SELinuxi olek</string>
     <string name="selinux_status_disabled">Keelatud</string>
     <string name="selinux_status_enforcing">Jõustav</string>
@@ -72,7 +72,7 @@ Liitu meie %2$si kanaliga</string>
     <string name="profile_capabilities">Võimekused</string>
     <string name="app_profile_template_id_invalid">Sobimatu malli ID</string>
     <string name="profile_selinux_context">SELinux kontekst</string>
-    <string name="require_kernel_version">Praegune KernelSU versioon %1$d on liiga madal, haldur ei saa korrektselt töötada. Palun täienda versioonile %2$d või kõrgem!</string>
+    <string name="require_kernel_version">Praegune MISU versioon %1$d on liiga madal, haldur ei saa korrektselt töötada. Palun täienda versioonile %2$d või kõrgem!</string>
     <string name="profile_selinux_domain">Domeen</string>
     <string name="launch_app">Käivita</string>
     <string name="force_stop_app">Sundpeata</string>
@@ -94,7 +94,7 @@ Liitu meie %2$si kanaliga</string>
     <string name="app_profile_template_save_failed">Malli salvestamine ebaõnnestus</string>
     <string name="app_profile_template_create">Loo mall</string>
     <string name="settings_profile_template_summary">Halda kohalikke ja võrgusolevaid rakenduseprofiili malle</string>
-    <string name="profile_umount_modules_summary">Selle valiku lubamine lubab KernelSU-l taastada selle rakenduse moodulite poolt mistahes muudetud faile.</string>
+    <string name="profile_umount_modules_summary">Selle valiku lubamine lubab MISU-l taastada selle rakenduse moodulite poolt mistahes muudetud faile.</string>
     <string name="app_profile_template_export_empty">Ei saa eksportida, kohalikku malli ei leitud!</string>
     <string name="settings_umount_modules_default_summary">Globaalne vaikeväärtus \"Lahtihaagitud moodulitele\" rakenduseprofiilis. Lubamisel eemaldab see kõik moodulite süsteemimuudatused rakendustele, millel ei ole profiili määratud.</string>
     <string name="enable_web_debugging_summary">Saab kasutada WebUI silumiseks, palun luba ainult vajadusel.</string>
@@ -109,9 +109,9 @@ Liitu meie %2$si kanaliga</string>
     <string name="install_next">Edasi</string>
     <string name="install_inactive_slot_warning">Sinu seade **SUNNITAKSE** pärast taaskäivitust ebaaktiivsesse lahtrisse käivituma!\nKasuta seda valikut vaid siis, kui tegid üle-õhu uuenduse.\nJätkad?</string>
     <string name="settings_uninstall">Eemalda</string>
-    <string name="settings_uninstall_temporary_message">Eemalda KernelSU ajutiselt, taasta pärast taaskäivitust algseisu.</string>
-    <string name="settings_uninstall_permanent_message">KernelSU eemaldamine (juurkasutaja ja kõik moodulid) täielikult ja püsivalt.</string>
-    <string name="settings_restore_stock_image_message">Taasta tehase-vaiketõmmis (kui varundus eksisteerib), tavaliselt kasutatakse enne üle-õhu uuendust; kui soovid KernelSU-d eemaldada, palun kasuta \"Eemalda püsivalt\".</string>
+    <string name="settings_uninstall_temporary_message">Eemalda MISU ajutiselt, taasta pärast taaskäivitust algseisu.</string>
+    <string name="settings_uninstall_permanent_message">MISU eemaldamine (juurkasutaja ja kõik moodulid) täielikult ja püsivalt.</string>
+    <string name="settings_restore_stock_image_message">Taasta tehase-vaiketõmmis (kui varundus eksisteerib), tavaliselt kasutatakse enne üle-õhu uuendust; kui soovid MISU-d eemaldada, palun kasuta \"Eemalda püsivalt\".</string>
     <string name="flashing">Välgutamine</string>
     <string name="flash_success">Välgutamine õnnestus</string>
     <string name="flash_failed">Välgutamine ebaõnnestus</string>
@@ -130,8 +130,8 @@ Liitu meie %2$si kanaliga</string>
     <string name="settings_sucompat">Suuna su binaarfail ümber</string>
     <string name="settings_sucompat_summary">Võimaldab rakendustel, kellele on antud Superuser luba rakenduse profiilis, saada superuser shell, käivitades /system/bin/su; kehtib ainult uute protsesside puhul.</string>
     <string name="settings_kernel_umount">Kernel umount</string>
-    <string name="settings_kernel_umount_summary">Kerneli tasemel lahtihaakimise käitumine, mida kontrollib KernelSU</string>
-    <string name="profile_flags_desc_no_new_privs">Takistab õiguste edasist tõstmist KernelSU kaudu selle root-profiili kontekstis.</string>
+    <string name="settings_kernel_umount_summary">Kerneli tasemel lahtihaakimise käitumine, mida kontrollib MISU</string>
+    <string name="profile_flags_desc_no_new_privs">Takistab õiguste edasist tõstmist MISU kaudu selle root-profiili kontekstis.</string>
     <string name="install_force_backup">Varunda kui tehasepilt</string>
     <string name="install_force_backup_summary">Veendu, et valitud boot-tõmmis on tehasepilt</string>
 </resources>

@@ -14,7 +14,7 @@
     <string name="reboot_download">In den Download-Modus neustarten</string>
     <string name="reboot_edl">In den EDL-Modus neustarten</string>
     <string name="module_author">Autor</string>
-    <string name="about">Über KernelSU</string>
+    <string name="about">Über MISU</string>
     <string name="module_magisk_conflict">Module sind aufgrund eines Konfliktes mit Magisk nicht verfügbar!</string>
     <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="home_click_to_learn_kernelsu">Erfahre, wie KernelSU installiert wird und wie Module verwendet werden.</string>
@@ -32,7 +32,7 @@
     <string name="profile_namespace_individual">Individuell</string>
     <string name="profile_selinux_domain">Domäne</string>
     <string name="module_update">Aktualisieren</string>
-    <string name="profile_umount_modules_summary">Wenn du diese Option aktivierst, kann KernelSU alle von den Modulen für diese App geänderten Dateien wiederherstellen.</string>
+    <string name="profile_umount_modules_summary">Wenn du diese Option aktivierst, kann MISU alle von den Modulen für diese App geänderten Dateien wiederherstellen.</string>
     <string name="profile_selinux_rules">Regeln</string>
     <string name="module_start_downloading">Starte Download: %s</string>
     <string name="failed_to_update_sepolicy">Aktualisieren der SELinux-Regeln schlug fehl für %s</string>
@@ -68,14 +68,14 @@
     <string name="profile_umount_modules">Module aushängen</string>
     <string name="module_downloading">Lädt Modul %s herunter</string>
     <string name="home_unsupported">Nicht unterstützt</string>
-    <string name="home_unsupported_reason">KernelSU unterstützt derzeit nur GKI-Kernel.</string>
+    <string name="home_unsupported_reason">MISU unterstützt derzeit nur GKI-Kernel.</string>
     <string name="home_kernel">Kernelversion</string>
     <string name="home_fingerprint">Fingerabdruck</string>
     <string name="module_install">Installieren</string>
     <string name="reboot_userspace">Soft Reboot</string>
     <string name="module_uninstall_confirm">Möchtest du wirklich Modul %s deinstallieren?</string>
     <string name="module_uninstall_failed">Deinstallation fehlgeschlagen: %s</string>
-    <string name="require_kernel_version">Die aktuelle KernelSU-Version %1$d ist zu alt für diese Manager-Version. Bitte auf Version %2$d oder höher aktualisieren!</string>
+    <string name="require_kernel_version">Die aktuelle MISU-Version %1$d ist zu alt für diese Manager-Version. Bitte auf Version %2$d oder höher aktualisieren!</string>
     <string name="module_changelog">Änderungsprotokoll</string>
     <string name="app_profile_template_import_success">Erfolgreich importiert</string>
     <string name="app_profile_export_to_clipboard">In Zwischenablage exportieren</string>
@@ -118,12 +118,12 @@
     <string name="settings_check_update_summary">Prüfe automatisch auf Aktualisierungen, wenn die App geöffnet wird.</string>
     <string name="settings_uninstall_temporary">Temporär deinstallieren</string>
     <string name="settings_uninstall">Deinstallieren</string>
-    <string name="settings_uninstall_permanent_message">KernelSU (Root und alle Module) vollständig und dauerhaft deinstallieren.</string>
+    <string name="settings_uninstall_permanent_message">MISU (Root und alle Module) vollständig und dauerhaft deinstallieren.</string>
     <string name="save_log">Protokolle Speichern</string>
     <string name="settings_uninstall_permanent">Permanent deinstallieren</string>
     <string name="settings_restore_stock_image">Standard-Abbild wiederherstellen</string>
-    <string name="settings_uninstall_temporary_message">KernelSU temporär deinstallieren, originalen Status nach dem nächsten Neustart wiederherstellen.</string>
-    <string name="settings_restore_stock_image_message">Das Standard Werksabbild wiederherstellen (falls ein Backup existiert), normalerweise vor einem OTA zu verwenden; falls Sie KernelSU deinstallieren müssen, nutzen Sie bitte \"Permanent deinstallieren\".</string>
+    <string name="settings_uninstall_temporary_message">MISU temporär deinstallieren, originalen Status nach dem nächsten Neustart wiederherstellen.</string>
+    <string name="settings_restore_stock_image_message">Das Standard Werksabbild wiederherstellen (falls ein Backup existiert), normalerweise vor einem OTA zu verwenden; falls Sie MISU deinstallieren müssen, nutzen Sie bitte \"Permanent deinstallieren\".</string>
     <string name="flashing">Schreibt</string>
     <string name="flash_success">Schreiben erfolgreich</string>
     <string name="flash_failed">Schreiben fehlgeschlagen</string>
@@ -148,7 +148,7 @@
     <string name="install_select_partition">Partition wählen</string>
     <string name="install_upload_lkm_file">Nutze lokale LKM Datei</string>
     <string name="install_only_support_ko_file">Nur .ko Dateien unterstützt</string>
-    <string name="profile_flags_desc_no_new_privs">Verhindert eine weitere Rechteausweitung über KernelSU innerhalb dieses Root-Profils.</string>
+    <string name="profile_flags_desc_no_new_privs">Verhindert eine weitere Rechteausweitung über MISU innerhalb dieses Root-Profils.</string>
     <string name="install_force_backup">Als Original-Image sichern</string>
     <string name="install_force_backup_summary">Bitte stelle sicher, dass das ausgewählte Boot-Image das Original-Image ist</string>
 </resources>

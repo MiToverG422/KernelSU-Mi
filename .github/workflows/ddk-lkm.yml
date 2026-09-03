@@ -12,6 +12,21 @@ on:
         required: false
         default: '20260828'
         type: string
+      manager_package:
+        description: 'Manager package name accepted by the kernel module'
+        required: false
+        default: 'com.mimi0721.manager'
+        type: string
+      expected_size:
+        description: 'Primary manager signing certificate size'
+        required: false
+        default: '0x02c8'
+        type: string
+      expected_hash:
+        description: 'Primary manager signing certificate SHA-256'
+        required: false
+        default: '3b0d042b55e4eee9eb14c9aedbbe1499dacea8eb4c87106a2c5b922e7c2583af'
+        type: string
       expected_size2:
         description: 'Second expected signature size (for PR builds)'
         required: false
@@ -37,15 +52,23 @@ jobs:
 
     - name: Build kernelsu.ko
       env:
+        MANAGER_PACKAGE: ${{ inputs.manager_package }}
+        EXPECTED_SIZE: ${{ inputs.expected_size }}
+        EXPECTED_HASH: ${{ inputs.expected_hash }}
         EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
         EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
       run: |
-        git config --global --add safe.directory /__w/KernelSU/KernelSU
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
         cd kernel
 
         echo "=== Building kernelsu.ko for KMI: ${{ inputs.kmi }} ==="
 
+        if [ -z "$MANAGER_PACKAGE" ] || [ -z "$EXPECTED_SIZE" ] || [ -z "$EXPECTED_HASH" ]; then
+          echo "ERROR: manager_package, expected_size, and expected_hash must be provided."
+          exit 1
+        fi
+        BASE_ARGS="KSU_MANAGER_PACKAGE=$MANAGER_PACKAGE KSU_EXPECTED_SIZE=$EXPECTED_SIZE KSU_EXPECTED_HASH=$EXPECTED_HASH"
         EXTRA_ARGS=""
         if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
           echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
@@ -58,8 +81,8 @@ jobs:
         if [ -n "$EXPECTED_SIZE2" ]; then
           EXTRA_ARGS="KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
         fi
-        CONFIG_KSU=m CC=clang make $EXTRA_ARGS
-        
+        CONFIG_KSU=m CC=clang make $BASE_ARGS $EXTRA_ARGS
+
         echo "=== Build completed ==="
 
         # Create output directory in GitHub workspace
@@ -69,7 +92,7 @@ jobs:
         # Copy with KMI-specific naming
         OUTPUT_NAME="${{ inputs.kmi }}_kernelsu.ko"
         cp ksu.ko "$OUT_DIR/$OUTPUT_NAME"
-        
+
         echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
         ls -la "$OUT_DIR/$OUTPUT_NAME"
         echo "Size: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
@@ -81,4 +104,3 @@ jobs:
       with:
         name: aarch64-${{ inputs.kmi }}-lkm
         path: /github/workspace/out/aarch64/${{ inputs.kmi }}_kernelsu.ko
-
