@@ -3,6 +3,7 @@ package me.weishu.kernelsu.ui.screen.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,25 +52,28 @@ import me.weishu.kernelsu.data.model.BuiltinMountStorage
 import me.weishu.kernelsu.ui.theme.LocalEnableBlur
 import me.weishu.kernelsu.ui.util.CouiBlurredBar
 import me.weishu.kernelsu.ui.util.rememberCouiBlurBackdrop
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
 import io.github.suqi8.coui.kmp.basic.Card
 import io.github.suqi8.coui.kmp.basic.Icon
 import io.github.suqi8.coui.kmp.basic.IconButton
 import io.github.suqi8.coui.kmp.basic.InfiniteProgressIndicator
 import io.github.suqi8.coui.kmp.basic.COUIScrollBehavior
+import io.github.suqi8.coui.kmp.basic.HorizontalDivider
 import io.github.suqi8.coui.kmp.basic.Scaffold
 import io.github.suqi8.coui.kmp.basic.Text
-import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TextField
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
+import io.github.suqi8.coui.kmp.preference.CheckboxLocation
+import io.github.suqi8.coui.kmp.preference.CheckboxPreference
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
 import io.github.suqi8.coui.kmp.window.WindowDialog
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
 import java.text.DateFormat
 import java.util.Date
 
@@ -98,9 +103,9 @@ fun BuiltinMountScreenCoui(
                                 modifier = Modifier.graphicsLayer {
                                     if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                                 },
-                                imageVector = COUIIcons.Back,
+                                imageVector = MiuixIcons.Back,
                                 contentDescription = null,
-                                tint = colorScheme.onBackground
+                                tint = colorScheme.onSurfaceSecondary
                             )
                         }
                     },
@@ -117,8 +122,7 @@ fun BuiltinMountScreenCoui(
                     .fillMaxHeight()
                     .scrollEndHaptic()
                     .overScrollVertical()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .padding(horizontal = 12.dp),
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 contentPadding = innerPadding,
                 overscrollEffect = null,
             ) {
@@ -150,36 +154,32 @@ fun BuiltinMountScreenCoui(
     if (showAddPartitionDialog) {
         WindowDialog(
             show = true,
+            title = stringResource(id = R.string.settings_builtin_mount_add_partition),
             onDismissRequest = { showAddPartitionDialog = false },
             content = {
                 Column {
-                    Text(stringResource(id = R.string.settings_builtin_mount_add_partition))
-                    Spacer(Modifier.height(12.dp))
                     TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
                         value = partitionInput,
                         onValueChange = { partitionInput = it },
                         label = stringResource(id = R.string.settings_builtin_mount_partition_name),
                     )
-                    Spacer(Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        TextButton(
+                    DialogButtonBar(
+                        negative = DialogButtonBarAction(
                             text = stringResource(id = android.R.string.cancel),
                             onClick = { showAddPartitionDialog = false },
-                            modifier = Modifier.weight(1f),
-                        )
-                        TextButton(
+                        ),
+                        positive = DialogButtonBarAction(
                             text = stringResource(id = android.R.string.ok),
                             onClick = {
                                 actions.onAddPartition(partitionInput)
                                 showAddPartitionDialog = false
                             },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.textButtonColorsPrimary()
-                        )
-                    }
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
         )
@@ -192,6 +192,8 @@ fun BuiltinMountScreenCoui(
     if (selectedModule != null) {
         WindowDialog(
             show = true,
+            title = selectedModule.name.ifBlank { selectedModule.id },
+            summary = selectedModule.id,
             onDismissRequest = { selectedModuleId = null },
             content = {
                 ModuleBackendDialogCoui(
@@ -213,7 +215,8 @@ private fun BackendCardCoui(
 ) {
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .fillMaxWidth()
     ) {
         OverlayDropdownPreference(
@@ -225,12 +228,13 @@ private fun BackendCardCoui(
                     Icons.Rounded.Storage,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_builtin_mount_backend),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             selectedIndex = state.selectedBackendIndex,
             onSelectedIndexChange = actions.onSetBackendIndex
         )
+        PreferenceDividerCoui()
         OverlayDropdownPreference(
             title = stringResource(id = R.string.settings_builtin_mount_storage),
             summary = stringResource(id = R.string.settings_builtin_mount_storage_summary),
@@ -240,7 +244,7 @@ private fun BackendCardCoui(
                     Icons.Rounded.Storage,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_builtin_mount_storage),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             selectedIndex = state.selectedStorageIndex,
@@ -255,7 +259,11 @@ private fun LastRunCardCoui(lastRun: BuiltinMountLastRun?) {
         title = stringResource(id = R.string.settings_builtin_mount_last_run),
         summary = stringResource(id = R.string.settings_builtin_mount_last_run_summary)
     )
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+    ) {
         if (lastRun == null) {
             MountInfoRowCoui(
                 title = stringResource(id = R.string.settings_builtin_mount_last_run_empty),
@@ -272,18 +280,21 @@ private fun LastRunCardCoui(lastRun: BuiltinMountLastRun?) {
             }
         )
         if (!lastRun.error.isNullOrBlank()) {
+            PreferenceDividerCoui()
             MountInfoRowCoui(
                 title = stringResource(id = R.string.settings_builtin_mount_last_run_error),
                 summary = lastRun.error,
             )
         }
         if (lastRun.warnings.isNotEmpty()) {
+            PreferenceDividerCoui()
             MountInfoRowCoui(
                 title = stringResource(id = R.string.settings_builtin_mount_last_run_warnings),
                 summary = lastRun.warnings.compactList(),
             )
         }
         if (lastRun.activeMounts.isNotEmpty()) {
+            PreferenceDividerCoui()
             MountInfoRowCoui(
                 title = stringResource(id = R.string.settings_builtin_mount_last_run_mounts),
                 summary = lastRun.activeMounts.compactList(),
@@ -301,14 +312,18 @@ private fun ModuleStatusCardCoui(
         title = stringResource(id = R.string.settings_builtin_mount_modules),
         summary = stringResource(id = R.string.settings_builtin_mount_modules_summary, modules.size)
     )
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+    ) {
         if (modules.isEmpty()) {
             MountInfoRowCoui(
                 title = stringResource(id = R.string.settings_builtin_mount_modules_empty),
                 summary = null,
             )
         } else {
-            modules.forEach { module ->
+            modules.forEachIndexed { index, module ->
                 MountInfoRowCoui(
                     title = module.name.ifBlank { module.id },
                     summary = "${module.id}\n${module.partitions.joinToString(", ")}",
@@ -317,6 +332,9 @@ private fun ModuleStatusCardCoui(
                         BackendPillCoui(backend = module.effectiveBackend)
                     }
                 )
+                if (index != modules.lastIndex) {
+                    PreferenceDividerCoui()
+                }
             }
         }
     }
@@ -332,13 +350,18 @@ private fun PartitionCardCoui(
         title = stringResource(id = R.string.settings_builtin_mount_partitions),
         summary = stringResource(id = R.string.settings_builtin_mount_partitions_summary)
     )
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+    ) {
         MountInfoRowCoui(
             icon = Icons.Rounded.Add,
             title = stringResource(id = R.string.settings_builtin_mount_add_partition),
             summary = null,
             onClick = onAdd,
         )
+        PreferenceDividerCoui()
         if (partitions.isEmpty()) {
             MountInfoRowCoui(
                 icon = Icons.Rounded.FolderDelete,
@@ -346,7 +369,7 @@ private fun PartitionCardCoui(
                 summary = null,
             )
         } else {
-            partitions.forEach { partition ->
+            partitions.forEachIndexed { index, partition ->
                 MountInfoRowCoui(
                     icon = Icons.Rounded.FolderDelete,
                     title = "/$partition",
@@ -357,11 +380,14 @@ private fun PartitionCardCoui(
                                 Icons.Rounded.Delete,
                                 contentDescription = null,
                                 modifier = Modifier.size(28.dp),
-                                tint = colorScheme.onBackground,
+                                tint = colorScheme.onSurfaceSecondary,
                             )
                         }
                     }
                 )
+                if (index != partitions.lastIndex) {
+                    PreferenceDividerCoui()
+                }
             }
         }
     }
@@ -372,34 +398,24 @@ private fun ModuleBackendDialogCoui(
     module: BuiltinMountModuleStatus,
     onSelect: (Int) -> Unit,
 ) {
-    Column {
-        Text(text = module.name.ifBlank { module.id }, fontSize = 20.sp, color = colorScheme.onSurface)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = module.id, fontSize = 14.sp, color = colorScheme.onSurfaceVariantSummary)
-        Spacer(modifier = Modifier.height(12.dp))
+    Column(modifier = Modifier.heightIn(max = 420.dp)) {
         BuiltinMountBackend.entries.forEachIndexed { index, backend ->
             val selected = backend == module.effectiveBackend
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(
-                        if (selected) colorScheme.primaryContainer.copy(alpha = 0.55f)
-                        else Color.Transparent
-                    )
-                    .clickable { onSelect(index) }
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = backend.label(),
-                    fontSize = 16.sp,
-                    color = colorScheme.onSurface
-                )
-                if (selected) {
-                    BackendPillCoui(backend = backend)
+            CheckboxPreference(
+                title = backend.label(),
+                checked = selected,
+                holdDownState = selected,
+                checkboxLocation = CheckboxLocation.End,
+                insideMargin = PaddingValues(horizontal = 24.dp, vertical = 14.dp),
+                onCheckedChange = {
+                    onSelect(index)
                 }
+            )
+            if (index != BuiltinMountBackend.entries.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    color = colorScheme.dividerLine
+                )
             }
         }
     }
@@ -425,11 +441,11 @@ private fun MountInfoRowCoui(
                 icon,
                 contentDescription = title,
                 modifier = Modifier.padding(end = 12.dp),
-                tint = colorScheme.onBackground,
+                tint = colorScheme.onSurfaceSecondary,
             )
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, fontSize = 17.sp, color = colorScheme.onBackground)
+            Text(text = title, fontSize = 17.sp, color = colorScheme.onSurface)
             if (!summary.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = summary, fontSize = 14.sp, color = colorScheme.onSurfaceVariantSummary)
@@ -469,11 +485,16 @@ private fun SectionTitleCoui(
     summary: String,
 ) {
     Column(
-        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 8.dp)
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 8.dp)
     ) {
-        Text(text = title, fontSize = 15.sp, color = colorScheme.onBackground)
+        Text(text = title, fontSize = 15.sp, color = colorScheme.onSurface)
         Text(text = summary, fontSize = 13.sp, color = colorScheme.onSurfaceVariantSummary)
     }
+}
+
+@Composable
+private fun PreferenceDividerCoui() {
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
 }
 
 @Composable

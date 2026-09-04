@@ -1,16 +1,11 @@
 package me.weishu.kernelsu.ui.component.profile
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
@@ -34,10 +28,10 @@ import me.weishu.kernelsu.toRawFlags
 import me.weishu.kernelsu.toRootProfileFlags
 import me.weishu.kernelsu.ui.component.coui.SuperEditArrow
 import me.weishu.kernelsu.ui.util.isSepolicyValid
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
-import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TextField
 import io.github.suqi8.coui.kmp.basic.TextFieldDefaults
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.overlay.OverlayDialog
 import io.github.suqi8.coui.kmp.preference.ArrowPreference
 import io.github.suqi8.coui.kmp.preference.CheckboxLocation
@@ -179,7 +173,6 @@ private fun GroupsPanel(
         title = stringResource(R.string.profile_groups),
         summary = "${currentSelection.value.size} / 32",
         onDismissRequest = { showDialog.value = false },
-        insideMargin = DpSize(0.dp, 24.dp),
         content = {
             Column(modifier = Modifier.heightIn(max = 500.dp)) {
                 LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
@@ -203,30 +196,23 @@ private fun GroupsPanel(
                         )
                     }
                 }
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = stringResource(android.R.string.cancel),
                         onClick = {
                             currentSelection.value = selected.toSet()
                             showDialog.value = false
                         },
-                        text = stringResource(android.R.string.cancel),
-                        modifier = Modifier.weight(1f),
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    TextButton(
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(R.string.confirm),
                         onClick = {
                             closeSelection(currentSelection.value)
                             showDialog.value = false
                         },
-                        text = stringResource(R.string.confirm),
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.textButtonColorsPrimary()
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )
@@ -285,7 +271,6 @@ private fun RootProfileFlagPanel(
         show = showDialog.value,
         title = stringResource(R.string.profile_flags),
         onDismissRequest = { showDialog.value = false },
-        insideMargin = DpSize(0.dp, 24.dp),
         content = {
             Column(modifier = Modifier.heightIn(max = 500.dp)) {
                 LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
@@ -309,30 +294,23 @@ private fun RootProfileFlagPanel(
                         )
                     }
                 }
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = stringResource(android.R.string.cancel),
                         onClick = {
                             showDialog.value = false
                             currentSelection.value = selected.toSet()
                         },
-                        text = stringResource(android.R.string.cancel),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    TextButton(
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(R.string.confirm),
                         onClick = {
                             closeSelection(currentSelection.value.toList())
                             showDialog.value = false
                         },
-                        text = stringResource(R.string.confirm),
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.textButtonColorsPrimary()
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )
@@ -371,7 +349,6 @@ private fun CapsPanel(
         show = showDialog.value,
         title = stringResource(R.string.profile_capabilities),
         onDismissRequest = { showDialog.value = false },
-        insideMargin = DpSize(0.dp, 24.dp),
         content = {
             Column(modifier = Modifier.heightIn(max = 500.dp)) {
                 LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
@@ -395,30 +372,23 @@ private fun CapsPanel(
                         )
                     }
                 }
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = stringResource(android.R.string.cancel),
                         onClick = {
                             showDialog.value = false
                             currentSelection.value = selected.toSet()
                         },
-                        text = stringResource(android.R.string.cancel),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    TextButton(
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(R.string.confirm),
                         onClick = {
                             closeSelection(currentSelection.value)
                             showDialog.value = false
                         },
-                        text = stringResource(R.string.confirm),
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.textButtonColorsPrimary()
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )
@@ -503,27 +473,21 @@ private fun SELinuxPanel(
                         singleLine = false
                     )
                 }
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(
-                        onClick = { showDialog.value = false },
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
                         text = stringResource(android.R.string.cancel),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    TextButton(
+                        onClick = { showDialog.value = false },
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(R.string.confirm),
                         onClick = {
                             onSELinuxChange(domain, rules)
                             showDialog.value = false
                         },
-                        text = stringResource(R.string.confirm),
                         enabled = isDomainValid && isRulesValid,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.textButtonColorsPrimary()
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )

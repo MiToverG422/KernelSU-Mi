@@ -2,21 +2,20 @@ package me.weishu.kernelsu.ui.component.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,10 +24,10 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.markdown.MarkdownContent
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
 import io.github.suqi8.coui.kmp.basic.InfiniteProgressIndicator
 import io.github.suqi8.coui.kmp.basic.Text
-import io.github.suqi8.coui.kmp.basic.TextButton
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.theme.LocalDismissState
 import io.github.suqi8.coui.kmp.theme.COUITheme
 import io.github.suqi8.coui.kmp.window.WindowDialog
@@ -85,54 +84,40 @@ fun ConfirmDialogCoui(
             showDialog.value = false
         },
         content = {
-            Layout(
-                content = {
-                    val dismissState = LocalDismissState.current
-                    visuals.content?.let { content ->
+            val dismissState = LocalDismissState.current
+            Column {
+                visuals.content?.let { content ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 360.dp)
+                            .padding(horizontal = 24.dp, vertical = 8.dp)
+                    ) {
                         when {
                             visuals.isMarkdown -> MarkdownContent(content = content, isMarkdown = true)
                             visuals.isHtml -> MarkdownContent(content = content, isMarkdown = false)
                             else -> Text(text = content)
                         }
                     }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.padding(top = 12.dp)
-                    ) {
-                        TextButton(
-                            text = visuals.dismiss ?: stringResource(id = android.R.string.cancel),
-                            onClick = {
-                                dismiss()
-                                dismissState?.invoke()
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(20.dp))
-                        TextButton(
-                            text = visuals.confirm ?: stringResource(id = android.R.string.ok),
-                            onClick = {
-                                confirm()
-                                dismissState?.invoke()
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.textButtonColorsPrimary()
-                        )
-                    }
                 }
-            ) { measurables, constraints ->
-                if (measurables.size != 2) {
-                    val button = measurables[0].measure(constraints)
-                    layout(constraints.maxWidth, button.height) {
-                        button.place(0, 0)
-                    }
-                } else {
-                    val button = measurables[1].measure(constraints)
-                    val lazyList = measurables[0].measure(constraints.copy(maxHeight = constraints.maxHeight - button.height))
-                    layout(constraints.maxWidth, lazyList.height + button.height) {
-                        lazyList.place(0, 0)
-                        button.place(0, lazyList.height)
-                    }
-                }
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = visuals.dismiss ?: stringResource(id = android.R.string.cancel),
+                        onClick = {
+                            dismiss()
+                            dismissState?.invoke()
+                        }
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = visuals.confirm ?: stringResource(id = android.R.string.ok),
+                        onClick = {
+                            confirm()
+                            dismissState?.invoke()
+                        }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    hasContentAbove = visuals.title.isNotBlank() || !visuals.content.isNullOrBlank(),
+                )
             }
         }
     )

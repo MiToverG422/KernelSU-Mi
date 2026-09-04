@@ -1,14 +1,9 @@
 package me.weishu.kernelsu.ui.component.choosekmidialog
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -18,13 +13,12 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.util.getCurrentKmi
 import me.weishu.kernelsu.ui.util.getSupportedKmis
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
-import io.github.suqi8.coui.kmp.basic.TextButton
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.overlay.OverlayDialog
 import io.github.suqi8.coui.kmp.preference.CheckboxLocation
 import io.github.suqi8.coui.kmp.preference.CheckboxPreference
@@ -50,7 +44,6 @@ fun ChooseKmiDialogCoui(
             onDismissRequest()
             currentSelection.value = currentKmi
         },
-        insideMargin = DpSize(0.dp, 24.dp),
         content = {
             Column(modifier = Modifier.heightIn(max = 500.dp)) {
                 LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
@@ -68,31 +61,24 @@ fun ChooseKmiDialogCoui(
                         )
                     }
                 }
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = stringResource(android.R.string.cancel),
                         onClick = {
                             onDismissRequest()
                             currentSelection.value = currentKmi
                         },
-                        text = stringResource(android.R.string.cancel),
-                        modifier = Modifier.weight(1f),
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    TextButton(
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(R.string.confirm),
                         enabled = supportedKMIs.contains(currentSelection.value),
                         onClick = {
                             onSelected(currentSelection.value)
                             onDismissRequest()
                         },
-                        text = stringResource(R.string.confirm),
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.textButtonColorsPrimary()
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )

@@ -78,15 +78,15 @@ import io.github.suqi8.coui.kmp.basic.Text
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
-import io.github.suqi8.coui.kmp.icon.extended.MoreCircle
 import io.github.suqi8.coui.kmp.overlay.OverlayListPopup
 import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
 import io.github.suqi8.coui.kmp.preference.SwitchPreference
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.MoreCircle
 
 /**
  * @author weishu
@@ -515,7 +515,7 @@ private fun TopBar(
                         modifier = Modifier.graphicsLayer {
                             if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                         },
-                        imageVector = COUIIcons.Back,
+                        imageVector = MiuixIcons.Back,
                         contentDescription = null,
                         tint = colorScheme.onBackground
                     )
@@ -529,7 +529,7 @@ private fun TopBar(
                         holdDownState = showTopPopup.value
                     ) {
                         Icon(
-                            imageVector = COUIIcons.MoreCircle,
+                            imageVector = MiuixIcons.MoreCircle,
                             tint = colorScheme.onSurface,
                             contentDescription = stringResource(id = R.string.settings)
                         )

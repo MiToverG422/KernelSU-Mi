@@ -263,7 +263,7 @@ fun SearchBar(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 16.dp)
             .padding(top = searchBarTopPadding, bottom = 6.dp)
             .heightIn(min = 45.dp)
             .background(colorScheme.surfaceContainerHigh, CircleShape)
@@ -337,7 +337,7 @@ fun SearchBarFake(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 16.dp)
             .padding(top = searchBarTopPadding, bottom = 6.dp),
         onSearch = { },
         enabled = false,

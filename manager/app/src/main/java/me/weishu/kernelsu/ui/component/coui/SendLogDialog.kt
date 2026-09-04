@@ -16,9 +16,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
@@ -29,11 +26,9 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.dialog.LoadingDialogHandle
 import me.weishu.kernelsu.ui.util.getBugreportFile
 import io.github.suqi8.coui.kmp.basic.Icon
-import io.github.suqi8.coui.kmp.basic.Text
 import io.github.suqi8.coui.kmp.basic.TextButton
-import io.github.suqi8.coui.kmp.overlay.OverlayDialog
+import io.github.suqi8.coui.kmp.overlay.OverlayBottomSheet
 import io.github.suqi8.coui.kmp.preference.ArrowPreference
-import io.github.suqi8.coui.kmp.theme.COUITheme
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -65,21 +60,11 @@ fun SendLogDialog(
             }
         }
     }
-    OverlayDialog(
+    OverlayBottomSheet(
         show = show,
+        title = stringResource(R.string.send_log),
         onDismissRequest = onDismissRequest,
-        insideMargin = DpSize(0.dp, 0.dp),
         content = {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 12.dp),
-                text = stringResource(R.string.send_log),
-                fontSize = COUITheme.textStyles.title4.fontSize,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                color = colorScheme.onSurface
-            )
             ArrowPreference(
                 title = stringResource(id = R.string.save_log),
                 startAction = {
@@ -96,7 +81,7 @@ fun SendLogDialog(
                     exportBugreportLauncher.launch("MISU_bugreport_${current}.tar.gz")
                     onDismissRequest()
                 },
-                insideMargin = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                insideMargin = PaddingValues(horizontal = 0.dp, vertical = 14.dp)
             )
             ArrowPreference(
                 title = stringResource(id = R.string.send_log),
@@ -138,7 +123,7 @@ fun SendLogDialog(
                         )
                     }
                 },
-                insideMargin = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                insideMargin = PaddingValues(horizontal = 0.dp, vertical = 14.dp)
             )
             TextButton(
                 text = stringResource(id = android.R.string.cancel),
@@ -147,8 +132,7 @@ fun SendLogDialog(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 24.dp)
-                    .padding(horizontal = 24.dp)
+                    .padding(top = 12.dp, bottom = 20.dp)
             )
         }
     )

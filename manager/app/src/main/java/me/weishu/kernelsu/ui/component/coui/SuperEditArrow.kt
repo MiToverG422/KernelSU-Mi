@@ -1,11 +1,9 @@
 package me.weishu.kernelsu.ui.component.coui
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,9 +16,9 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.filter.FilterNumber
 import io.github.suqi8.coui.kmp.basic.BasicComponentColors
 import io.github.suqi8.coui.kmp.basic.BasicComponentDefaults
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
-import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TextField
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.overlay.OverlayDialog
 import io.github.suqi8.coui.kmp.preference.ArrowPreference
 
@@ -83,43 +81,41 @@ private fun EditDialog(
             filter.setInputValue(dialogTextFieldValue.toString())
         },
         content = {
-            TextField(
-                modifier = Modifier.padding(bottom = 16.dp),
-                value = filter.getInputValue(),
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-                onValueChange = filter.onValueChange()
-            )
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextButton(
-                    text = stringResource(android.R.string.cancel),
-                    onClick = {
-                        onDismissRequest()
-                        filter.setInputValue(dialogTextFieldValue.toString())
-                    },
-                    modifier = Modifier.weight(1f)
+            Column {
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    value = filter.getInputValue(),
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                    ),
+                    onValueChange = filter.onValueChange()
                 )
-                Spacer(Modifier.width(20.dp))
-                TextButton(
-                    text = stringResource(R.string.confirm),
-                    onClick = {
-                        onDismissRequest()
-                        with(filter.getInputValue().text) {
-                            if (isEmpty()) {
-                                onValueChange(0)
-                                filter.setInputValue("0")
-                            } else {
-                                onValueChange(this@with.toInt())
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = stringResource(android.R.string.cancel),
+                        onClick = {
+                            onDismissRequest()
+                            filter.setInputValue(dialogTextFieldValue.toString())
+                        },
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(R.string.confirm),
+                        onClick = {
+                            onDismissRequest()
+                            with(filter.getInputValue().text) {
+                                if (isEmpty()) {
+                                    onValueChange(0)
+                                    filter.setInputValue("0")
+                                } else {
+                                    onValueChange(this@with.toInt())
+                                }
                             }
-
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.textButtonColorsPrimary()
+                        },
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

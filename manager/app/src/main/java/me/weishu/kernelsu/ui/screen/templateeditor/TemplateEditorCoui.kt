@@ -44,13 +44,13 @@ import io.github.suqi8.coui.kmp.basic.ScrollBehavior
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
-import io.github.suqi8.coui.kmp.icon.extended.Delete
-import io.github.suqi8.coui.kmp.icon.extended.Ok
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.Delete
+import top.yukonga.miuix.kmp.icon.extended.Ok
 
 /**
  * @author weishu
@@ -179,7 +179,7 @@ private fun TopBar(
                         modifier = Modifier.graphicsLayer {
                             if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                         },
-                        imageVector = COUIIcons.Back,
+                        imageVector = MiuixIcons.Back,
                         contentDescription = null,
                         tint = colorScheme.onSurface
                     )
@@ -192,7 +192,7 @@ private fun TopBar(
                             onClick = onDelete
                         ) {
                             Icon(
-                                imageVector = COUIIcons.Delete,
+                                imageVector = MiuixIcons.Delete,
                                 contentDescription = stringResource(id = R.string.app_profile_template_delete),
                                 tint = colorScheme.onBackground
                             )
@@ -204,7 +204,7 @@ private fun TopBar(
                             onClick = onSave
                         ) {
                             Icon(
-                                imageVector = COUIIcons.Ok,
+                                imageVector = MiuixIcons.Ok,
                                 contentDescription = stringResource(id = R.string.app_profile_template_save),
                                 tint = colorScheme.onBackground
                             )

@@ -60,19 +60,19 @@ import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.basic.ArrowRight
-import io.github.suqi8.coui.kmp.icon.extended.Back
-import io.github.suqi8.coui.kmp.icon.extended.Close
-import io.github.suqi8.coui.kmp.icon.extended.ConvertFile
-import io.github.suqi8.coui.kmp.icon.extended.ExpandLess
-import io.github.suqi8.coui.kmp.icon.extended.ExpandMore
-import io.github.suqi8.coui.kmp.icon.extended.MoveFile
 import io.github.suqi8.coui.kmp.preference.CheckboxPreference
 import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.basic.ArrowRight
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.Close
+import top.yukonga.miuix.kmp.icon.extended.ConvertFile
+import top.yukonga.miuix.kmp.icon.extended.ExpandLess
+import top.yukonga.miuix.kmp.icon.extended.ExpandMore
+import top.yukonga.miuix.kmp.icon.extended.MoveFile
 
 /**
  * @author weishu
@@ -164,7 +164,7 @@ internal fun InstallScreenCoui(
                                 onSelectedIndexChange = actions.onSelectPartition,
                                 startAction = {
                                     Icon(
-                                        COUIIcons.ConvertFile,
+                                        MiuixIcons.ConvertFile,
                                         tint = colorScheme.onSurface,
                                         modifier = Modifier.padding(end = 12.dp),
                                         contentDescription = null
@@ -213,7 +213,7 @@ internal fun InstallScreenCoui(
                                     onClick = actions.onSelectLkm,
                                     startAction = {
                                         Icon(
-                                            COUIIcons.MoveFile,
+                                            MiuixIcons.MoveFile,
                                             tint = colorScheme.onSurface,
                                             modifier = Modifier.padding(end = 12.dp),
                                             contentDescription = null
@@ -223,7 +223,7 @@ internal fun InstallScreenCoui(
                                         if (uiState.lkmVariant == LkmVariant.CUSTOM && uiState.lkmSelection is LkmSelection.LkmUri) {
                                             IconButton(onClick = actions.onClearLkm) {
                                                 Icon(
-                                                    COUIIcons.Close,
+                                                    MiuixIcons.Close,
                                                     modifier = Modifier.size(16.dp),
                                                     contentDescription = stringResource(android.R.string.cancel),
                                                     tint = colorScheme.onSurfaceVariantActions
@@ -238,7 +238,7 @@ internal fun InstallScreenCoui(
                                                         scaleX = if (layoutDirection == LayoutDirection.Rtl) -1f else 1f
                                                     }
                                                     .align(Alignment.CenterVertically),
-                                                imageVector = COUIIcons.Basic.ArrowRight,
+                                                imageVector = MiuixIcons.Basic.ArrowRight,
                                                 contentDescription = null,
                                                 tint = colorScheme.onSurfaceVariantActions,
                                             )
@@ -258,7 +258,7 @@ internal fun InstallScreenCoui(
                             onClick = actions.onAdvancedOptionsClicked,
                             endActions = {
                                 Icon(
-                                    if (uiState.advancedOptionsShown) COUIIcons.ExpandLess else COUIIcons.ExpandMore,
+                                    if (uiState.advancedOptionsShown) MiuixIcons.ExpandLess else MiuixIcons.ExpandMore,
                                     modifier = Modifier.size(16.dp),
                                     tint = colorScheme.onSurfaceVariantActions,
                                     contentDescription = stringResource(R.string.expand),
@@ -379,7 +379,7 @@ private fun TopBar(
                         modifier = Modifier.graphicsLayer {
                             if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                         },
-                        imageVector = COUIIcons.Back,
+                        imageVector = MiuixIcons.Back,
                         tint = colorScheme.onSurface,
                         contentDescription = null,
                     )

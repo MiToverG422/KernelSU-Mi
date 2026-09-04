@@ -121,7 +121,6 @@ import me.weishu.kernelsu.ui.util.CouiBlurredBar
 import me.weishu.kernelsu.ui.util.getFileName
 import me.weishu.kernelsu.ui.util.reboot
 import me.weishu.kernelsu.ui.util.rememberCouiBlurBackdrop
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
 import io.github.suqi8.coui.kmp.basic.Card
 import io.github.suqi8.coui.kmp.basic.DropdownImpl
 import io.github.suqi8.coui.kmp.basic.FloatingActionButton
@@ -144,18 +143,20 @@ import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TextField
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import io.github.suqi8.coui.kmp.basic.rememberPullToRefreshState
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Delete
-import io.github.suqi8.coui.kmp.icon.extended.Download
-import io.github.suqi8.coui.kmp.icon.extended.Sort
-import io.github.suqi8.coui.kmp.icon.extended.Undo
-import io.github.suqi8.coui.kmp.icon.extended.UploadCloud
 import io.github.suqi8.coui.kmp.overlay.OverlayDialog
 import io.github.suqi8.coui.kmp.overlay.OverlayListPopup
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Delete
+import top.yukonga.miuix.kmp.icon.extended.Download
+import top.yukonga.miuix.kmp.icon.extended.Sort
+import top.yukonga.miuix.kmp.icon.extended.Undo
+import top.yukonga.miuix.kmp.icon.extended.UploadCloud
 
 @SuppressLint("StringFormatInvalid", "LocalContextGetResourceValueCall")
 @Composable
@@ -275,7 +276,7 @@ fun ModulePagerCoui(
                                     holdDownState = showTopPopup.value
                                 ) {
                                     Icon(
-                                        imageVector = COUIIcons.Sort,
+                                        imageVector = MiuixIcons.Sort,
                                         tint = colorScheme.onSurface,
                                         contentDescription = null
                                     )
@@ -319,7 +320,7 @@ fun ModulePagerCoui(
                                 onClick = actions.onOpenRepo,
                             ) {
                                 Icon(
-                                    imageVector = COUIIcons.Download,
+                                    imageVector = MiuixIcons.Download,
                                     tint = colorScheme.onSurface,
                                     contentDescription = null
                                 )
@@ -638,7 +639,7 @@ private fun ModuleShortcutDialog(
                             modifier = Modifier.padding(start = 12.dp)
                         ) {
                             Icon(
-                                imageVector = COUIIcons.Undo,
+                                imageVector = MiuixIcons.Undo,
                                 contentDescription = null,
                                 tint = colorScheme.onSurface,
                                 modifier = Modifier.size(28.dp),
@@ -663,25 +664,21 @@ private fun ModuleShortcutDialog(
                     onClick = ::copyShortcutUrl,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    TextButton(
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
                         text = stringResource(id = android.R.string.cancel),
                         onClick = onDismissRequest,
-                        modifier = Modifier.weight(1f),
-                    )
-                    TextButton(
+                    ),
+                    positive = DialogButtonBarAction(
                         text = if (shortcutState.hasExistingShortcut) {
                             stringResource(id = R.string.module_update)
                         } else {
                             stringResource(id = android.R.string.ok)
                         },
                         onClick = onConfirmShortcut,
-                        colors = ButtonDefaults.textButtonColorsPrimary(),
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )
@@ -770,9 +767,22 @@ private fun ModuleItemCoui(
     onAddActionShortcut: (ShortcutType) -> Unit,
     onOpenWebUi: () -> Unit
 ) {
-    val secondaryContainer = colorScheme.secondaryContainer.copy(alpha = 0.8f)
-    val actionIconTint = colorScheme.onSurface.copy(alpha = if (isInDarkTheme()) 0.7f else 0.9f)
-    val updateBg = colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+    val isDarkTheme = isInDarkTheme()
+    val actionButtonContainer = if (isDarkTheme) {
+        colorScheme.secondaryContainer
+    } else {
+        colorScheme.secondaryContainer.copy(alpha = 0.8f)
+    }
+    val actionIconTint = if (isDarkTheme) {
+        colorScheme.onSurfaceSecondary
+    } else {
+        colorScheme.onSurface.copy(alpha = 0.9f)
+    }
+    val updateBg = if (isDarkTheme) {
+        colorScheme.tertiaryContainer
+    } else {
+        colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+    }
     val updateTint = colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
     val hasUpdate = updateUrl.isNotEmpty()
     val textDecoration = if (module.remove) TextDecoration.LineThrough else null
@@ -782,8 +792,8 @@ private fun ModuleItemCoui(
 
     Card(
         modifier = Modifier
-            .padding(horizontal = 12.dp)
-            .padding(bottom = 12.dp),
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp),
         insideMargin = PaddingValues(16.dp),
         onClick = {
             if (hasDescription) expanded = !expanded
@@ -791,7 +801,7 @@ private fun ModuleItemCoui(
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             Column(
                 modifier = Modifier
@@ -864,6 +874,7 @@ private fun ModuleItemCoui(
                 )
             }
             Switch(
+                modifier = Modifier.padding(top = 6.dp),
                 enabled = !module.update,
                 checked = module.enabled,
                 onCheckedChange = {
@@ -896,8 +907,6 @@ private fun ModuleItemCoui(
 
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
-            thickness = 0.5.dp,
-            color = colorScheme.outline.copy(alpha = 0.5f)
         )
 
         Row {
@@ -913,7 +922,7 @@ private fun ModuleItemCoui(
                                 .heightIn(min = compactActionButtonMinSize)
                                 .widthIn(min = compactActionButtonMinSize)
                                 .clip(CircleShape)
-                                .background(secondaryContainer)
+                                .background(actionButtonContainer)
                                 .combinedClickable(
                                     onClick = onExecuteAction,
                                     onLongClick = { onAddActionShortcut(ShortcutType.Action) }
@@ -948,7 +957,7 @@ private fun ModuleItemCoui(
                                 .heightIn(min = compactActionButtonMinSize)
                                 .widthIn(min = compactActionButtonMinSize)
                                 .clip(CircleShape)
-                                .background(secondaryContainer)
+                                .background(actionButtonContainer)
                                 .combinedClickable(
                                     onClick = onOpenWebUi,
                                     onLongClick = { onAddActionShortcut(ShortcutType.WebUI) }
@@ -999,7 +1008,7 @@ private fun ModuleItemCoui(
                     ) {
                         Icon(
                             modifier = Modifier.size(20.dp),
-                            imageVector = COUIIcons.UploadCloud,
+                            imageVector = MiuixIcons.UploadCloud,
                             tint = updateTint,
                             contentDescription = stringResource(R.string.module_update),
                         )
@@ -1017,11 +1026,7 @@ private fun ModuleItemCoui(
                 minHeight = compactActionButtonMinSize,
                 minWidth = compactActionButtonMinSize,
                 onClick = if (module.remove) onUndoUninstall else onUninstall,
-                backgroundColor = if (module.remove) {
-                    secondaryContainer.copy(alpha = 0.8f)
-                } else {
-                    secondaryContainer
-                },
+                backgroundColor = actionButtonContainer,
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 7.dp),
@@ -1030,9 +1035,9 @@ private fun ModuleItemCoui(
                     Icon(
                         modifier = Modifier.size(20.dp),
                         imageVector = if (module.remove) {
-                            COUIIcons.Undo
+                            MiuixIcons.Undo
                         } else {
-                            COUIIcons.Delete
+                            MiuixIcons.Delete
                         },
                         tint = actionIconTint,
                         contentDescription = stringResource(

@@ -10,9 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
@@ -25,9 +22,8 @@ import me.weishu.kernelsu.ui.screen.flash.UninstallType.PERMANENT
 import me.weishu.kernelsu.ui.screen.flash.UninstallType.RESTORE_STOCK_IMAGE
 import me.weishu.kernelsu.ui.screen.flash.UninstallType.TEMPORARY
 import io.github.suqi8.coui.kmp.basic.Icon
-import io.github.suqi8.coui.kmp.basic.Text
 import io.github.suqi8.coui.kmp.basic.TextButton
-import io.github.suqi8.coui.kmp.overlay.OverlayDialog
+import io.github.suqi8.coui.kmp.overlay.OverlayBottomSheet
 import io.github.suqi8.coui.kmp.preference.ArrowPreference
 import io.github.suqi8.coui.kmp.theme.COUITheme
 
@@ -60,21 +56,11 @@ fun UninstallDialogCoui(
         }
     }
 
-    OverlayDialog(
+    OverlayBottomSheet(
         show = show,
+        title = stringResource(R.string.uninstall),
         onDismissRequest = onDismissRequest,
-        insideMargin = DpSize(0.dp, 0.dp),
         content = {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 12.dp),
-                text = stringResource(R.string.uninstall),
-                fontSize = COUITheme.textStyles.title4.fontSize,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                color = COUITheme.colorScheme.onSurface
-            )
             options.forEach { type ->
                 ArrowPreference(
                     onClick = {
@@ -90,7 +76,7 @@ fun UninstallDialogCoui(
                             tint = COUITheme.colorScheme.onSurface
                         )
                     },
-                    insideMargin = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                    insideMargin = PaddingValues(horizontal = 0.dp, vertical = 14.dp)
                 )
             }
             TextButton(
@@ -98,8 +84,7 @@ fun UninstallDialogCoui(
                 onClick = onDismissRequest,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 24.dp)
-                    .padding(horizontal = 24.dp)
+                    .padding(top = 12.dp, bottom = 20.dp)
             )
         }
     )

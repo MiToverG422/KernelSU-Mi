@@ -93,15 +93,15 @@ import io.github.suqi8.coui.kmp.basic.Text
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import io.github.suqi8.coui.kmp.basic.rememberPullToRefreshState
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.basic.ArrowRight
-import io.github.suqi8.coui.kmp.icon.extended.MoreCircle
-import io.github.suqi8.coui.kmp.icon.extended.Notes
-import io.github.suqi8.coui.kmp.icon.extended.Sort
 import io.github.suqi8.coui.kmp.overlay.OverlayListPopup
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.basic.ArrowRight
+import top.yukonga.miuix.kmp.icon.extended.MoreCircle
+import top.yukonga.miuix.kmp.icon.extended.Notes
+import top.yukonga.miuix.kmp.icon.extended.Sort
 
 @Composable
 fun SuperUserPagerCoui(
@@ -134,7 +134,7 @@ fun SuperUserPagerCoui(
                                 onClick = actions.onOpenSulog,
                             ) {
                                 Icon(
-                                    imageVector = COUIIcons.Notes,
+                                    imageVector = MiuixIcons.Notes,
                                     tint = colorScheme.onSurface,
                                     contentDescription = stringResource(R.string.settings_sulog)
                                 )
@@ -196,7 +196,7 @@ fun SuperUserPagerCoui(
                                     holdDownState = showSortPopup.value,
                                 ) {
                                     Icon(
-                                        imageVector = COUIIcons.Sort,
+                                        imageVector = MiuixIcons.Sort,
                                         tint = colorScheme.onSurface,
                                         contentDescription = stringResource(R.string.menu_sort)
                                     )
@@ -248,7 +248,7 @@ fun SuperUserPagerCoui(
                                     holdDownState = showTopPopup.value
                                 ) {
                                     Icon(
-                                        imageVector = COUIIcons.MoreCircle,
+                                        imageVector = MiuixIcons.MoreCircle,
                                         tint = colorScheme.onSurface,
                                         contentDescription = null
                                     )
@@ -616,7 +616,7 @@ private fun GroupItem(
                     }
                     .padding(start = 8.dp)
                     .size(width = 10.dp, height = 16.dp),
-                imageVector = COUIIcons.Basic.ArrowRight,
+                imageVector = MiuixIcons.Basic.ArrowRight,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(colorScheme.onSurfaceVariantActions),
             )

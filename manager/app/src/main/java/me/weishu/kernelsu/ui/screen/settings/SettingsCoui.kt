@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -21,32 +22,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.automirrored.rounded.Rule
-import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.AdminPanelSettings
+import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.BugReport
-import androidx.compose.material.icons.rounded.ContactPage
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.DeveloperMode
 import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.ElectricalServices
-import androidx.compose.material.icons.rounded.Fence
-import androidx.compose.material.icons.rounded.FolderDelete
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Policy
-import androidx.compose.material.icons.rounded.RemoveCircle
-import androidx.compose.material.icons.rounded.RemoveModerator
-import androidx.compose.material.icons.rounded.RestartAlt
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.FlashOn
+import androidx.compose.material.icons.rounded.FolderDelete
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LayersClear
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.SystemUpdateAlt
-import androidx.compose.material.icons.rounded.Update
-import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,17 +69,18 @@ import io.github.suqi8.coui.kmp.basic.Card
 import io.github.suqi8.coui.kmp.basic.Icon
 import io.github.suqi8.coui.kmp.basic.IconButton
 import io.github.suqi8.coui.kmp.basic.COUIScrollBehavior
+import io.github.suqi8.coui.kmp.basic.HorizontalDivider
 import io.github.suqi8.coui.kmp.basic.Scaffold
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
 import io.github.suqi8.coui.kmp.preference.ArrowPreference
 import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
 import io.github.suqi8.coui.kmp.preference.SwitchPreference
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
 
 /**
  * @author weishu
@@ -134,9 +128,9 @@ fun SettingPagerCoui(
                                     modifier = Modifier.graphicsLayer {
                                         if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                                     },
-                                    imageVector = COUIIcons.Back,
+                                    imageVector = MiuixIcons.Back,
                                     contentDescription = null,
-                                    tint = colorScheme.onBackground
+                                    tint = colorScheme.onSurfaceSecondary
                                 )
                             }
                         }
@@ -154,8 +148,7 @@ fun SettingPagerCoui(
                     .fillMaxHeight()
                     .scrollEndHaptic()
                     .overScrollVertical()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .padding(horizontal = 12.dp),
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 contentPadding = innerPadding,
                 overscrollEffect = null,
             ) {
@@ -169,7 +162,8 @@ fun SettingPagerCoui(
                         KsuIsValid {
                             Card(
                                 modifier = Modifier
-                                    .padding(top = 12.dp)
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 16.dp)
                                     .fillMaxWidth(),
                             ) {
                                 SwitchPreference(
@@ -180,12 +174,13 @@ fun SettingPagerCoui(
                                             Icons.Rounded.SystemUpdate,
                                             modifier = Modifier.padding(end = 6.dp),
                                             contentDescription = stringResource(id = R.string.settings_check_update),
-                                            tint = colorScheme.onBackground
+                                            tint = colorScheme.onSurfaceSecondary
                                         )
                                     },
                                     checked = uiState.checkUpdate,
                                     onCheckedChange = actions.onSetCheckUpdate
                                 )
+                                PreferenceDividerCoui()
                                 SwitchPreference(
                                     title = stringResource(id = R.string.settings_module_check_update),
                                     summary = stringResource(id = R.string.settings_check_update_summary),
@@ -194,12 +189,13 @@ fun SettingPagerCoui(
                                             Icons.Rounded.SystemUpdateAlt,
                                             modifier = Modifier.padding(end = 6.dp),
                                             contentDescription = stringResource(id = R.string.settings_module_check_update),
-                                            tint = colorScheme.onBackground
+                                            tint = colorScheme.onSurfaceSecondary
                                         )
                                     },
                                     checked = uiState.checkModuleUpdate,
                                     onCheckedChange = actions.onSetCheckModuleUpdate
                                 )
+                                PreferenceDividerCoui()
                                 val profileTemplate = stringResource(id = R.string.settings_profile_template)
                                 ArrowPreference(
                                     title = profileTemplate,
@@ -209,11 +205,12 @@ fun SettingPagerCoui(
                                             Icons.Rounded.Description,
                                             modifier = Modifier.padding(end = 6.dp),
                                             contentDescription = profileTemplate,
-                                            tint = colorScheme.onBackground
+                                            tint = colorScheme.onSurfaceSecondary
                                         )
                                     },
                                     onClick = actions.onOpenProfileTemplate
                                 )
+                                PreferenceDividerCoui()
                                 SwitchPreference(
                                     title = stringResource(id = R.string.enable_web_debugging),
                                     summary = stringResource(id = R.string.enable_web_debugging_summary),
@@ -222,7 +219,7 @@ fun SettingPagerCoui(
                                             Icons.Rounded.DeveloperMode,
                                             modifier = Modifier.padding(end = 6.dp),
                                             contentDescription = stringResource(id = R.string.enable_web_debugging),
-                                            tint = colorScheme.onBackground
+                                            tint = colorScheme.onSurfaceSecondary
                                         )
                                     },
                                     checked = uiState.enableWebDebugging,
@@ -232,7 +229,8 @@ fun SettingPagerCoui(
                         }
                         Card(
                             modifier = Modifier
-                                .padding(top = 12.dp)
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp)
                                 .fillMaxWidth(),
                         ) {
                             ArrowPreference(
@@ -242,12 +240,13 @@ fun SettingPagerCoui(
                                         Icons.Rounded.BugReport,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.send_log),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 onClick = { showSendLogDialog.value = true },
                             )
                             if (uiState.isLkmMode) {
+                                PreferenceDividerCoui()
                                 val uninstall = stringResource(id = R.string.settings_uninstall)
                                 ArrowPreference(
                                     title = uninstall,
@@ -257,7 +256,7 @@ fun SettingPagerCoui(
                                             Icons.Rounded.Delete,
                                             modifier = Modifier.padding(end = 6.dp),
                                             contentDescription = uninstall,
-                                            tint = colorScheme.onBackground,
+                                            tint = colorScheme.onSurfaceSecondary,
                                         )
                                     },
                                     onClick = { showUninstallDialog.value = true },
@@ -277,7 +276,8 @@ fun SettingPagerCoui(
                         val builtinMountEnabled = MountMode.fromValue(uiState.mountMode) == MountMode.MisuMount
                         Card(
                             modifier = Modifier
-                                .padding(top = 12.dp)
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp)
                                 .fillMaxWidth(),
                         ) {
                             SwitchPreference(
@@ -288,31 +288,35 @@ fun SettingPagerCoui(
                                         Icons.Rounded.Build,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_mount_mode),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 checked = builtinMountEnabled,
                                 onCheckedChange = actions.onSetMountMode
                             )
 
+                            PreferenceDividerCoui()
                             AnimatedVisibility(
                                 visible = builtinMountEnabled,
                                 enter = fadeIn() + expandVertically(),
                                 exit = fadeOut() + shrinkVertically()
                             ) {
-                                ArrowPreference(
-                                    title = stringResource(id = R.string.settings_builtin_mount),
-                                    summary = stringResource(id = R.string.settings_builtin_mount_summary),
-                                    startAction = {
-                                        Icon(
-                                            Icons.Rounded.FolderDelete,
-                                            modifier = Modifier.padding(end = 6.dp),
-                                            contentDescription = stringResource(id = R.string.settings_builtin_mount),
-                                            tint = colorScheme.onBackground
-                                        )
-                                    },
-                                    onClick = actions.onOpenBuiltinMount
-                                )
+                                Column {
+                                    ArrowPreference(
+                                        title = stringResource(id = R.string.settings_builtin_mount),
+                                        summary = stringResource(id = R.string.settings_builtin_mount_summary),
+                                        startAction = {
+                                            Icon(
+                                                Icons.Rounded.FolderDelete,
+                                                modifier = Modifier.padding(end = 6.dp),
+                                                contentDescription = stringResource(id = R.string.settings_builtin_mount),
+                                                tint = colorScheme.onSurfaceSecondary
+                                            )
+                                        },
+                                        onClick = actions.onOpenBuiltinMount
+                                    )
+                                    PreferenceDividerCoui()
+                                }
                             }
 
                             val umountSummary = when (uiState.kernelUmountStatus) {
@@ -328,7 +332,7 @@ fun SettingPagerCoui(
                                         Icons.Rounded.LayersClear,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_kernel_umount),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 enabled = uiState.kernelUmountStatus == "supported",
@@ -336,6 +340,7 @@ fun SettingPagerCoui(
                                 onCheckedChange = actions.onSetKernelUmountEnabled
                             )
 
+                            PreferenceDividerCoui()
                             SwitchPreference(
                                 title = stringResource(id = R.string.settings_umount_modules_default),
                                 summary = stringResource(id = R.string.settings_umount_modules_default_summary),
@@ -344,7 +349,7 @@ fun SettingPagerCoui(
                                         Icons.AutoMirrored.Rounded.Rule,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_umount_modules_default),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 checked = uiState.isDefaultUmountModules,
@@ -356,7 +361,8 @@ fun SettingPagerCoui(
                     if (section == SettingsSection.Kernel) KsuIsValid {
                         Card(
                             modifier = Modifier
-                                .padding(top = 12.dp)
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp)
                                 .fillMaxWidth(),
                         ) {
                             val suCompatModeItems = listOf(
@@ -378,7 +384,7 @@ fun SettingPagerCoui(
                                         Icons.Rounded.AdminPanelSettings,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_sucompat),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 enabled = uiState.suCompatStatus == "supported",
@@ -386,6 +392,7 @@ fun SettingPagerCoui(
                                 onSelectedIndexChange = actions.onSetSuCompatMode
                             )
 
+                            PreferenceDividerCoui()
                             val selinuxHideSummary = when (uiState.selinuxHideStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
@@ -399,7 +406,7 @@ fun SettingPagerCoui(
                                         Icons.Rounded.Security,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_selinux_hide),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 enabled = uiState.selinuxHideStatus == "supported",
@@ -407,6 +414,7 @@ fun SettingPagerCoui(
                                 onCheckedChange = actions.onSetSelinuxHideEnabled
                             )
 
+                            PreferenceDividerCoui()
                             val sulogSummary = when (uiState.sulogStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
@@ -420,7 +428,7 @@ fun SettingPagerCoui(
                                         Icons.AutoMirrored.Rounded.Article,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_sulog),
-                                        tint = if (uiState.sulogStatus == "supported") colorScheme.onBackground else colorScheme.disabledOnSecondaryVariant
+                                        tint = if (uiState.sulogStatus == "supported") colorScheme.onSurfaceSecondary else colorScheme.disabledOnSecondaryVariant
                                     )
                                 },
                                 enabled = uiState.sulogStatus == "supported",
@@ -428,6 +436,7 @@ fun SettingPagerCoui(
                                 onCheckedChange = actions.onSetSulogEnabled
                             )
 
+                            PreferenceDividerCoui()
                             val adbRootSummary = when (uiState.adbRootStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
@@ -441,13 +450,14 @@ fun SettingPagerCoui(
                                         Icons.Rounded.Adb,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_adb_root),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 enabled = uiState.adbRootStatus == "supported",
                                 checked = uiState.isAdbRootEnabled,
                                 onCheckedChange = actions.onSetAdbRootEnabled
                             )
+                            PreferenceDividerCoui()
                             SwitchPreference(
                                 title = stringResource(id = R.string.settings_auto_jailbreak),
                                 summary = stringResource(id = R.string.settings_auto_jailbreak_summary),
@@ -456,13 +466,14 @@ fun SettingPagerCoui(
                                         Icons.Rounded.FlashOn,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_auto_jailbreak),
-                                        tint = if (uiState.isLateLoadMode) colorScheme.onBackground else colorScheme.disabledOnSecondaryVariant
+                                        tint = if (uiState.isLateLoadMode) colorScheme.onSurfaceSecondary else colorScheme.disabledOnSecondaryVariant
                                     )
                                 },
                                 enabled = uiState.isLateLoadMode,
                                 checked = uiState.autoJailbreak,
                                 onCheckedChange = actions.onSetAutoJailbreak
                             )
+                            PreferenceDividerCoui()
                             SwitchPreference(
                                 title = stringResource(id = R.string.settings_soft_reboot),
                                 summary = stringResource(id = R.string.settings_soft_reboot_summary),
@@ -471,7 +482,7 @@ fun SettingPagerCoui(
                                         Icons.Rounded.RestartAlt,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_soft_reboot),
-                                        tint = if (uiState.isLateLoadMode) colorScheme.disabledOnSecondaryVariant else colorScheme.onBackground
+                                        tint = if (uiState.isLateLoadMode) colorScheme.disabledOnSecondaryVariant else colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 enabled = !uiState.isLateLoadMode,
@@ -479,6 +490,7 @@ fun SettingPagerCoui(
                                 onCheckedChange = actions.onSetUseSoftReboot
                             )
 
+                            PreferenceDividerCoui()
                             val avcSpoofSummary = when (uiState.avcSpoofStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
@@ -492,7 +504,7 @@ fun SettingPagerCoui(
                                         Icons.Rounded.EditNote,
                                         modifier = Modifier.padding(end = 6.dp),
                                         contentDescription = stringResource(id = R.string.settings_avc_spoof),
-                                        tint = colorScheme.onBackground
+                                        tint = colorScheme.onSurfaceSecondary
                                     )
                                 },
                                 enabled = uiState.avcSpoofStatus == "supported",
@@ -512,26 +524,30 @@ fun SettingPagerCoui(
 private fun SettingsSectionListCoui(
     actions: SettingsScreenActions,
 ) {
-    Card(
-        modifier = Modifier
-            .padding(top = 12.dp)
-            .fillMaxWidth(),
+                        Card(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp)
+                                .fillMaxWidth(),
     ) {
-        for (section in SettingsSection.entries) {
+        SettingsSection.entries.forEachIndexed { index, section ->
             val title = stringResource(section.titleRes)
             ArrowPreference(
                 title = title,
                 summary = stringResource(section.summaryRes),
                 startAction = {
                     Icon(
-                        section.miuixIcon(),
+                        section.couiIcon(),
                         modifier = Modifier.padding(end = 6.dp),
                         contentDescription = title,
-                        tint = colorScheme.onBackground
+                        tint = colorScheme.onSurfaceSecondary
                     )
                 },
                 onClick = { actions.onOpenSettingsSection(section) },
             )
+            if (index != SettingsSection.entries.lastIndex) {
+                PreferenceDividerCoui()
+            }
         }
     }
 }
@@ -542,7 +558,8 @@ private fun SettingsAboutEntryCoui(
 ) {
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .fillMaxWidth(),
     ) {
         val about = stringResource(id = R.string.about)
@@ -553,7 +570,7 @@ private fun SettingsAboutEntryCoui(
                     Icons.Rounded.Info,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = about,
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             onClick = actions.onOpenAbout,
@@ -561,9 +578,14 @@ private fun SettingsAboutEntryCoui(
     }
 }
 
-private fun SettingsSection.miuixIcon(): ImageVector = when (this) {
+private fun SettingsSection.couiIcon(): ImageVector = when (this) {
     SettingsSection.General -> Icons.Rounded.Settings
     SettingsSection.Appearance -> Icons.Rounded.Palette
     SettingsSection.Kernel -> Icons.Rounded.Build
     SettingsSection.Mount -> Icons.Rounded.FolderDelete
+}
+
+@Composable
+private fun PreferenceDividerCoui() {
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
 }

@@ -217,7 +217,13 @@ fun FloatingBottomBarCoui(
     val accentColor = COUITheme.colorScheme.primary
     val tabContentColor = COUITheme.colorScheme.onSurface
     val surfaceContainer = COUITheme.colorScheme.surfaceContainer
-    val containerColor = if (isBlurEnabled) surfaceContainer.copy(0.4f) else surfaceContainer
+    val containerColor = when {
+        isBlurEnabled && isInDark -> surfaceContainer
+        isBlurEnabled -> surfaceContainer.copy(alpha = 0.4f)
+        isInDark -> COUITheme.colorScheme.surfaceContainerHigh
+        else -> surfaceContainer
+    }
+    val glassHighlightAlpha = if (isInDark) 0.35f else 0.75f
 
     val tabsBackdrop = rememberLayerBackdrop()
     val density = LocalDensity.current
@@ -366,7 +372,7 @@ fun FloatingBottomBarCoui(
                                     refractionAmount = 24.dp.toPx(),
                                 )
                             },
-                            highlight = { baseHighlight.value.copy(alpha = 0.75f) },
+                            highlight = { baseHighlight.value.copy(alpha = glassHighlightAlpha) },
                             layerBlock = {
                                 val width = size.width.coerceAtLeast(1f)
                                 val s = lerp(1f, 1f + 16.dp.toPx() / width, dampedDragAnimation.pressProgress)

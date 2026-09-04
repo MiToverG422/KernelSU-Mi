@@ -7,6 +7,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
@@ -50,21 +51,24 @@ fun CouiKernelSUTheme(
 
         else -> null
     }
+    val colorSchemeMode = when (appSettings.colorMode) {
+        ColorMode.SYSTEM -> ColorSchemeMode.System
+        ColorMode.LIGHT -> ColorSchemeMode.Light
+        ColorMode.DARK, ColorMode.DARK_AMOLED -> ColorSchemeMode.Dark
+        ColorMode.MONET_SYSTEM -> ColorSchemeMode.MonetSystem
+        ColorMode.MONET_LIGHT -> ColorSchemeMode.MonetLight
+        ColorMode.MONET_DARK -> ColorSchemeMode.MonetDark
+    }
 
-    val controller = ThemeController(
-        when (appSettings.colorMode) {
-            ColorMode.SYSTEM -> ColorSchemeMode.System
-            ColorMode.LIGHT -> ColorSchemeMode.Light
-            ColorMode.DARK -> ColorSchemeMode.Dark
-            ColorMode.MONET_SYSTEM -> ColorSchemeMode.MonetSystem
-            ColorMode.MONET_LIGHT -> ColorSchemeMode.MonetLight
-            ColorMode.MONET_DARK, ColorMode.DARK_AMOLED -> ColorSchemeMode.MonetDark
-        },
-        keyColor = resolvedKeyColor,
-        isDark = darkTheme,
-        paletteStyle = couiPaletteStyle,
-        colorSpec = couiColorSpec,
-    )
+    val controller = remember(colorSchemeMode, resolvedKeyColor, couiColorSpec, couiPaletteStyle, darkTheme) {
+        ThemeController(
+            colorSchemeMode = colorSchemeMode,
+            keyColor = resolvedKeyColor,
+            paletteStyle = couiPaletteStyle,
+            colorSpec = couiColorSpec,
+            isDark = darkTheme,
+        )
+    }
 
     COUITheme(
         controller = controller,

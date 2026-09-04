@@ -4,7 +4,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 enum class UiMode(val value: String, val label: String) {
     Miuix("miuix", "MIUIX"),
-    Coui("coui", "COUI"),
+    Coui("coui", "COUI（测试版）"),
     Material("material", "Material");
 
     companion object {

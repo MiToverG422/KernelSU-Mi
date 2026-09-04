@@ -1,10 +1,8 @@
 package me.weishu.kernelsu.ui.component.coui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,10 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
 import io.github.suqi8.coui.kmp.basic.Text
-import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TextField
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.overlay.OverlayDialog
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 
@@ -37,45 +35,46 @@ fun ScaleDialog(
             var text by remember(show) {
                 mutableStateOf((volumeState() * 100).toInt().toString())
             }
-            TextField(
-                modifier = Modifier.padding(bottom = 16.dp),
-                value = text,
-                maxLines = 1,
-                trailingIcon = {
-                    Text(
-                        text = "%",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = colorScheme.onSurfaceVariantActions,
-                    )
-                },
-                onValueChange = { newValue ->
-                    if (newValue.isEmpty()) {
-                        text = ""
-                    } else {
-                        val valid = newValue.all { it.isDigit() }
-                        if (valid) {
-                            text = newValue
-                        }
-                    }
-                },
-            )
-            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                TextButton(
-                    text = stringResource(android.R.string.cancel),
-                    onClick = onDismissRequest,
-                    modifier = Modifier.weight(1f),
-                )
-                Spacer(Modifier.width(20.dp))
-                TextButton(
-                    text = stringResource(android.R.string.ok),
-                    onClick = {
-                        val parsed = text.toIntOrNull()
-                        val clamped = parsed?.coerceIn(80, 110) ?: (volumeState() * 100).toInt()
-                        onVolumeChange(clamped / 100f)
-                        onDismissRequest()
+            Column {
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    value = text,
+                    maxLines = 1,
+                    trailingIcon = {
+                        Text(
+                            text = "%",
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = colorScheme.onSurfaceVariantActions,
+                        )
                     },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.textButtonColorsPrimary(),
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty()) {
+                            text = ""
+                        } else {
+                            val valid = newValue.all { it.isDigit() }
+                            if (valid) {
+                                text = newValue
+                            }
+                        }
+                    },
+                )
+                DialogButtonBar(
+                    negative = DialogButtonBarAction(
+                        text = stringResource(android.R.string.cancel),
+                        onClick = onDismissRequest,
+                    ),
+                    positive = DialogButtonBarAction(
+                        text = stringResource(android.R.string.ok),
+                        onClick = {
+                            val parsed = text.toIntOrNull()
+                            val clamped = parsed?.coerceIn(80, 110) ?: (volumeState() * 100).toInt()
+                            onVolumeChange(clamped / 100f)
+                            onDismissRequest()
+                        },
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

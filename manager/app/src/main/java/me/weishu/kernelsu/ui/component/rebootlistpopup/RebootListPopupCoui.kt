@@ -14,10 +14,10 @@ import io.github.suqi8.coui.kmp.basic.Icon
 import io.github.suqi8.coui.kmp.basic.IconButton
 import io.github.suqi8.coui.kmp.basic.ListPopupColumn
 import io.github.suqi8.coui.kmp.basic.PopupPositionProvider
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Close2
 import io.github.suqi8.coui.kmp.overlay.OverlayListPopup
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Close2
 
 @Composable
 fun RebootListPopupCoui(
@@ -33,7 +33,7 @@ fun RebootListPopupCoui(
             holdDownState = showTopPopup.value
         ) {
             Icon(
-                imageVector = COUIIcons.Close2,
+                imageVector = MiuixIcons.Close2,
                 contentDescription = stringResource(id = R.string.reboot),
                 tint = colorScheme.onBackground
             )

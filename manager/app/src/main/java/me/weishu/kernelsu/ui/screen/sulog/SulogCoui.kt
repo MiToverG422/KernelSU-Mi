@@ -90,11 +90,6 @@ import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import io.github.suqi8.coui.kmp.basic.rememberPullToRefreshState
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.basic.ArrowRight
-import io.github.suqi8.coui.kmp.icon.extended.Back
-import io.github.suqi8.coui.kmp.icon.extended.Delete
-import io.github.suqi8.coui.kmp.icon.extended.Filter
 import io.github.suqi8.coui.kmp.overlay.OverlayDialog
 import io.github.suqi8.coui.kmp.overlay.OverlayListPopup
 import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
@@ -102,6 +97,11 @@ import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.theme.COUITheme.isDynamicColor
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.basic.ArrowRight
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.Delete
+import top.yukonga.miuix.kmp.icon.extended.Filter
 import androidx.compose.ui.input.key.key
 
 @Composable
@@ -166,7 +166,7 @@ fun SulogScreenCoui(
                                     modifier = Modifier.graphicsLayer {
                                         if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                                     },
-                                    imageVector = COUIIcons.Back,
+                                    imageVector = MiuixIcons.Back,
                                     contentDescription = null,
                                     tint = colorScheme.onSurface,
                                 )
@@ -178,7 +178,7 @@ fun SulogScreenCoui(
                                 onClick = actions.onCleanFile,
                             ) {
                                 Icon(
-                                    imageVector = COUIIcons.Delete,
+                                    imageVector = MiuixIcons.Delete,
                                     tint = colorScheme.onSurface,
                                     contentDescription = stringResource(R.string.sulog_clean_title),
                                 )
@@ -214,7 +214,7 @@ fun SulogScreenCoui(
                                     holdDownState = showFilterPopup.value,
                                 ) {
                                     Icon(
-                                        imageVector = COUIIcons.Filter,
+                                        imageVector = MiuixIcons.Filter,
                                         tint = colorScheme.onSurface,
                                         contentDescription = stringResource(R.string.sulog_filter_title),
                                     )
@@ -519,7 +519,7 @@ private fun SulogEntryCard(
                     }
                     .padding(start = 8.dp)
                     .size(width = 10.dp, height = 16.dp),
-                imageVector = COUIIcons.Basic.ArrowRight,
+                imageVector = MiuixIcons.Basic.ArrowRight,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(colorScheme.onSurfaceVariantActions),
             )

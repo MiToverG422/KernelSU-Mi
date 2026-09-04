@@ -25,9 +25,9 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
 import me.weishu.kernelsu.ui.component.material.ExpressiveDialog
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults as CouiButtonDefaults
-import io.github.suqi8.coui.kmp.basic.TextButton as CouiTextButton
 import io.github.suqi8.coui.kmp.basic.TextField as CouiTextField
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar as CouiDialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction as CouiDialogButtonBarAction
 import io.github.suqi8.coui.kmp.window.WindowDialog as CouiWindowDialog
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.TextButton
@@ -144,26 +144,22 @@ private fun DownloadDialogCoui(
                     value = url,
                     onValueChange = { url = it },
                     label = stringResource(R.string.download_dialog_msg),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
                 )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-                    CouiTextButton(
+                CouiDialogButtonBar(
+                    negative = CouiDialogButtonBarAction(
                         text = stringResource(android.R.string.cancel),
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(Modifier.width(20.dp))
-                    CouiTextButton(
+                    ),
+                    positive = CouiDialogButtonBarAction(
                         text = stringResource(android.R.string.ok),
                         enabled = isValidUrl(url.trim()),
                         onClick = { onConfirm(url.trim()) },
-                        modifier = Modifier.weight(1f),
-                        colors = CouiButtonDefaults.textButtonColorsPrimary()
-                    )
-                }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     )

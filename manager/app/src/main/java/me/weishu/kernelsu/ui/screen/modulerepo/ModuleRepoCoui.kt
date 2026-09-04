@@ -115,18 +115,18 @@ import io.github.suqi8.coui.kmp.basic.TopAppBar
 import io.github.suqi8.coui.kmp.basic.rememberPullToRefreshState
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
-import io.github.suqi8.coui.kmp.icon.extended.FileDownloads
-import io.github.suqi8.coui.kmp.icon.extended.HorizontalSplit
-import io.github.suqi8.coui.kmp.icon.extended.Link
-import io.github.suqi8.coui.kmp.icon.extended.Sort
-import io.github.suqi8.coui.kmp.icon.extended.TopDownloads
 import io.github.suqi8.coui.kmp.overlay.OverlayListPopup
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.PressFeedbackType
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.FileDownloads
+import top.yukonga.miuix.kmp.icon.extended.HorizontalSplit
+import top.yukonga.miuix.kmp.icon.extended.Link
+import top.yukonga.miuix.kmp.icon.extended.Sort
+import top.yukonga.miuix.kmp.icon.extended.TopDownloads
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
@@ -194,7 +194,7 @@ fun ModuleRepoScreenCoui(
                                 holdDownState = showSortPopup.value
                             ) {
                                 Icon(
-                                    imageVector = COUIIcons.Sort,
+                                    imageVector = MiuixIcons.Sort,
                                     tint = colorScheme.onSurface,
                                     contentDescription = stringResource(R.string.menu_sort),
                                 )
@@ -209,7 +209,7 @@ fun ModuleRepoScreenCoui(
                                     modifier = Modifier.graphicsLayer {
                                         if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                                     },
-                                    imageVector = COUIIcons.Back,
+                                    imageVector = MiuixIcons.Back,
                                     contentDescription = null,
                                     tint = colorScheme.onSurface
                                 )
@@ -298,7 +298,7 @@ fun ModuleRepoScreenCoui(
                                         if (module.stargazerCount > 0) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Icon(
-                                                    imageVector = COUIIcons.TopDownloads,
+                                                    imageVector = MiuixIcons.TopDownloads,
                                                     contentDescription = "stars",
                                                     tint = colorScheme.onSurfaceVariantSummary,
                                                     modifier = Modifier.size(16.dp)
@@ -504,7 +504,7 @@ fun ModuleRepoScreenCoui(
                                                 if (module.stargazerCount > 0) {
                                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                                         Icon(
-                                                            imageVector = COUIIcons.TopDownloads,
+                                                            imageVector = MiuixIcons.TopDownloads,
                                                             contentDescription = "stars",
                                                             tint = colorScheme.onSurfaceVariantSummary,
                                                             modifier = Modifier.size(16.dp)
@@ -829,7 +829,7 @@ fun ReleasesPage(
                                                     ) {
                                                         Icon(
                                                             modifier = Modifier.size(20.dp),
-                                                            imageVector = COUIIcons.FileDownloads,
+                                                            imageVector = MiuixIcons.FileDownloads,
                                                             tint = actionIconTint,
                                                             contentDescription = stringResource(R.string.install)
                                                         )
@@ -862,7 +862,7 @@ fun ReleasesPage(
                                                         ) {
                                                             Icon(
                                                                 modifier = Modifier.size(20.dp),
-                                                                imageVector = COUIIcons.FileDownloads,
+                                                                imageVector = MiuixIcons.FileDownloads,
                                                                 tint = actionIconTint,
                                                                 contentDescription = stringResource(R.string.download)
                                                             )
@@ -956,7 +956,7 @@ fun InfoPage(
                                     ) {
                                         Icon(
                                             modifier = Modifier.size(20.dp),
-                                            imageVector = COUIIcons.Link,
+                                            imageVector = MiuixIcons.Link,
                                             tint = tint,
                                             contentDescription = null
                                         )
@@ -1009,7 +1009,7 @@ fun InfoPage(
                             ) {
                                 Icon(
                                     modifier = Modifier.size(20.dp),
-                                    imageVector = COUIIcons.Link,
+                                    imageVector = MiuixIcons.Link,
                                     tint = actionIconTint,
                                     contentDescription = null
                                 )
@@ -1066,7 +1066,7 @@ fun ModuleRepoDetailScreenCoui(
                         Icon(
                             modifier = Modifier.graphicsLayer {
                                 if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
-                            }, imageVector = COUIIcons.Back, contentDescription = null, tint = colorScheme.onSurface
+                            }, imageVector = MiuixIcons.Back, contentDescription = null, tint = colorScheme.onSurface
                         )
                     }
                 }, actions = {
@@ -1075,7 +1075,7 @@ fun ModuleRepoDetailScreenCoui(
                             onClick = actions.onOpenWebUrl
                         ) {
                             Icon(
-                                imageVector = COUIIcons.HorizontalSplit, contentDescription = null, tint = colorScheme.onBackground
+                                imageVector = MiuixIcons.HorizontalSplit, contentDescription = null, tint = colorScheme.onBackground
                             )
                         }
                     }

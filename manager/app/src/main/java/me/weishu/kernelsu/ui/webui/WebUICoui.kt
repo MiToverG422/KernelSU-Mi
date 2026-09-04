@@ -2,14 +2,10 @@ package me.weishu.kernelsu.ui.webui
 
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
-import io.github.suqi8.coui.kmp.basic.ButtonDefaults
 import io.github.suqi8.coui.kmp.basic.Text
-import io.github.suqi8.coui.kmp.basic.TextButton
 import io.github.suqi8.coui.kmp.basic.TextField
+import io.github.suqi8.coui.kmp.layout.DialogButtonBar
+import io.github.suqi8.coui.kmp.layout.DialogButtonBarAction
 import io.github.suqi8.coui.kmp.window.WindowDialog
 
 @Composable
@@ -37,16 +33,23 @@ fun HandleWebUIEventCoui(
                 show = showDialog.value,
                 content = {
                     Column {
-                        Text(event.message)
-                        Spacer(Modifier.height(12.dp))
-                        TextButton(
+                        Text(
+                            text = event.message,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 360.dp)
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                        )
+                        DialogButtonBar(
+                            negative = null,
+                            positive = DialogButtonBarAction(
+                                text = stringResource(R.string.confirm),
+                                onClick = {
+                                    webUIState.onAlertResult()
+                                    showDialog.value = false
+                                }
+                            ),
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                webUIState.onAlertResult()
-                                showDialog.value = false
-                            },
-                            text = stringResource(R.string.confirm),
-                            colors = ButtonDefaults.textButtonColorsPrimary()
                         )
                     }
                 }
@@ -60,31 +63,30 @@ fun HandleWebUIEventCoui(
                 onDismissRequest = { webUIState.onConfirmResult(false) },
                 content = {
                     Column {
-                        Text(event.message)
-                        Spacer(Modifier.height(12.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            TextButton(
+                        Text(
+                            text = event.message,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 360.dp)
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                        )
+                        DialogButtonBar(
+                            negative = DialogButtonBarAction(
+                                text = stringResource(android.R.string.cancel),
                                 onClick = {
                                     webUIState.onConfirmResult(false)
                                     showDialog.value = false
-                                },
-                                text = stringResource(android.R.string.cancel),
-                                modifier = Modifier.weight(1f),
-                            )
-                            Spacer(modifier = Modifier.width(20.dp))
-                            TextButton(
+                                }
+                            ),
+                            positive = DialogButtonBarAction(
+                                text = stringResource(R.string.confirm),
                                 onClick = {
                                     webUIState.onConfirmResult(true)
                                     showDialog.value = false
-                                },
-                                text = stringResource(R.string.confirm),
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.textButtonColorsPrimary()
-                            )
-                        }
+                                }
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
             )
@@ -98,35 +100,36 @@ fun HandleWebUIEventCoui(
                 onDismissRequest = { webUIState.onPromptResult(null) },
                 content = {
                     Column {
-                        Text(event.message)
-                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = event.message,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 240.dp)
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                        )
                         TextField(
-                            modifier = Modifier.padding(bottom = 16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 8.dp),
                             state = state
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            TextButton(
+                        DialogButtonBar(
+                            negative = DialogButtonBarAction(
+                                text = stringResource(android.R.string.cancel),
                                 onClick = {
                                     webUIState.onPromptResult(null)
                                     showDialog.value = false
-                                },
-                                text = stringResource(android.R.string.cancel),
-                                modifier = Modifier.weight(1f),
-                            )
-                            Spacer(modifier = Modifier.width(20.dp))
-                            TextButton(
+                                }
+                            ),
+                            positive = DialogButtonBarAction(
+                                text = stringResource(R.string.confirm),
                                 onClick = {
                                     webUIState.onPromptResult(state.text.toString())
                                     showDialog.value = false
-                                },
-                                text = stringResource(R.string.confirm),
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.textButtonColorsPrimary()
-                            )
-                        }
+                                }
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
             )

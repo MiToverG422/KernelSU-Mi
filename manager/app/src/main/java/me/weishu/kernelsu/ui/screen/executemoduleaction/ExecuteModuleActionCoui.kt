@@ -59,11 +59,11 @@ import io.github.suqi8.coui.kmp.basic.SmallTopAppBar
 import io.github.suqi8.coui.kmp.basic.Text
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
-import io.github.suqi8.coui.kmp.icon.extended.Download
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.Download
 
 @Composable
 fun ExecuteModuleActionScreenCoui(
@@ -201,7 +201,7 @@ private fun TopBar(
                         modifier = Modifier.graphicsLayer {
                             if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                         },
-                        imageVector = COUIIcons.Back,
+                        imageVector = MiuixIcons.Back,
                         contentDescription = null,
                         tint = colorScheme.onBackground
                     )
@@ -212,7 +212,7 @@ private fun TopBar(
                     onClick = onSave
                 ) {
                     Icon(
-                        imageVector = COUIIcons.Download,
+                        imageVector = MiuixIcons.Download,
                         contentDescription = stringResource(id = R.string.save_log),
                         tint = colorScheme.onBackground
                     )

@@ -113,16 +113,15 @@ fun HomePagerCoui(
                     .fillMaxHeight()
                     .scrollEndHaptic()
                     .overScrollVertical()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .padding(horizontal = 12.dp),
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 contentPadding = innerPadding,
                 overscrollEffect = null,
             ) {
                 item {
                     Column(
-                        modifier = Modifier.padding(top = 12.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         if (state.checkUpdateEnabled) {
                             UpdateCard(state = state, actions = actions)
@@ -361,7 +360,7 @@ private fun StatusCard(
                                     Icons.Rounded.ErrorOutline,
                                     stringResource(R.string.home_not_installed),
                                     modifier = Modifier.padding(end = 6.dp),
-                                    tint = colorScheme.onBackground,
+                                    tint = colorScheme.onSurfaceSecondary,
                                 )
                             },
                             endActions = {
@@ -396,7 +395,7 @@ private fun StatusCard(
                                 Icons.Rounded.ErrorOutline,
                                 stringResource(R.string.home_unsupported),
                                 modifier = Modifier.padding(end = 16.dp),
-                                tint = colorScheme.onBackground,
+                                tint = colorScheme.onSurfaceSecondary,
                             )
                         }
                     )
@@ -422,7 +421,7 @@ private fun SupportLinks(
                     imageVector = Icons.Filled.VolunteerActivism,
                     contentDescription = stringResource(R.string.home_support_title),
                     modifier = Modifier.padding(end = 6.dp),
-                    tint = colorScheme.onBackground,
+                    tint = colorScheme.onSurfaceSecondary,
                 )
             },
             onClick = { onOpenUrl("https://patreon.com/weishu") },
@@ -435,7 +434,7 @@ private fun SupportLinks(
                     imageVector = Icons.AutoMirrored.Filled.MenuBook,
                     contentDescription = stringResource(R.string.home_learn_kernelsu),
                     modifier = Modifier.padding(end = 6.dp),
-                    tint = colorScheme.onBackground,
+                    tint = colorScheme.onSurfaceSecondary,
                 )
             },
             onClick = { onOpenUrl(learnMoreUrl) },
@@ -467,7 +466,7 @@ private fun InfoCard(
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .size(24.dp),
-                tint = colorScheme.onSurface,
+                tint = colorScheme.onSurfaceSecondary,
             )
             Column {
                 Text(
@@ -603,9 +602,9 @@ private fun HomeScreenPreviewContent(
 ) {
     CompositionLocalProvider(LocalUriHandler provides previewUriHandler) {
         Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val actions = HomeActions({}, {})
             StatusCard(

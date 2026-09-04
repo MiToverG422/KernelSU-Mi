@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -71,7 +70,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
-import com.materialkolor.rememberDynamicColorScheme
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.MainActivity
 import me.weishu.kernelsu.ui.UiMode
@@ -85,21 +83,22 @@ import io.github.suqi8.coui.kmp.basic.Card
 import io.github.suqi8.coui.kmp.basic.Icon
 import io.github.suqi8.coui.kmp.basic.IconButton
 import io.github.suqi8.coui.kmp.basic.COUIScrollBehavior
+import io.github.suqi8.coui.kmp.basic.HorizontalDivider
 import io.github.suqi8.coui.kmp.basic.Scaffold
 import io.github.suqi8.coui.kmp.basic.Slider
 import io.github.suqi8.coui.kmp.basic.SliderDefaults
-import io.github.suqi8.coui.kmp.basic.TabRow
+import io.github.suqi8.coui.kmp.basic.TabRowWithContour
 import io.github.suqi8.coui.kmp.basic.Text
 import io.github.suqi8.coui.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.layerBackdrop
-import io.github.suqi8.coui.kmp.icon.COUIIcons
-import io.github.suqi8.coui.kmp.icon.extended.Back
 import io.github.suqi8.coui.kmp.preference.ArrowPreference
 import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
 import io.github.suqi8.coui.kmp.preference.SwitchPreference
 import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
 import io.github.suqi8.coui.kmp.utils.overScrollVertical
 import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
 
 @Composable
 fun ColorPaletteScreenCoui(
@@ -127,9 +126,9 @@ fun ColorPaletteScreenCoui(
                                 modifier = Modifier.graphicsLayer {
                                     if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
                                 },
-                                imageVector = COUIIcons.Back,
+                                imageVector = MiuixIcons.Back,
                                 contentDescription = null,
-                                tint = colorScheme.onBackground
+                                tint = colorScheme.onSurfaceSecondary
                             )
                         }
                     },
@@ -146,8 +145,7 @@ fun ColorPaletteScreenCoui(
                     .fillMaxHeight()
                     .scrollEndHaptic()
                     .overScrollVertical()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .padding(horizontal = 12.dp),
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 contentPadding = innerPadding,
                 overscrollEffect = null,
             ) {
@@ -174,20 +172,13 @@ fun ColorPaletteContentCoui(
     actions: ColorPaletteScreenActions,
 ) {
     val uiState = state.uiState
-    val currentColorMode = state.currentColorMode
-    val isDark = currentColorMode.isDark || currentColorMode.isSystem && isSystemInDarkTheme()
     val context = LocalContext.current
     val showScaleDialog = rememberSaveable { mutableStateOf(false) }
 
     Spacer(modifier = Modifier.height(32.dp))
     ThemePreviewCardCoui(
-        keyColor = uiState.keyColor,
-        isDark = isDark,
-        miuixMonet = uiState.miuixMonet,
         enableFloatingBottomBar = uiState.enableFloatingBottomBar,
         enableFloatingBottomBarBlur = uiState.enableFloatingBottomBarBlur,
-        paletteStyle = state.currentPaletteStyle,
-        colorSpec = state.currentColorSpec,
     )
     Spacer(modifier = Modifier.height(72.dp))
 
@@ -196,17 +187,21 @@ fun ColorPaletteContentCoui(
         stringResource(id = R.string.settings_theme_mode_light),
         stringResource(id = R.string.settings_theme_mode_dark),
     )
-    TabRow(
+    TabRowWithContour(
         tabs = themeItems,
         selectedTabIndex = (if (uiState.themeMode >= 3) uiState.themeMode - 3 else uiState.themeMode).coerceIn(0, 2),
         onTabSelected = { index ->
             actions.onSetThemeMode(index)
         },
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
     )
 
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .fillMaxWidth(),
     ) {
         OverlayDropdownPreference(
@@ -218,13 +213,14 @@ fun ColorPaletteContentCoui(
                     Icons.Rounded.DisplaySettings,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_ui_mode),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             selectedIndex = UiMode.entries.indexOf(UiMode.fromValue(uiState.uiMode)).coerceAtLeast(0),
             onSelectedIndexChange = actions.onSetUiModeIndex
         )
 
+        PreferenceDividerCoui()
         SwitchPreference(
             title = stringResource(id = R.string.settings_monet),
             startAction = {
@@ -232,7 +228,7 @@ fun ColorPaletteContentCoui(
                     Icons.Rounded.Wallpaper,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_monet),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             checked = uiState.miuixMonet,
@@ -245,6 +241,7 @@ fun ColorPaletteContentCoui(
             visible = uiState.miuixMonet
         ) {
             Column {
+                PreferenceDividerCoui()
                 val colorItems = listOf(
                     stringResource(id = R.string.settings_key_color_default),
                     stringResource(id = R.string.color_red),
@@ -272,7 +269,7 @@ fun ColorPaletteContentCoui(
                             Icons.Rounded.Colorize,
                             modifier = Modifier.padding(end = 6.dp),
                             contentDescription = stringResource(id = R.string.settings_key_color),
-                            tint = colorScheme.onBackground
+                            tint = colorScheme.onSurfaceSecondary
                         )
                     },
                     selectedIndex = colorValues.indexOf(uiState.keyColor).takeIf { it >= 0 } ?: 0,
@@ -286,6 +283,7 @@ fun ColorPaletteContentCoui(
                 ) {
                     Column {
                         val styles = PaletteStyle.entries
+                        PreferenceDividerCoui()
                         OverlayDropdownPreference(
                             title = stringResource(R.string.settings_color_style),
                             startAction = {
@@ -293,7 +291,7 @@ fun ColorPaletteContentCoui(
                                     Icons.Rounded.Style,
                                     modifier = Modifier.padding(end = 6.dp),
                                     contentDescription = stringResource(id = R.string.settings_color_style),
-                                    tint = colorScheme.onBackground
+                                    tint = colorScheme.onSurfaceSecondary
                                 )
                             },
                             items = styles.map { it.name },
@@ -304,6 +302,7 @@ fun ColorPaletteContentCoui(
                         )
 
                         val specs = ColorSpec.SpecVersion.entries
+                        PreferenceDividerCoui()
                         OverlayDropdownPreference(
                             title = stringResource(R.string.settings_color_spec),
                             startAction = {
@@ -311,7 +310,7 @@ fun ColorPaletteContentCoui(
                                     Icons.Rounded.DesignServices,
                                     modifier = Modifier.padding(end = 6.dp),
                                     contentDescription = stringResource(id = R.string.settings_color_spec),
-                                    tint = colorScheme.onBackground
+                                    tint = colorScheme.onSurfaceSecondary
                                 )
                             },
                             items = specs.map { it.name },
@@ -328,7 +327,8 @@ fun ColorPaletteContentCoui(
 
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .fillMaxWidth(),
     ) {
         SwitchPreference(
@@ -342,7 +342,7 @@ fun ColorPaletteContentCoui(
                         .size(24.dp)
                         .wrapContentSize(unbounded = true)
                         .requiredSize(48.dp),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             checked = uiState.enableOfficialLauncher,
@@ -358,6 +358,7 @@ fun ColorPaletteContentCoui(
             }
         )
 
+        PreferenceDividerCoui()
         SwitchPreference(
             title = stringResource(id = R.string.settings_scroll_animation),
             startAction = {
@@ -365,7 +366,7 @@ fun ColorPaletteContentCoui(
                     Icons.Rounded.ViewCarousel,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_scroll_animation),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             checked = uiState.scrollAnimation,
@@ -377,7 +378,8 @@ fun ColorPaletteContentCoui(
 
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .fillMaxWidth(),
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -389,7 +391,7 @@ fun ColorPaletteContentCoui(
                         Icons.Rounded.BlurOn,
                         modifier = Modifier.padding(end = 6.dp),
                         contentDescription = stringResource(id = R.string.settings_enable_blur),
-                        tint = colorScheme.onBackground
+                        tint = colorScheme.onSurfaceSecondary
                     )
                 },
                 checked = uiState.enableBlur,
@@ -397,6 +399,7 @@ fun ColorPaletteContentCoui(
                     actions.onSetEnableBlur(it)
                 }
             )
+            PreferenceDividerCoui()
         }
         SwitchPreference(
             title = stringResource(id = R.string.settings_floating_bottom_bar),
@@ -406,7 +409,7 @@ fun ColorPaletteContentCoui(
                     Icons.Rounded.CallToAction,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_floating_bottom_bar),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             checked = uiState.enableFloatingBottomBar,
@@ -415,23 +418,27 @@ fun ColorPaletteContentCoui(
             }
         )
         AnimatedVisibility(visible = uiState.enableFloatingBottomBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            SwitchPreference(
-                title = stringResource(id = R.string.settings_enable_glass),
-                summary = stringResource(id = R.string.settings_enable_glass_summary),
-                startAction = {
-                    Icon(
-                        Icons.Rounded.WaterDrop,
-                        modifier = Modifier.padding(end = 6.dp),
-                        contentDescription = stringResource(id = R.string.settings_enable_glass),
-                        tint = colorScheme.onBackground
-                    )
-                },
-                checked = uiState.enableFloatingBottomBarBlur,
-                onCheckedChange = {
-                    actions.onSetEnableFloatingBottomBarBlur(it)
-                }
-            )
+            Column {
+                PreferenceDividerCoui()
+                SwitchPreference(
+                    title = stringResource(id = R.string.settings_enable_glass),
+                    summary = stringResource(id = R.string.settings_enable_glass_summary),
+                    startAction = {
+                        Icon(
+                            Icons.Rounded.WaterDrop,
+                            modifier = Modifier.padding(end = 6.dp),
+                            contentDescription = stringResource(id = R.string.settings_enable_glass),
+                            tint = colorScheme.onSurfaceSecondary
+                        )
+                    },
+                    checked = uiState.enableFloatingBottomBarBlur,
+                    onCheckedChange = {
+                        actions.onSetEnableFloatingBottomBarBlur(it)
+                    }
+                )
+            }
         }
+        PreferenceDividerCoui()
         SwitchPreference(
             title = stringResource(id = R.string.settings_navigation_badge),
             summary = stringResource(id = R.string.settings_navigation_badge_summary),
@@ -440,7 +447,7 @@ fun ColorPaletteContentCoui(
                     Icons.Rounded.Pin,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_navigation_badge),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             checked = uiState.enableNavigationBadge,
@@ -452,7 +459,8 @@ fun ColorPaletteContentCoui(
 
     Card(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .fillMaxWidth(),
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -464,7 +472,7 @@ fun ColorPaletteContentCoui(
                         Icons.AutoMirrored.Rounded.MenuOpen,
                         modifier = Modifier.padding(end = 6.dp),
                         contentDescription = stringResource(id = R.string.settings_enable_predictive_back),
-                        tint = colorScheme.onBackground
+                        tint = colorScheme.onSurfaceSecondary
                     )
                 },
                 checked = uiState.enablePredictiveBack,
@@ -472,6 +480,7 @@ fun ColorPaletteContentCoui(
                     actions.onSetEnablePredictiveBack(it)
                 }
             )
+            PreferenceDividerCoui()
         }
 
         var sliderValue by remember(uiState.pageScale) { mutableFloatStateOf(uiState.pageScale) }
@@ -483,7 +492,7 @@ fun ColorPaletteContentCoui(
                     Icons.Rounded.AspectRatio,
                     modifier = Modifier.padding(end = 6.dp),
                     contentDescription = stringResource(id = R.string.settings_page_scale),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onSurfaceSecondary
                 )
             },
             endActions = {
@@ -522,16 +531,16 @@ fun ColorPaletteContentCoui(
     }
 }
 
+@Composable
+private fun PreferenceDividerCoui() {
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+}
+
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 private fun ThemePreviewCardCoui(
-    keyColor: Int,
-    isDark: Boolean,
-    miuixMonet: Boolean,
     enableFloatingBottomBar: Boolean = false,
     enableFloatingBottomBarBlur: Boolean = false,
-    paletteStyle: PaletteStyle = PaletteStyle.TonalSpot,
-    colorSpec: ColorSpec.SpecVersion = ColorSpec.SpecVersion.SPEC_2021,
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.toFloat()
@@ -539,28 +548,14 @@ private fun ThemePreviewCardCoui(
     val screenRatio = screenWidth / screenHeight
     val useRail = useNavigationRail(enableFloatingBottomBar)
 
-    val seedColor = if (keyColor == 0) colorScheme.primary else Color(keyColor)
-    val effectiveStyle = if (keyColor == 0) PaletteStyle.TonalSpot else paletteStyle
-    val effectiveSpec = if (keyColor == 0) ColorSpec.SpecVersion.Default else colorSpec
-    val dynamicCs = rememberDynamicColorScheme(
-        seedColor = seedColor,
-        isDark = isDark,
-        style = effectiveStyle,
-        specVersion = effectiveSpec,
-    )
-
-    val bgColor = if (miuixMonet) dynamicCs.background else colorScheme.surface
-    val textColor = if (miuixMonet) dynamicCs.onSurface else colorScheme.onBackground
-    val accentCardColor = when {
-        miuixMonet -> dynamicCs.secondaryContainer
-        isDark -> Color(0xFF1A3825)
-        else -> Color(0xFFDFFAE4)
-    }
-    val cardColor = if (miuixMonet) dynamicCs.surfaceContainerHighest else colorScheme.surfaceVariant
-    val navBarColor = if (miuixMonet) dynamicCs.surfaceContainer else colorScheme.surface
-    val iconColor = if (miuixMonet) dynamicCs.primary else colorScheme.primary
-    val navSelectedColor = colorScheme.onSurfaceContainer
-    val navUnselectedColor = colorScheme.onSurfaceContainer.copy(alpha = 0.5f)
+    val textColor = colorScheme.onSurface
+    val bgColor = colorScheme.surface
+    val accentCardColor = colorScheme.tertiaryContainer
+    val cardColor = colorScheme.surfaceVariant
+    val navBarColor = colorScheme.background
+    val iconColor = colorScheme.primary
+    val navSelectedColor = colorScheme.primary
+    val navUnselectedColor = colorScheme.onSurfaceVariantSummary
 
     Box(
         modifier = Modifier
