@@ -38,6 +38,14 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data class SettingsSubpage(val section: String) : Route
+
+    @Parcelize
+    @Serializable
+    data object BuiltinMount : Route
+
+    @Parcelize
+    @Serializable
     data object About : Route
 
     @Parcelize

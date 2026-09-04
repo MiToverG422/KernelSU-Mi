@@ -1,1 +1,4 @@
+/.gitattributes text eol=lf
 *.bat eol=crlf
+*.sh text eol=lf
+userspace/ksud/src/banner text eol=lf

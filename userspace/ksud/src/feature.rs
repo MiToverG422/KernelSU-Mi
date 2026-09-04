@@ -63,9 +63,7 @@ impl FeatureId {
             Self::SelinuxHide => {
                 "SELinux Hide - sanitize /sys/fs/selinux access results for app UIDs"
             }
-            Self::AvcSpoof => {
-                "AVC Spoof - fix selinux context leak due to avc denial"
-            }
+            Self::AvcSpoof => "AVC Spoof - fix selinux context leak due to avc denial",
         }
     }
 }

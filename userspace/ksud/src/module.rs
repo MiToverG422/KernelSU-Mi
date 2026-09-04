@@ -43,6 +43,14 @@ const INSTALL_MODULE_SCRIPT: &str = concatcp!(
     "\n"
 );
 
+fn is_metamodule_module(module_path: &Path) -> bool {
+    read_module_prop(module_path).is_ok_and(|props| metamodule::is_metamodule(&props))
+}
+
+fn should_skip_metamodule_runtime(module_path: &Path) -> bool {
+    !crate::mount_mode::uses_metamodule() && is_metamodule_module(module_path)
+}
+
 /// Validate module_id format and security
 /// Module ID must match: ^[a-zA-Z][a-zA-Z0-9._-]+$
 /// - Must start with a letter (a-zA-Z)
@@ -166,6 +174,14 @@ fn foreach_active_module(f: impl FnMut(&Path) -> Result<()>) -> Result<()> {
 
 pub fn load_sepolicy_rule() -> Result<()> {
     foreach_active_module(|path| {
+        if should_skip_metamodule_runtime(path) {
+            info!(
+                "built-in mount mode active, skip metamodule sepolicy: {}",
+                path.display()
+            );
+            return Ok(());
+        }
+
         let rule_file = path.join("sepolicy.rule");
         if !rule_file.exists() {
             return Ok(());
@@ -292,6 +308,14 @@ pub fn exec_common_scripts(dir: &str, wait: bool) -> Result<()> {
 
 pub fn load_system_prop() -> Result<()> {
     foreach_active_module(|module| {
+        if should_skip_metamodule_runtime(module) {
+            info!(
+                "built-in mount mode active, skip metamodule system.prop: {}",
+                module.display()
+            );
+            return Ok(());
+        }
+
         let system_prop = module.join("system.prop");
         if !system_prop.exists() {
             return Ok(());
@@ -447,6 +471,14 @@ pub fn regenerate_preinit_rc() -> Result<()> {
                 if module_path.join(defs::DISABLE_FILE_NAME).exists()
                     || module_path.join(defs::REMOVE_FILE_NAME).exists()
                 {
+                    modules.insert(id, None);
+                    continue;
+                }
+                if should_skip_metamodule_runtime(&module_path) {
+                    info!(
+                        "built-in mount mode active, skip metamodule initrc: {}",
+                        module_path.display()
+                    );
                     modules.insert(id, None);
                     continue;
                 }
@@ -874,6 +906,8 @@ fn list_module(path: &str) -> Vec<HashMap<String, String>> {
             HashMap::new()
         }
     };
+    let mount_config = crate::mount_config::load();
+    let mount_partitions = mount_config.all_partitions();
 
     // first check enabled modules
     let dir = std::fs::read_dir(path);
@@ -916,7 +950,10 @@ fn list_module(path: &str) -> Vec<HashMap<String, String>> {
         let remove = path.join(defs::REMOVE_FILE_NAME).exists();
         let web = path.join(defs::MODULE_WEB_DIR).exists();
         let action = path.join(defs::MODULE_ACTION_SH).exists();
-        let need_mount = path.join("system").exists() && !path.join("skip_mount").exists();
+        let is_metamodule = metamodule::is_metamodule(&module_prop_map);
+        let need_mount = !is_metamodule
+            && !path.join(defs::SKIP_MOUNT_FILE_NAME).exists()
+            && !crate::mount_config::detect_module_partitions(&path, &mount_partitions).is_empty();
 
         module_prop_map.insert("enabled".to_owned(), enabled.to_string());
         module_prop_map.insert("update".to_owned(), update.to_string());
@@ -974,6 +1011,14 @@ pub fn get_managed_features() -> Result<HashMap<String, Vec<String>>> {
     let mut managed_features_map: HashMap<String, Vec<String>> = HashMap::new();
 
     foreach_active_module(|module_path| {
+        if should_skip_metamodule_runtime(module_path) {
+            info!(
+                "built-in mount mode active, skip metamodule managed features: {}",
+                module_path.display()
+            );
+            return Ok(());
+        }
+
         // Get module ID
         let Some(module_id) = module_path.file_name().and_then(|n| n.to_str()) else {
             warn!(
