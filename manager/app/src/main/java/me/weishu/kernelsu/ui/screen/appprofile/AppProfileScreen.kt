@@ -146,6 +146,11 @@ fun AppProfileScreen(uid: Int) {
             actions = actions,
         )
 
+        UiMode.Coui -> AppProfileScreenCoui(
+            state = state,
+            actions = actions,
+        )
+
         UiMode.Material -> AppProfileScreenMaterial(
             state = state,
             actions = actions,

@@ -22,6 +22,7 @@ import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.navigation3.Route
 import me.weishu.kernelsu.ui.util.isNetworkAvailable
 import me.weishu.kernelsu.ui.viewmodel.TemplateViewModel
+import io.github.suqi8.coui.kmp.basic.SnackbarHostState as CouiSnackbarHostState
 import top.yukonga.miuix.kmp.basic.SnackbarHostState as MiuixSnackbarHostState
 
 @Composable
@@ -36,6 +37,7 @@ fun AppProfileTemplateScreen() {
     val requestKey = "template_edit"
     val snackBarHost = remember { SnackbarHostState() }
     val miuixSnackbarHost = remember { MiuixSnackbarHostState() }
+    val couiSnackbarHost = remember { CouiSnackbarHostState() }
 
     LaunchedEffect(Unit) {
         if (screenState.templateList.isEmpty()) {
@@ -46,7 +48,7 @@ fun AppProfileTemplateScreen() {
     LaunchedEffect(Unit) {
         navigator.observeResult<Boolean>(requestKey).collect { success ->
             if (success) {
-                if (uiMode == UiMode.Miuix) {
+                if (uiMode.isMiuixFamily) {
                     navigator.clearResult(requestKey)
                 }
                 viewModel.fetchTemplates()
@@ -60,10 +62,10 @@ fun AppProfileTemplateScreen() {
 
     fun showMessage(message: String) {
         scope.launch {
-            if (uiMode == UiMode.Material) {
-                snackBarHost.showSnackbar(message)
-            } else {
-                miuixSnackbarHost.showSnackbar(message)
+            when (uiMode) {
+                UiMode.Material -> snackBarHost.showSnackbar(message)
+                UiMode.Miuix -> miuixSnackbarHost.showSnackbar(message)
+                UiMode.Coui -> couiSnackbarHost.showSnackbar(message)
             }
         }
     }
@@ -115,6 +117,11 @@ fun AppProfileTemplateScreen() {
                     requestKey,
                 )
 
+                UiMode.Coui -> navigator.navigateForResult(
+                    Route.TemplateEditor(TemplateViewModel.TemplateInfo(), false),
+                    requestKey,
+                )
+
                 UiMode.Material -> navigator.push(
                     Route.TemplateEditor(TemplateViewModel.TemplateInfo(), false)
                 )
@@ -123,6 +130,11 @@ fun AppProfileTemplateScreen() {
         onOpenTemplate = { template ->
             when (uiMode) {
                 UiMode.Miuix -> navigator.navigateForResult(
+                    Route.TemplateEditor(template, !template.local),
+                    requestKey,
+                )
+
+                UiMode.Coui -> navigator.navigateForResult(
                     Route.TemplateEditor(template, !template.local),
                     requestKey,
                 )
@@ -139,6 +151,12 @@ fun AppProfileTemplateScreen() {
             state = uiState,
             actions = actions,
             snackBarHost = miuixSnackbarHost,
+        )
+
+        UiMode.Coui -> AppProfileTemplateScreenCoui(
+            state = uiState,
+            actions = actions,
+            snackBarHost = couiSnackbarHost,
         )
 
         UiMode.Material -> AppProfileTemplateScreenMaterial(

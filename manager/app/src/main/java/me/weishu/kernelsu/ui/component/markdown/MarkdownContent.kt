@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
+import io.github.suqi8.coui.kmp.basic.InfiniteProgressIndicator as CouiInfiniteProgressIndicator
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 
 @Composable
@@ -43,11 +44,12 @@ fun MarkdownContent(
     val containerColor = when (uiMode) {
         UiMode.Material -> MaterialTheme.colorScheme.surfaceContainerHigh
         UiMode.Miuix -> null
+        UiMode.Coui -> null
     }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .let { if (uiMode == UiMode.Miuix) it.animateContentSize(animationSpec = tween(durationMillis = 300)) else it }
+            .let { if (uiMode.isMiuixFamily) it.animateContentSize(animationSpec = tween(durationMillis = 300)) else it }
     ) {
         Box(
             modifier = Modifier
@@ -72,6 +74,7 @@ fun MarkdownContent(
                 when (LocalUiMode.current) {
                     UiMode.Material -> LoadingIndicator()
                     UiMode.Miuix -> InfiniteProgressIndicator()
+                    UiMode.Coui -> CouiInfiniteProgressIndicator()
                 }
             }
         }

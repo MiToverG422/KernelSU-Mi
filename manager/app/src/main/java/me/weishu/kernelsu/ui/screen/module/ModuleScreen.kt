@@ -178,6 +178,14 @@ fun ModulePager(
             bottomInnerPadding = bottomInnerPadding,
         )
 
+        UiMode.Coui -> ModulePagerCoui(
+            uiState = rawUiState,
+            confirmDialogState = rawUiState.confirmDialogState,
+            moduleEvent = viewModel.moduleEvent,
+            actions = actions,
+            bottomInnerPadding = bottomInnerPadding,
+        )
+
         UiMode.Material -> ModulePagerMaterial(
             uiState = rawUiState,
             confirmDialogState = rawUiState.confirmDialogState,

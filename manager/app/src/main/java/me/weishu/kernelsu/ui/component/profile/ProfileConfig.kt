@@ -23,6 +23,14 @@ fun AppProfileConfig(
             onProfileChange = onProfileChange
         )
 
+        UiMode.Coui -> AppProfileConfigCoui(
+            modifier = modifier,
+            fixedName = fixedName,
+            enabled = enabled,
+            profile = profile,
+            onProfileChange = onProfileChange
+        )
+
         UiMode.Material -> AppProfileConfigMaterial(
             modifier = modifier,
             fixedName = fixedName,
@@ -50,6 +58,14 @@ fun RootProfileConfig(
             onProfileChange = onProfileChange
         )
 
+        UiMode.Coui -> RootProfileConfigCoui(
+            modifier = modifier,
+            fixedName = fixedName,
+            enabled = enabled,
+            profile = profile,
+            onProfileChange = onProfileChange
+        )
+
         UiMode.Material -> RootProfileConfigMaterial(
             modifier = modifier,
             enabled = enabled,
@@ -69,6 +85,14 @@ fun TemplateConfig(
 ) {
     when (LocalUiMode.current) {
         UiMode.Miuix -> TemplateConfigMiuix(
+            modifier = modifier,
+            profile = profile,
+            onViewTemplate = onViewTemplate,
+            onManageTemplate = onManageTemplate,
+            onProfileChange = onProfileChange
+        )
+
+        UiMode.Coui -> TemplateConfigCoui(
             modifier = modifier,
             profile = profile,
             onViewTemplate = onViewTemplate,

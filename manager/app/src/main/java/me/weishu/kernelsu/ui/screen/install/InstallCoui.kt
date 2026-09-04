@@ -1,0 +1,391 @@
+package me.weishu.kernelsu.ui.screen.install
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.captionBar
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import me.weishu.kernelsu.R
+import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
+import me.weishu.kernelsu.ui.theme.LocalEnableBlur
+import me.weishu.kernelsu.ui.util.CouiBlurredBar
+import me.weishu.kernelsu.ui.util.LkmSelection
+import me.weishu.kernelsu.ui.util.rememberCouiBlurBackdrop
+import io.github.suqi8.coui.kmp.basic.BasicComponent
+import io.github.suqi8.coui.kmp.basic.ButtonDefaults
+import io.github.suqi8.coui.kmp.basic.Card
+import io.github.suqi8.coui.kmp.basic.Icon
+import io.github.suqi8.coui.kmp.basic.IconButton
+import io.github.suqi8.coui.kmp.basic.COUIScrollBehavior
+import io.github.suqi8.coui.kmp.basic.Scaffold
+import io.github.suqi8.coui.kmp.basic.ScrollBehavior
+import io.github.suqi8.coui.kmp.basic.SnackbarHost
+import io.github.suqi8.coui.kmp.basic.SnackbarHostState
+import io.github.suqi8.coui.kmp.basic.TextButton
+import io.github.suqi8.coui.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.blur.LayerBackdrop
+import top.yukonga.miuix.kmp.blur.layerBackdrop
+import io.github.suqi8.coui.kmp.icon.COUIIcons
+import io.github.suqi8.coui.kmp.icon.basic.ArrowRight
+import io.github.suqi8.coui.kmp.icon.extended.Back
+import io.github.suqi8.coui.kmp.icon.extended.Close
+import io.github.suqi8.coui.kmp.icon.extended.ConvertFile
+import io.github.suqi8.coui.kmp.icon.extended.ExpandLess
+import io.github.suqi8.coui.kmp.icon.extended.ExpandMore
+import io.github.suqi8.coui.kmp.icon.extended.MoveFile
+import io.github.suqi8.coui.kmp.preference.CheckboxPreference
+import io.github.suqi8.coui.kmp.preference.OverlayDropdownPreference
+import io.github.suqi8.coui.kmp.theme.COUITheme.colorScheme
+import io.github.suqi8.coui.kmp.utils.overScrollVertical
+import io.github.suqi8.coui.kmp.utils.scrollEndHaptic
+
+/**
+ * @author weishu
+ * @date 2024/3/12.
+ */
+@Composable
+internal fun InstallScreenCoui(
+    uiState: InstallUiState,
+    actions: InstallScreenActions,
+    snackbarHost: SnackbarHostState,
+) {
+    val enableBlur = LocalEnableBlur.current
+    val scrollBehavior = COUIScrollBehavior()
+    val backdrop = rememberCouiBlurBackdrop(enableBlur)
+    val blurActive = backdrop != null
+    val barColor = if (blurActive) Color.Transparent else colorScheme.surface
+
+    Scaffold(
+        topBar = {
+            TopBar(
+                onBack = actions.onBack,
+                scrollBehavior = scrollBehavior,
+                backdrop = backdrop,
+                barColor = barColor,
+            )
+        },
+        popupHost = { },
+        snackbarHost = {
+            SnackbarHost(
+                state = snackbarHost,
+                modifier = Modifier.padding(bottom = 20.dp),
+            )
+        },
+        contentWindowInsets = WindowInsets.systemBars.add(WindowInsets.displayCutout).only(WindowInsetsSides.Horizontal)
+    ) { innerPadding ->
+        Box(modifier = if (backdrop != null) Modifier.layerBackdrop(backdrop) else Modifier) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .scrollEndHaptic()
+                    .overScrollVertical()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .padding(top = 12.dp)
+                    .padding(horizontal = 16.dp),
+                contentPadding = innerPadding,
+                overscrollEffect = null,
+            ) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        SelectInstallMethod(
+                            state = uiState,
+                            onSelected = actions.onSelectMethod,
+                            onDownloadFile = actions.onDownloadFile,
+                            onSelectBootImage = actions.onSelectBootImage,
+                            onSelectAnyKernel = actions.onSelectAnyKernel,
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = uiState.canSelectPartition,
+                        enter = expandVertically(),
+                        exit = shrinkVertically()
+                    ) {
+                        val isDownload = uiState.installMethod is InstallMethod.DownloadFile
+                        val partitionItems = if (isDownload) {
+                            uiState.remoteDisplayPartitions
+                        } else {
+                            uiState.displayPartitions
+                        }
+                        val partitionIndex = if (isDownload) {
+                            uiState.remotePartitionSelectionIndex
+                        } else {
+                            uiState.partitionSelectionIndex
+                        }
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp),
+                        ) {
+                            OverlayDropdownPreference(
+                                items = partitionItems,
+                                selectedIndex = partitionIndex,
+                                title = if (isDownload) {
+                                    stringResource(R.string.install_select_partition)
+                                } else {
+                                    "${stringResource(R.string.install_select_partition)} (${uiState.slotSuffix})"
+                                },
+                                onSelectedIndexChange = actions.onSelectPartition,
+                                startAction = {
+                                    Icon(
+                                        COUIIcons.ConvertFile,
+                                        tint = colorScheme.onSurface,
+                                        modifier = Modifier.padding(end = 12.dp),
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+                        }
+                    }
+                    AnimatedVisibility(
+                        visible = uiState.showInstallOptions,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        Column {
+                            if (uiState.canForceBackup) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp),
+                                ) {
+                                    CheckboxPreference(
+                                        title = stringResource(id = R.string.install_force_backup),
+                                        checked = uiState.forceBackup,
+                                        summary = stringResource(id = R.string.install_force_backup_summary),
+                                        onCheckedChange = actions.onSelectForceBackup
+                                    )
+                                }
+                            }
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp),
+                            ) {
+                                val summaryText = when (uiState.lkmVariant) {
+                                    LkmVariant.KOWSU -> stringResource(id = R.string.install_lkm_kowsu)
+                                    LkmVariant.XXKSU -> stringResource(id = R.string.install_lkm_xxksu)
+                                    LkmVariant.CUSTOM -> {
+                                        (uiState.lkmSelection as? LkmSelection.LkmUri)?.let {
+                                            stringResource(id = R.string.selected_lkm, it.uri.lastPathSegment ?: "(file)")
+                                        } ?: stringResource(id = R.string.install_upload_lkm_file)
+                                    }
+                                }
+                                BasicComponent(
+                                    title = stringResource(id = R.string.install_select_lkm_variant),
+                                    summary = summaryText,
+                                    onClick = actions.onSelectLkm,
+                                    startAction = {
+                                        Icon(
+                                            COUIIcons.MoveFile,
+                                            tint = colorScheme.onSurface,
+                                            modifier = Modifier.padding(end = 12.dp),
+                                            contentDescription = null
+                                        )
+                                    },
+                                    endActions = {
+                                        if (uiState.lkmVariant == LkmVariant.CUSTOM && uiState.lkmSelection is LkmSelection.LkmUri) {
+                                            IconButton(onClick = actions.onClearLkm) {
+                                                Icon(
+                                                    COUIIcons.Close,
+                                                    modifier = Modifier.size(16.dp),
+                                                    contentDescription = stringResource(android.R.string.cancel),
+                                                    tint = colorScheme.onSurfaceVariantActions
+                                                )
+                                            }
+                                        } else {
+                                            val layoutDirection = LocalLayoutDirection.current
+                                            Icon(
+                                                modifier = Modifier
+                                                    .size(width = 10.dp, height = 16.dp)
+                                                    .graphicsLayer {
+                                                        scaleX = if (layoutDirection == LayoutDirection.Rtl) -1f else 1f
+                                                    }
+                                                    .align(Alignment.CenterVertically),
+                                                imageVector = COUIIcons.Basic.ArrowRight,
+                                                contentDescription = null,
+                                                tint = colorScheme.onSurfaceVariantActions,
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                    ) {
+                        BasicComponent(
+                            title = stringResource(id = R.string.advanced_options),
+                            onClick = actions.onAdvancedOptionsClicked,
+                            endActions = {
+                                Icon(
+                                    if (uiState.advancedOptionsShown) COUIIcons.ExpandLess else COUIIcons.ExpandMore,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = colorScheme.onSurfaceVariantActions,
+                                    contentDescription = stringResource(R.string.expand),
+                                )
+                            }
+                        )
+                        AnimatedVisibility(
+                            visible = uiState.advancedOptionsShown,
+                            enter = expandVertically() + fadeIn(),
+                            exit = shrinkVertically() + fadeOut()
+                        ) {
+                            Column {
+                                CheckboxPreference(
+                                    title = stringResource(id = R.string.allow_shell),
+                                    checked = uiState.allowShell,
+                                    summary = stringResource(id = R.string.allow_shell_summary),
+                                    onCheckedChange = actions.onSelectAllowShell
+                                )
+                                CheckboxPreference(
+                                    title = stringResource(id = R.string.enable_adb),
+                                    checked = uiState.enableAdb,
+                                    summary = stringResource(id = R.string.enable_adb_summary),
+                                    onCheckedChange = actions.onSelectEnableAdb
+                                )
+                            }
+                        }
+                    }
+                    TextButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        text = stringResource(id = R.string.install_next),
+                        enabled = uiState.installMethod != null,
+                        colors = ButtonDefaults.textButtonColorsPrimary(),
+                        onClick = actions.onNext
+                    )
+                    Spacer(
+                        Modifier.height(
+                            WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() +
+                                    WindowInsets.captionBar.asPaddingValues().calculateBottomPadding()
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelectInstallMethod(
+    state: InstallUiState,
+    onSelected: (InstallMethod) -> Unit,
+    onDownloadFile: () -> Unit,
+    onSelectBootImage: () -> Unit,
+    onSelectAnyKernel: () -> Unit,
+) {
+    val confirmDialog = rememberConfirmDialog(
+        onConfirm = {
+            onSelected(InstallMethod.DirectInstallToInactiveSlot)
+        }
+    )
+    val dialogTitle = stringResource(id = android.R.string.dialog_alert_title)
+    val dialogContent = stringResource(id = R.string.install_inactive_slot_warning)
+
+    val onClick = { option: InstallMethod ->
+        when (option) {
+            is InstallMethod.SelectFile -> onSelectBootImage()
+            is InstallMethod.DownloadFile -> onDownloadFile()
+            is InstallMethod.DirectInstall -> onSelected(option)
+            is InstallMethod.DirectInstallToInactiveSlot -> confirmDialog.showConfirm(dialogTitle, dialogContent)
+            is InstallMethod.AnyKernel -> onSelectAnyKernel()
+        }
+    }
+
+    Column {
+        state.installMethodOptions.forEach { option ->
+            val interactionSource = remember { MutableInteractionSource() }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = option.javaClass == state.installMethod?.javaClass,
+                        onValueChange = { onClick(option) },
+                        role = Role.RadioButton,
+                        indication = LocalIndication.current,
+                        interactionSource = interactionSource
+                    )
+            ) {
+                CheckboxPreference(
+                    title = stringResource(id = option.label),
+                    summary = option.summary,
+                    checked = option.javaClass == state.installMethod?.javaClass,
+                    onCheckedChange = { onClick(option) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TopBar(
+    onBack: () -> Unit = {},
+    scrollBehavior: ScrollBehavior,
+    backdrop: LayerBackdrop?,
+    barColor: Color,
+) {
+    CouiBlurredBar(backdrop) {
+        TopAppBar(
+            color = barColor,
+            title = stringResource(R.string.install),
+            navigationIcon = {
+                IconButton(
+                    onClick = onBack
+                ) {
+                    val layoutDirection = LocalLayoutDirection.current
+                    Icon(
+                        modifier = Modifier.graphicsLayer {
+                            if (layoutDirection == LayoutDirection.Rtl) scaleX = -1f
+                        },
+                        imageVector = COUIIcons.Back,
+                        tint = colorScheme.onSurface,
+                        contentDescription = null,
+                    )
+                }
+            },
+            scrollBehavior = scrollBehavior
+        )
+    }
+}

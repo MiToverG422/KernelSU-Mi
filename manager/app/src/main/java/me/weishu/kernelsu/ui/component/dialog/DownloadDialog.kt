@@ -25,6 +25,10 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
 import me.weishu.kernelsu.ui.component.material.ExpressiveDialog
+import io.github.suqi8.coui.kmp.basic.ButtonDefaults as CouiButtonDefaults
+import io.github.suqi8.coui.kmp.basic.TextButton as CouiTextButton
+import io.github.suqi8.coui.kmp.basic.TextField as CouiTextField
+import io.github.suqi8.coui.kmp.window.WindowDialog as CouiWindowDialog
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
@@ -38,6 +42,7 @@ fun DownloadDialog(
 ) {
     when (LocalUiMode.current) {
         UiMode.Miuix -> DownloadDialogMiuix(show, onConfirm, onDismiss)
+        UiMode.Coui -> DownloadDialogCoui(show, onConfirm, onDismiss)
         UiMode.Material -> DownloadDialogMaterial(show, onConfirm, onDismiss)
     }
 }
@@ -115,6 +120,48 @@ private fun DownloadDialogMiuix(
                         onClick = { onConfirm(url.trim()) },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.textButtonColorsPrimary()
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
+private fun DownloadDialogCoui(
+    show: Boolean,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var url by remember { mutableStateOf("") }
+    CouiWindowDialog(
+        show = show,
+        title = stringResource(R.string.download_dialog_title),
+        onDismissRequest = onDismiss,
+        content = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                CouiTextField(
+                    value = url,
+                    onValueChange = { url = it },
+                    label = stringResource(R.string.download_dialog_msg),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.padding(top = 12.dp)
+                ) {
+                    CouiTextButton(
+                        text = stringResource(android.R.string.cancel),
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(20.dp))
+                    CouiTextButton(
+                        text = stringResource(android.R.string.ok),
+                        enabled = isValidUrl(url.trim()),
+                        onClick = { onConfirm(url.trim()) },
+                        modifier = Modifier.weight(1f),
+                        colors = CouiButtonDefaults.textButtonColorsPrimary()
                     )
                 }
             }

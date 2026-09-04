@@ -84,6 +84,12 @@ fun SuperUserPager(
             bottomInnerPadding = bottomInnerPadding,
         )
 
+        UiMode.Coui -> SuperUserPagerCoui(
+            uiState = uiState,
+            actions = actions,
+            bottomInnerPadding = bottomInnerPadding,
+        )
+
         UiMode.Material -> SuperUserPagerMaterial(
             uiState = uiState,
             actions = actions,

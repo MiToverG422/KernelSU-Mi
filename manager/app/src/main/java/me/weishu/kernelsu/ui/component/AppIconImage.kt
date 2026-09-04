@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
 import me.weishu.kernelsu.ui.util.AppIconCache
+import io.github.suqi8.coui.kmp.theme.COUITheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 
@@ -106,6 +107,7 @@ private fun PlaceHolderBox(modifier: Modifier = Modifier) {
     val containerColor = when (LocalUiMode.current) {
         UiMode.Material -> MaterialTheme.colorScheme.secondaryContainer
         UiMode.Miuix -> MiuixTheme.colorScheme.secondaryContainer
+        UiMode.Coui -> COUITheme.colorScheme.secondaryContainer
     }
 
     Box(

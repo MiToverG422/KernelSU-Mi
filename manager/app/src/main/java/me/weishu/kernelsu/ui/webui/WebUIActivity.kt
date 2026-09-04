@@ -31,6 +31,8 @@ import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
 import me.weishu.kernelsu.ui.theme.KernelSUTheme
 import me.weishu.kernelsu.ui.theme.ThemeController
+import io.github.suqi8.coui.kmp.basic.InfiniteProgressIndicator as CouiInfiniteProgressIndicator
+import io.github.suqi8.coui.kmp.theme.COUITheme
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -125,6 +127,17 @@ private fun LoadingContent() {
                 contentAlignment = Alignment.Center
             ) {
                 InfiniteProgressIndicator()
+            }
+        }
+
+        UiMode.Coui -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(COUITheme.colorScheme.background),
+                contentAlignment = Alignment.Center
+            ) {
+                CouiInfiniteProgressIndicator()
             }
         }
 

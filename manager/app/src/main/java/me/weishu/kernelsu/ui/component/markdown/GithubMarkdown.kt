@@ -46,6 +46,7 @@ import org.commonmark.ext.gfm.tables.TablesExtension
 import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
+import io.github.suqi8.coui.kmp.theme.COUITheme
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
@@ -390,6 +391,27 @@ private fun getMarkdownColors(containerColor: androidx.compose.ui.graphics.Color
                 bgRowAlt = cssColorFromArgb(makeVariant(rowAltDelta, 1.05)),
                 fgDefault = cssColorFromArgb(MiuixTheme.colorScheme.onSurface.toArgb()),
                 fgLink = cssColorFromArgb(MiuixTheme.colorScheme.primary.toArgb())
+            )
+        }
+
+        UiMode.Coui -> {
+            val bgArgb = containerColor?.toArgb() ?: COUITheme.colorScheme.surfaceContainer.toArgb()
+            val bgLuminance = relativeLuminance(bgArgb)
+
+            fun makeVariant(delta: Float, ratio: Double): Int {
+                val candidate = adjustLightnessArgb(bgArgb, delta)
+                val madeLighter = delta > 0f
+                return ensureVisibleByMix(bgArgb, candidate, ratio, madeLighter)
+            }
+
+            val codeDelta = if (bgLuminance > 0.6) -0.05f else 0.05f
+            val rowAltDelta = if (bgLuminance > 0.6) -0.02f else 0.02f
+
+            MarkdownColors(
+                bgCode = cssColorFromArgb(makeVariant(codeDelta, 1.1)),
+                bgRowAlt = cssColorFromArgb(makeVariant(rowAltDelta, 1.05)),
+                fgDefault = cssColorFromArgb(COUITheme.colorScheme.onSurface.toArgb()),
+                fgLink = cssColorFromArgb(COUITheme.colorScheme.primary.toArgb())
             )
         }
     }
