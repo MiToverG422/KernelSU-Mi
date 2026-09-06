@@ -330,7 +330,7 @@ private fun StatusCard(
                                     Text(
                                         text = stringResource(
                                             R.string.home_working_version,
-                                            "${state.ksuVersion}-${state.kernelUAPIVersion}"
+                                            state.ksuVersion.toString()
                                         ),
                                         fontSize = 15.sp,
                                     )

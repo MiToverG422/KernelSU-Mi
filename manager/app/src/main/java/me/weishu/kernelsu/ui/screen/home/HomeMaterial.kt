@@ -221,7 +221,7 @@ private fun StatusCard(
             else -> stringResource(R.string.home_unsupported)
         }
         val statusSummary = when {
-            ksuActive -> stringResource(R.string.home_working_version, "${state.ksuVersion}-${state.kernelUAPIVersion}")
+            ksuActive -> stringResource(R.string.home_working_version, state.ksuVersion.toString())
             notInstalled -> stringResource(R.string.home_click_to_install)
             else -> stringResource(R.string.home_unsupported_reason)
         }
