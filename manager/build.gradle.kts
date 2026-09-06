@@ -50,11 +50,11 @@ fun getGitCommitCountSince(revision: String): Int? {
     }.getOrNull()
 }
 
-fun getKernelVersionCode(): Int? {
+fun getKernelBaseVersionCode(): Int? {
     val makefile = rootProject.projectDir.parentFile.resolve("kernel/Makefile")
     if (!makefile.isFile) return null
 
-    val versionRegex = Regex("""-DKSU_VERSION=(\d+)""")
+    val versionRegex = Regex("""KSU_VERSION_BASE\s*:=\s*(\d+)""")
     return makefile.useLines { lines ->
         lines.firstNotNullOfOrNull { line ->
             versionRegex.find(line)?.groupValues?.get(1)?.toIntOrNull()
@@ -78,7 +78,7 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    val kernelVersionCode = getKernelVersionCode()
+    val kernelVersionCode = getKernelBaseVersionCode()
     if (kernelVersionCode != null) {
         val baseName = getKernelVersionName(kernelVersionCode)
         val baseRevision = kernelVersionCode.toString()

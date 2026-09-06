@@ -56,12 +56,9 @@ jobs:
       id: version
       run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        cd kernel
-        KSU_VERSION=$(sed -n 's/.*-DKSU_VERSION=\([0-9][0-9]*\).*/\1/p' Makefile | head -n1)
-        if [ -z "$KSU_VERSION" ]; then
-          KSU_GIT_VERSION=$(git rev-list --count HEAD)
-          KSU_VERSION=$((30000 + KSU_GIT_VERSION - 97))
-        fi
+        # Capture the MISU build version before switching to upstream sources.
+        KSU_GIT_VERSION=$(git rev-list --count HEAD)
+        KSU_VERSION=$((30000 + KSU_GIT_VERSION - 97))
         echo "KSU_VERSION=$KSU_VERSION" >> $GITHUB_OUTPUT
         echo "Calculated KSU_VERSION: $KSU_VERSION"
 

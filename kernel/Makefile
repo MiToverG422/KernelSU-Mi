@@ -11,8 +11,27 @@ MDIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 $(info -- KDIR: $(KDIR))
 $(info -- MDIR: $(MDIR))
 
-# compliant to last upstream kernel change as of c72f294
-CFLAGS_ksu.o += -DKSU_VERSION=32620
+# Upstream baseline for version names and source archives without Git metadata.
+KSU_VERSION_BASE := 32620
+
+# Match manager/build.gradle.kts and the ksud Git-based version calculation.
+# An explicit KSU_VERSION also supports builds from a different source checkout.
+ifndef KSU_VERSION
+ifneq ($(wildcard $(MDIR)/../.git),)
+ifeq ($(shell git -C "$(MDIR)" rev-parse --is-shallow-repository),true)
+$(error KernelSU version calculation requires full Git history)
+endif
+KSU_GIT_COUNT := $(shell git -C "$(MDIR)" rev-list --count HEAD)
+ifeq ($(KSU_GIT_COUNT),)
+$(error Cannot determine KernelSU Git commit count)
+endif
+KSU_VERSION := $(shell expr 30000 + $(KSU_GIT_COUNT) - 97)
+else
+KSU_VERSION := $(KSU_VERSION_BASE)
+endif
+endif
+CFLAGS_ksu.o += -DKSU_VERSION=$(KSU_VERSION)
+$(info -- KernelSU build version: $(KSU_VERSION))
 
 ifndef KSU_EXPECTED_SIZE
 KSU_EXPECTED_SIZE := 0x033b
