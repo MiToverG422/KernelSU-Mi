@@ -13,8 +13,7 @@ extra["androidCompileNdkVersion"] = libs.versions.ndk.get()
 extra["androidSourceCompatibility"] = JavaVersion.VERSION_21
 extra["androidTargetCompatibility"] = JavaVersion.VERSION_21
 
-val managerVersionCodeBase = 30335
-val managerVersionBaseTag = "32612c"
+val managerVersionCodeFallbackOffset = 97
 
 extra["managerVersionCode"] = getVersionCode()
 extra["managerVersionName"] = getVersionName()
@@ -32,24 +31,29 @@ fun gitOutput(vararg args: String): String {
 }
 
 fun getGitCommitCount(): Int {
-    return gitOutput("rev-list", "--first-parent", "--count", "HEAD").toInt()
+    return gitOutput("rev-list", "--count", "HEAD").toInt()
 }
 
-fun getGitCommitCountSince(ref: String): Int {
-    return gitOutput("rev-list", "--first-parent", "--count", "$ref..HEAD").toInt()
+fun getGitDescribe(): String {
+    return gitOutput("describe", "--tags", "--always")
 }
 
-fun getGitShortCommit(): String {
-    return gitOutput("rev-parse", "--short=9", "HEAD")
+fun getKernelVersionCode(): Int? {
+    val makefile = rootProject.projectDir.parentFile.resolve("kernel/Makefile")
+    if (!makefile.isFile) return null
+
+    val versionRegex = Regex("""-DKSU_VERSION=(\d+)""")
+    return makefile.useLines { lines ->
+        lines.firstNotNullOfOrNull { line ->
+            versionRegex.find(line)?.groupValues?.get(1)?.toIntOrNull()
+        }
+    }
 }
 
 fun getVersionCode(): Int {
-    val commitCount = getGitCommitCount()
-    return managerVersionCodeBase + commitCount
+    return getKernelVersionCode() ?: (30000 + getGitCommitCount() - managerVersionCodeFallbackOffset)
 }
 
 fun getVersionName(): String {
-    val commitCount = runCatching { getGitCommitCountSince(managerVersionBaseTag) }
-        .getOrElse { getGitCommitCount() }
-    return "$managerVersionBaseTag-$commitCount-g${getGitShortCommit()}"
+    return getGitDescribe()
 }
