@@ -83,6 +83,13 @@ jobs:
         fi
         CONFIG_KSU=m CC=clang make $BASE_ARGS $EXTRA_ARGS
 
+        # KernelSU-owned symbols must resolve inside the module, not on the device.
+        llvm-nm --undefined-only ksu.ko > /tmp/ksu-undefined-symbols.txt
+        if grep -E '[[:space:]](ksu_|kernelsu_|tiny_sulog_|write_sulog$|send_sulog_dump$)' /tmp/ksu-undefined-symbols.txt; then
+          echo "ERROR: kernelsu.ko contains unresolved KernelSU symbols."
+          exit 1
+        fi
+
         echo "=== Build completed ==="
 
         # Create output directory in GitHub workspace
