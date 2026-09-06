@@ -34,8 +34,20 @@ fun getGitCommitCount(): Int {
     return gitOutput("rev-list", "--count", "HEAD").toInt()
 }
 
-fun getGitDescribe(): String {
-    return gitOutput("describe", "--tags", "--always")
+fun getShortGitHash(): String {
+    return gitOutput("rev-parse", "--short", "HEAD")
+}
+
+fun hasGitRevision(revision: String): Boolean {
+    return runCatching {
+        gitOutput("rev-parse", "--verify", revision)
+    }.isSuccess
+}
+
+fun getGitCommitCountSince(revision: String): Int? {
+    return runCatching {
+        gitOutput("rev-list", "--count", "$revision..HEAD").toInt()
+    }.getOrNull()
 }
 
 fun getKernelVersionCode(): Int? {
@@ -50,10 +62,40 @@ fun getKernelVersionCode(): Int? {
     }
 }
 
+fun getKernelVersionName(versionCode: Int): String {
+    return when (versionCode) {
+        in 32600..32699 -> {
+            val patch = versionCode - 32600
+            if (patch == 0) "v3.3.0" else "v3.3.0-$patch"
+        }
+        else -> versionCode.toString()
+    }
+}
+
 fun getVersionCode(): Int {
-    return getKernelVersionCode() ?: (30000 + getGitCommitCount() - managerVersionCodeFallbackOffset)
+    val commitCount = getGitCommitCount()
+    return 30000 + commitCount - managerVersionCodeFallbackOffset
 }
 
 fun getVersionName(): String {
-    return getGitDescribe()
+    val kernelVersionCode = getKernelVersionCode()
+    if (kernelVersionCode != null) {
+        val baseName = getKernelVersionName(kernelVersionCode)
+        val baseRevision = kernelVersionCode.toString()
+        val distance = if (hasGitRevision("$baseRevision^{}")) {
+            getGitCommitCountSince(baseRevision)
+        } else {
+            null
+        }
+
+        return if (distance != null && distance > 0) {
+            "$baseName-$distance-g${getShortGitHash()}"
+        } else if (distance == 0) {
+            baseName
+        } else {
+            "$baseName-g${getShortGitHash()}"
+        }
+    }
+
+    return gitOutput("describe", "--tags", "--match", "v[0-9]*", "--always")
 }
