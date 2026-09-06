@@ -7,6 +7,10 @@ import me.weishu.kernelsu.ksuApp
 import me.weishu.kernelsu.ui.util.module.LatestVersionInfo
 import okhttp3.Request
 
+private const val UPDATE_RELEASE_API = "https://api.github.com/repos/MiToverG422/KernelSU-Mi/releases/tags/manager-latest"
+private const val UPDATE_APK_PREFIX = "MISU_"
+private val updateApkVersionRegex = Regex("""_(\d+)(?:[-.]|$)""")
+
 /**
  * @author weishu
  * @date 2023/6/22.
@@ -38,11 +42,10 @@ suspend fun download(
 
 fun checkNewVersion(): LatestVersionInfo {
     if (!isNetworkAvailable(ksuApp)) return LatestVersionInfo()
-    val url = "https://api.github.com/repos/backslashxx/KernelSU/releases/latest"
     // default null value if failed
     val defaultValue = LatestVersionInfo()
     runCatching {
-        ksuApp.okhttpClient.newCall(Request.Builder().url(url).build()).execute()
+        ksuApp.okhttpClient.newCall(Request.Builder().url(UPDATE_RELEASE_API).build()).execute()
             .use { response ->
                 if (!response.isSuccessful) {
                     return defaultValue
@@ -52,26 +55,30 @@ fun checkNewVersion(): LatestVersionInfo {
                 val changelog = json.optString("body")
 
                 val assets = json.getJSONArray("assets")
+                var latestApk = defaultValue
                 for (i in 0 until assets.length()) {
                     val asset = assets.getJSONObject(i)
                     val name = asset.getString("name")
-                    if (!name.endsWith(".apk")) {
+                    if (!name.startsWith(UPDATE_APK_PREFIX) || !name.endsWith(".apk")) {
                         continue
                     }
 
-                    val regex = Regex("v(.+?)_(\\d+)-")
-                    val matchResult = regex.find(name) ?: continue
-                    matchResult.groupValues[1]
-                    val versionCode = matchResult.groupValues[2].toInt()
+                    val matchResult = updateApkVersionRegex.find(name) ?: continue
+                    val versionCode = matchResult.groupValues[1].toIntOrNull() ?: continue
                     val downloadUrl = asset.getString("browser_download_url")
 
-                    return LatestVersionInfo(
+                    if (versionCode <= latestApk.versionCode) {
+                        continue
+                    }
+
+                    latestApk = LatestVersionInfo(
                         versionCode,
                         downloadUrl,
                         changelog
                     )
                 }
 
+                return latestApk
             }
     }
     return defaultValue
